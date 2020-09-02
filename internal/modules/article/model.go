@@ -2,7 +2,6 @@ package article
 
 import (
 	"github.com/ql31j45k3/SP_blog/internal/utils"
-	"go.uber.org/dig"
 	"gorm.io/gorm"
 	"strconv"
 )
@@ -36,7 +35,6 @@ type Article struct {
 }
 
 type ArticleRsp struct {
-	dig.Out
 	utils.Model
 
 	Title   string `json:"title"`
