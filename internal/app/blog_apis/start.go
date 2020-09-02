@@ -1,15 +1,16 @@
 package blog_apis
 
 import (
+	_ "github.com/spf13/viper"
+
 	"github.com/gin-gonic/gin"
-	"github.com/ql31j45k3/SP_blog/internal/binder"
-	"github.com/ql31j45k3/SP_blog/internal/modules/article"
 	"go.uber.org/dig"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	_ "github.com/spf13/viper"
+	"github.com/ql31j45k3/SP_blog/internal/binder"
+	"github.com/ql31j45k3/SP_blog/internal/modules/article"
 )
 
 func Start() {
