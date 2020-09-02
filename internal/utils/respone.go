@@ -20,41 +20,31 @@ func ResponeOK(c *gin.Context, obj interface{}) {
 func StrconvDataToRsp(data, rsp interface{}) {
 	rspType := reflect.TypeOf(rsp).Elem()
 	rspValue := reflect.ValueOf(rsp).Elem()
-	dataType := reflect.TypeOf(data).Elem()
 	dataValue := reflect.ValueOf(data).Elem()
 
+	findFieldAndSet(rspType, rspValue, dataValue)
+}
+
+// findFieldNameAndSet
+// 用遞迴方式處理巢狀 struct 的資料結構
+func findFieldAndSet(rspType reflect.Type, rspValue, dataValue reflect.Value) {
 	for i := 0; i < rspType.NumField(); i++ {
 		fieldName := rspType.Field(i).Name
+		rspType2 := rspType.Field(i).Type
+		rspValue2 := rspValue.FieldByName(fieldName)
+		dataValue2 := dataValue.FieldByName(fieldName)
 
 		if rspType.Field(i).Type.Kind() == reflect.Struct {
-			rspTypeModel := rspType.Field(i).Type.String()
-			if !(rspTypeModel == "utils.Model") {
+			rspTypeName := rspType.Field(i).Type.String()
+			// dig struct 可直接跳過(此struct DI 套件使用)
+			if rspTypeName == "dig.In" || rspTypeName == "dig.Out" {
 				continue
 			}
 
-			for j := 0; j < dataType.NumField(); j++ {
-				dataTypeModel := dataType.Field(j).Type.String()
-				if !(dataTypeModel == "gorm.Model") {
-					continue
-				}
-
-				for n := 0; n < rspType.Field(i).Type.NumField(); n++ {
-					fieldName2 := rspType.Field(i).Type.Field(n).Name
-
-					reflectType2 := rspType.Field(i).Type.Field(n).Type
-					value2 := rspValue.FieldByName(fieldName).FieldByName(fieldName2)
-					dataValueFile2 := dataValue.FieldByName(fieldName).FieldByName(fieldName2)
-
-					reflectSetValue(value2, dataValueFile2, reflectType2)
-				}
-			}
+			findFieldAndSet(rspType2, rspValue2, dataValue2)
 		}
 
-		reflectType := rspType.Field(i).Type
-		value := rspValue.FieldByName(fieldName)
-		dataValueFile := dataValue.FieldByName(fieldName)
-
-		reflectSetValue(value, dataValueFile, reflectType)
+		reflectSetValue(rspValue2, dataValue2, rspType2)
 	}
 }
 
