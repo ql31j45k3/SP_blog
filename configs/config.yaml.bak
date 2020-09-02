@@ -1,0 +1,9 @@
+host:
+  sp_blog_apis_host: <value>
+
+database:
+  host: <value>
+  port: <value>
+  username: <value>
+  password: <value>
+  dbname: <value>
