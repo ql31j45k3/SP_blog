@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Model 對外回傳基礎欄位
 type Model struct {
 	ID        uint `json:"id"`
 	CreatedAt time.Time `json:"created-at"`
@@ -17,6 +18,8 @@ func ResponeOK(c *gin.Context, obj interface{}) {
 	c.JSON(http.StatusOK, obj)
 }
 
+// StrconvDataToRsp data = 資料庫資料, rsp = API 回傳資料
+// 用反射實作達到動態賦值，不需手動一對一比照欄位給值
 func StrconvDataToRsp(data, rsp interface{}) {
 	rspType := reflect.TypeOf(rsp).Elem()
 	rspValue := reflect.ValueOf(rsp).Elem()
@@ -48,6 +51,8 @@ func findFieldAndSet(rspType reflect.Type, rspValue, dataValue reflect.Value) {
 	}
 }
 
+// reflectSetValue 取得 dataValue 值並賦植給 rspValue
+// 目前判斷型態只有 string、Int、Uint、time.Time
 func reflectSetValue(rspType reflect.Type, rspValue, dataValue reflect.Value) {
 	kind := rspType.Kind()
 	if kind == reflect.String {
