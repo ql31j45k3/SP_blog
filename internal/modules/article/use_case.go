@@ -8,11 +8,15 @@ import (
 	"net/http"
 )
 
-func newUseCaseArticle(c *gin.Context, db *gorm.DB) *useCaseArticle {
+func newUseCaseArticle(c *gin.Context, db *gorm.DB) UseCaseArticler {
 	return &useCaseArticle{
 		c : c,
 		db : db,
 	}
+}
+
+type UseCaseArticler interface {
+	GetID() (ArticleRsp, error)
 }
 
 type useCaseArticle struct {
