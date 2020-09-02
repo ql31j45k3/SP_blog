@@ -44,25 +44,25 @@ func findFieldAndSet(rspType reflect.Type, rspValue, dataValue reflect.Value) {
 			findFieldAndSet(rspType2, rspValue2, dataValue2)
 		}
 
-		reflectSetValue(rspValue2, dataValue2, rspType2)
+		reflectSetValue(rspType2, rspValue2, dataValue2)
 	}
 }
 
-func reflectSetValue(value, dataValueFile reflect.Value, reflectType reflect.Type) {
-	kind := reflectType.Kind()
+func reflectSetValue(rspType reflect.Type, rspValue, dataValue reflect.Value) {
+	kind := rspType.Kind()
 	if kind == reflect.String {
-		value.SetString(dataValueFile.Interface().(string))
+		rspValue.SetString(dataValue.Interface().(string))
 	}
 
 	if kind == reflect.Int {
-		value.SetInt(dataValueFile.Int())
+		rspValue.SetInt(dataValue.Int())
 	}
 
 	if kind == reflect.Uint {
-		value.SetUint(dataValueFile.Uint())
+		rspValue.SetUint(dataValue.Uint())
 	}
 
-	if reflectType.String() == "time.Time" {
-		value.Set(reflect.ValueOf(dataValueFile.Interface().(time.Time)))
+	if rspType.String() == "time.Time" {
+		rspValue.Set(reflect.ValueOf(dataValue.Interface().(time.Time)))
 	}
 }
