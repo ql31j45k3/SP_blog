@@ -33,7 +33,7 @@ func buildContainer() *dig.Container {
 		return gin.Default()
 	})
 
-	container.Provide(func() (*gorm.DB, error){
+	container.Provide(func() (*gorm.DB, error) {
 		return gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	})
 
