@@ -14,7 +14,7 @@ type articleCond struct {
 	ID uint
 }
 
-func (ac *articleCond) getID(IDStr string) error  {
+func (ac *articleCond) getID(IDStr string) error {
 	ID, err := strconv.ParseUint(IDStr, 10, 64)
 	if err != nil {
 		return err

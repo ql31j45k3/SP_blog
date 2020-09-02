@@ -8,5 +8,5 @@ func (uca *useCaseArticle) getID(cond articleCond) (Article, error) {
 		return article, result.Error
 	}
 
-	return  article, nil
+	return article, nil
 }

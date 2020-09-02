@@ -10,8 +10,8 @@ import (
 
 func newUseCaseArticle(c *gin.Context, db *gorm.DB) UseCaseArticler {
 	return &useCaseArticle{
-		c : c,
-		db : db,
+		c:  c,
+		db: db,
 	}
 }
 
@@ -20,7 +20,7 @@ type UseCaseArticler interface {
 }
 
 type useCaseArticle struct {
-	c *gin.Context
+	c  *gin.Context
 	db *gorm.DB
 }
 

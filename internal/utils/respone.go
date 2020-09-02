@@ -9,7 +9,7 @@ import (
 
 // Model 對外回傳基礎欄位
 type Model struct {
-	ID        uint `json:"id"`
+	ID        uint      `json:"id"`
 	CreatedAt time.Time `json:"created-at"`
 	UpdatedAt time.Time `json:"updated-at"`
 }
