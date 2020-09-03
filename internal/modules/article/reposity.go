@@ -15,6 +15,21 @@ func (uca *useCaseArticle) post(article Article) (uint, error) {
 	return article.ID, nil
 }
 
+func (uca *useCaseArticle) updateID(cond articleCond, article Article) error {
+	result := uca.db.Model(Article{}).Where("id = ?", cond.ID).
+		Updates(map[string]interface{}{
+			"title": article.Title,
+			"desc": article.Desc,
+			"content": article.Content,
+			"state": article.State,
+		})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func (uca *useCaseArticle) getID(cond articleCond) (Article, error) {
 	var article Article
 

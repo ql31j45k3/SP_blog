@@ -17,6 +17,7 @@ func newUseCaseArticle(c *gin.Context, db *gorm.DB) UseCaseArticler {
 
 type UseCaseArticler interface {
 	Post() (uint, error)
+	UpdateID() error
 	GetID() (ArticleRsp, error)
 }
 
@@ -40,6 +41,30 @@ func (uca *useCaseArticle) Post() (uint, error) {
 	}
 
 	return newRowID, err
+}
+
+func (uca *useCaseArticle) UpdateID() error {
+	var article Article
+	uca.c.BindJSON(&article)
+
+	ID := uca.c.Param("id")
+
+	cond := newArticleCond()
+	if err := cond.getID(ID); err != nil {
+		uca.c.String(http.StatusBadRequest, err.Error())
+		return err
+	}
+
+	if err := uca.updateID(cond, article); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			uca.c.String(http.StatusNotFound, err.Error())
+		} else {
+			uca.c.String(http.StatusInternalServerError, err.Error())
+		}
+		return err
+	}
+
+	return nil
 }
 
 func (uca *useCaseArticle) GetID() (ArticleRsp, error) {
