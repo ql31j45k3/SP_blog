@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"reflect"
 	"time"
 )
@@ -12,10 +10,6 @@ type Model struct {
 	ID        uint      `json:"id"`
 	CreatedAt time.Time `json:"created-at"`
 	UpdatedAt time.Time `json:"updated-at"`
-}
-
-func ResponeOK(c *gin.Context, obj interface{}) {
-	c.JSON(http.StatusOK, obj)
 }
 
 // StrconvDataToRsp data = 資料庫資料, rsp = API 回傳資料

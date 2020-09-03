@@ -2,7 +2,6 @@ package article
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/ql31j45k3/SP_blog/internal/utils"
 	"gorm.io/gorm"
 	"net/http"
 )
@@ -25,6 +24,6 @@ func Router(r *gin.Engine, db *gorm.DB) {
 			return
 		}
 
-		utils.ResponeOK(c, result)
+		c.JSON(http.StatusOK, result)
 	})
 }
