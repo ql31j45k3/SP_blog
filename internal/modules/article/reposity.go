@@ -15,7 +15,7 @@ func (uca *useCaseArticle) updateID(cond articleCond, article Article) error {
 			"title": article.Title,
 			"desc": article.Desc,
 			"content": article.Content,
-			"state": article.State,
+			"status": article.Status,
 		})
 	if result.Error != nil {
 		return result.Error

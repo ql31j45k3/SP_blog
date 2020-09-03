@@ -31,7 +31,7 @@ type Article struct {
 	Desc    string `json:"desc"`
 	Content string `json:"content"`
 
-	State int `json:"state"`
+	Status int `json:"status"`
 }
 
 type ArticleRsp struct {
@@ -41,5 +41,5 @@ type ArticleRsp struct {
 	Desc    string `json:"desc"`
 	Content string `json:"content"`
 
-	State int `json:"state"`
+	Status int `json:"status"`
 }
