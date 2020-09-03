@@ -13,6 +13,7 @@ func SetupRouter(r *gin.Engine, db *gorm.DB) {
 	routerGroup.POST("", articleRouter.post)
 	routerGroup.PUT("/:id", articleRouter.updateID)
 	routerGroup.GET("/:id", articleRouter.getID)
+	routerGroup.GET("", articleRouter.get)
 }
 
 func newArticleRouter(db *gorm.DB) articleRouter {
@@ -48,6 +49,16 @@ func (ar *articleRouter) updateID(c *gin.Context) {
 func (ar *articleRouter) getID(c *gin.Context) {
 	useCase := newUseCaseArticle(c, ar.db)
 	result, err := useCase.GetID()
+	if err != nil {
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (ar *articleRouter) get(c *gin.Context) {
+	useCase := newUseCaseArticle(c, ar.db)
+	result, err := useCase.Get()
 	if err != nil {
 		return
 	}
