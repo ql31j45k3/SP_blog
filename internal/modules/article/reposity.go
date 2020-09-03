@@ -10,7 +10,7 @@ func (uca *useCaseArticle) create(article Article) (uint, error) {
 }
 
 func (uca *useCaseArticle) updateID(cond *articleCond, article Article) error {
-	result := uca.db.Model(Article{}).Where("id = ?", cond.ID).
+	result := uca.db.Model(Article{}).Where("`id` = ?", cond.ID).
 		Updates(map[string]interface{}{
 			"title":   article.Title,
 			"desc":    article.Desc,
