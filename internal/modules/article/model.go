@@ -27,11 +27,11 @@ func (ac *articleCond) getID(IDStr string) error {
 type Article struct {
 	gorm.Model
 
-	Title   string `json:"title"`
-	Desc    string `json:"desc"`
-	Content string `json:"content"`
+	Title   string
+	Desc    string
+	Content string
 
-	Status int `json:"status"`
+	Status int
 }
 
 type ArticleRsp struct {
