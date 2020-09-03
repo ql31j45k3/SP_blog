@@ -7,7 +7,7 @@ import (
 )
 
 func SetupRouter(r *gin.Engine, db *gorm.DB) {
-	routerGroup := r.Group("/article")
+	routerGroup := r.Group("/v1/article")
 
 	routerGroup.POST("", func(c *gin.Context) {
 		useCase := newUseCaseArticle(c, db)
