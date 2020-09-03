@@ -27,7 +27,7 @@ type articleRouter struct {
 
 func (ar *articleRouter) post(c *gin.Context) {
 	useCase := newUseCaseArticle(c, ar.db)
-	result, err := useCase.Post()
+	result, err := useCase.Create()
 	if err != nil {
 		return
 	}

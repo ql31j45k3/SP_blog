@@ -1,6 +1,6 @@
 package article
 
-func (uca *useCaseArticle) post(article Article) (uint, error) {
+func (uca *useCaseArticle) create(article Article) (uint, error) {
 	result := uca.db.Create(&article)
 	if result.Error != nil {
 		return 0, result.Error
