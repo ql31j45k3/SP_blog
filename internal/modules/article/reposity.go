@@ -54,7 +54,7 @@ func (uca *useCaseArticle) get(cond *articleCond) ([]Article, error) {
 		uca.db = uca.db.Where("`content` like ?", "%"+cond.content+"%")
 	}
 
-	if cond.status == 0 || cond.status == 1 {
+	if cond.status != -1 {
 		uca.db = uca.db.Where("`status` = ?", cond.status)
 	}
 

@@ -97,7 +97,7 @@ func (uca *useCaseArticle) GetID() (ArticleRsp, error) {
 func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 	var articleRsqs []ArticleRsp
 
-	var status int
+	status := -1
 	if uca.c.Query("status") != "" {
 		var err error
 		status, err = strconv.Atoi(uca.c.Query("status"))
