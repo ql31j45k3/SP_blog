@@ -7,7 +7,9 @@ import (
 )
 
 func SetupRouter(r *gin.Engine, db *gorm.DB) {
-	r.POST("/article", func(c *gin.Context) {
+	routerGroup := r.Group("/article")
+
+	routerGroup.POST("", func(c *gin.Context) {
 		useCase := newUseCaseArticle(c, db)
 		result, err := useCase.Post()
 		if err != nil {
@@ -17,7 +19,7 @@ func SetupRouter(r *gin.Engine, db *gorm.DB) {
 		c.JSON(http.StatusCreated, result)
 	})
 
-	r.GET("/article/:id", func(c *gin.Context) {
+	routerGroup.GET("/:id", func(c *gin.Context) {
 		useCase := newUseCaseArticle(c, db)
 		result, err := useCase.GetID()
 		if err != nil {
