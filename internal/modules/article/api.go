@@ -7,25 +7,39 @@ import (
 )
 
 func SetupRouter(r *gin.Engine, db *gorm.DB) {
+	articleRouter := newArticleRouter(db)
+
 	routerGroup := r.Group("/v1/article")
+	routerGroup.POST("", articleRouter.post)
+	routerGroup.GET("/:id", articleRouter.getID)
+}
 
-	routerGroup.POST("", func(c *gin.Context) {
-		useCase := newUseCaseArticle(c, db)
-		result, err := useCase.Post()
-		if err != nil {
-			return
-		}
+func newArticleRouter(db *gorm.DB) articleRouter {
+	return articleRouter{
+		db: db,
+	}
+}
 
-		c.JSON(http.StatusCreated, result)
-	})
+type articleRouter struct {
+	db *gorm.DB
+}
 
-	routerGroup.GET("/:id", func(c *gin.Context) {
-		useCase := newUseCaseArticle(c, db)
-		result, err := useCase.GetID()
-		if err != nil {
-			return
-		}
+func (ar *articleRouter) post(c *gin.Context) {
+	useCase := newUseCaseArticle(c, ar.db)
+	result, err := useCase.Post()
+	if err != nil {
+		return
+	}
 
-		c.JSON(http.StatusOK, result)
-	})
+	c.JSON(http.StatusCreated, result)
+}
+
+func (ar *articleRouter) getID(c *gin.Context) {
+	useCase := newUseCaseArticle(c, ar.db)
+	result, err := useCase.GetID()
+	if err != nil {
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
 }
