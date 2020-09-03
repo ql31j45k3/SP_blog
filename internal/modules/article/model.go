@@ -6,22 +6,34 @@ import (
 	"strconv"
 )
 
-func newArticleCond() articleCond {
-	return articleCond{}
+type articleCondOption func(*articleCond) error
+
+func newArticleCond(opts ...articleCondOption) (*articleCond, error) {
+	ac := &articleCond{}
+
+	for _, o := range opts {
+		if err := o(ac); err != nil {
+			return ac, err
+		}
+	}
+
+	return ac, nil
 }
 
 type articleCond struct {
 	ID uint
 }
 
-func (ac *articleCond) getID(IDStr string) error {
-	ID, err := strconv.ParseUint(IDStr, 10, 64)
-	if err != nil {
-		return err
-	}
-	ac.ID = uint(ID)
+func withArticleID(IDStr string) articleCondOption {
+	return func(ac *articleCond) error {
+		ID, err := strconv.ParseUint(IDStr, 10, 64)
+		if err != nil {
+			return err
+		}
+		ac.ID = uint(ID)
 
-	return nil
+		return nil
+	}
 }
 
 type Article struct {

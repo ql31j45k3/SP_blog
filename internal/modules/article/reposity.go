@@ -9,7 +9,7 @@ func (uca *useCaseArticle) create(article Article) (uint, error) {
 	return article.ID, nil
 }
 
-func (uca *useCaseArticle) updateID(cond articleCond, article Article) error {
+func (uca *useCaseArticle) updateID(cond *articleCond, article Article) error {
 	result := uca.db.Model(Article{}).Where("id = ?", cond.ID).
 		Updates(map[string]interface{}{
 			"title": article.Title,
@@ -24,7 +24,7 @@ func (uca *useCaseArticle) updateID(cond articleCond, article Article) error {
 	return nil
 }
 
-func (uca *useCaseArticle) getID(cond articleCond) (Article, error) {
+func (uca *useCaseArticle) getID(cond *articleCond) (Article, error) {
 	var article Article
 
 	result := uca.db.First(&article, cond.ID)

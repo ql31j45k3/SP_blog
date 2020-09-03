@@ -49,8 +49,8 @@ func (uca *useCaseArticle) UpdateID() error {
 
 	ID := uca.c.Param("id")
 
-	cond := newArticleCond()
-	if err := cond.getID(ID); err != nil {
+	cond, err := newArticleCond(withArticleID(ID))
+	if err != nil {
 		uca.c.String(http.StatusBadRequest, err.Error())
 		return err
 	}
@@ -72,8 +72,8 @@ func (uca *useCaseArticle) GetID() (ArticleRsp, error) {
 
 	ID := uca.c.Param("id")
 
-	cond := newArticleCond()
-	if err := cond.getID(ID); err != nil {
+	cond, err := newArticleCond(withArticleID(ID))
+	if err != nil {
 		uca.c.String(http.StatusBadRequest, err.Error())
 		return articleRsq, err
 	}
