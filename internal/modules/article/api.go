@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Router(r *gin.Engine, db *gorm.DB) {
+func SetupRouter(r *gin.Engine, db *gorm.DB) {
 	r.POST("/article", func(c *gin.Context) {
 		useCase := newUseCaseArticle(c, db)
 		result, err := useCase.Post()

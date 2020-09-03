@@ -15,7 +15,7 @@ import (
 func Start() {
 	container := buildContainer()
 
-	container.Invoke(article.Router)
+	container.Invoke(article.SetupRouter)
 	container.Invoke(func(r *gin.Engine) {
 		r.Run(configs.ConfigHost.GetSPBlogApisHost())
 	})
