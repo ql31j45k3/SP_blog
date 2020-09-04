@@ -6,7 +6,6 @@ import (
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"gorm.io/gorm"
 	"net/http"
-	"strconv"
 )
 
 func newUseCaseArticle(c *gin.Context, db *gorm.DB) UseCaseArticler {
@@ -97,13 +96,9 @@ func (uca *useCaseArticle) GetID() (ArticleRsp, error) {
 func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 	var articleRsqs []ArticleRsp
 
-	status := -1
-	if tools.IsNotEmpty(uca.c.Query("status")) {
-		var err error
-		status, err = strconv.Atoi(uca.c.Query("status"))
-		if err != nil {
-			return articleRsqs, err
-		}
+	status, err := tools.Atoi(uca.c.Query("status"), -1)
+	if err != nil {
+		return articleRsqs, err
 	}
 
 	cond, err := newArticleCond(withArticleID(uca.c.Query("id")),
