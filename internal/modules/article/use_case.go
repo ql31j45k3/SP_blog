@@ -42,7 +42,7 @@ func (uca *useCaseArticle) Create() (uint, error) {
 		return newRowID, err
 	}
 
-	return newRowID, err
+	return newRowID, nil
 }
 
 func (uca *useCaseArticle) UpdateID() error {
