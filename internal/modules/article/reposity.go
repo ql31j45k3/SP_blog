@@ -42,25 +42,13 @@ func (uca *useCaseArticle) getID(cond *articleCond) (Article, error) {
 func (uca *useCaseArticle) get(cond *articleCond) ([]Article, error) {
 	var articles []Article
 
-	if cond.ID != 0 {
-		uca.db = uca.db.Where("`id` = ?", cond.ID)
-	}
+	uca.db = tools.SQLAppend(uca.db, cond.ID != 0, "`id` = ?", cond.ID)
 
-	if tools.IsNotEmpty(cond.title) {
-		uca.db = uca.db.Where("`title` like ?", "%"+cond.title+"%")
-	}
+	uca.db = tools.SQLAppend(uca.db, tools.IsNotEmpty(cond.title), "`title` like ?", "%"+cond.title+"%")
+	uca.db = tools.SQLAppend(uca.db, tools.IsNotEmpty(cond.desc), "`desc` like ?", "%"+cond.desc+"%")
+	uca.db = tools.SQLAppend(uca.db, tools.IsNotEmpty(cond.content), "`content` like ?", "%"+cond.content+"%")
 
-	if tools.IsNotEmpty(cond.desc) {
-		uca.db = uca.db.Where("`desc` like ?", "%"+cond.desc+"%")
-	}
-
-	if tools.IsNotEmpty(cond.content) {
-		uca.db = uca.db.Where("`content` like ?", "%"+cond.content+"%")
-	}
-
-	if cond.status != -1 {
-		uca.db = uca.db.Where("`status` = ?", cond.status)
-	}
+	uca.db = tools.SQLAppend(uca.db, cond.status != -1, "`status` = ?", cond.status)
 
 	result := uca.db.Find(&articles)
 	if result.Error != nil {
