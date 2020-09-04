@@ -2,6 +2,7 @@ package article
 
 import (
 	"github.com/ql31j45k3/SP_blog/internal/utils"
+	"github.com/ql31j45k3/SP_blog/internal/utils/stringstool"
 	"gorm.io/gorm"
 	"strconv"
 	"strings"
@@ -33,7 +34,7 @@ type articleCond struct {
 
 func withArticleID(IDStr string) articleCondOption {
 	return func(ac *articleCond) error {
-		if strings.TrimSpace(IDStr) == "" {
+		if stringstool.IsEmpty(IDStr) {
 			return nil
 		}
 

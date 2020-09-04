@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/ql31j45k3/SP_blog/internal/utils"
+	"github.com/ql31j45k3/SP_blog/internal/utils/stringstool"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
@@ -98,7 +99,7 @@ func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 	var articleRsqs []ArticleRsp
 
 	status := -1
-	if uca.c.Query("status") != "" {
+	if stringstool.IsNotEmpty(uca.c.Query("status")) {
 		var err error
 		status, err = strconv.Atoi(uca.c.Query("status"))
 		if err != nil {

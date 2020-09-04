@@ -1,5 +1,7 @@
 package article
 
+import "github.com/ql31j45k3/SP_blog/internal/utils/stringstool"
+
 func (uca *useCaseArticle) create(article Article) (uint, error) {
 	result := uca.db.Create(&article)
 	if result.Error != nil {
@@ -42,15 +44,15 @@ func (uca *useCaseArticle) get(cond *articleCond) ([]Article, error) {
 		uca.db = uca.db.Where("`id` = ?", cond.ID)
 	}
 
-	if cond.title != "" {
+	if stringstool.IsNotEmpty(cond.title) {
 		uca.db = uca.db.Where("`title` like ?", "%"+cond.title+"%")
 	}
 
-	if cond.desc != "" {
+	if stringstool.IsNotEmpty(cond.desc) {
 		uca.db = uca.db.Where("`desc` like ?", "%"+cond.desc+"%")
 	}
 
-	if cond.content != "" {
+	if stringstool.IsNotEmpty(cond.content) {
 		uca.db = uca.db.Where("`content` like ?", "%"+cond.content+"%")
 	}
 
