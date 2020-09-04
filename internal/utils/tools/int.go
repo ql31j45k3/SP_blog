@@ -1,7 +1,7 @@
 package tools
 
 func IsZero(i int) bool {
-	return  i == 0
+	return i == 0
 }
 
 func IsNotZero(i int) bool {
@@ -9,7 +9,7 @@ func IsNotZero(i int) bool {
 }
 
 func IsNegativeOne(i int) bool {
-	return  i == -1
+	return i == -1
 }
 
 func IsNotNegativeOne(i int) bool {

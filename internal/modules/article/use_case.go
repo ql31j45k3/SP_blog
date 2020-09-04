@@ -106,7 +106,7 @@ func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 		withArticleTitle(uca.c.Query("title")),
 		withArticleDesc(uca.c.Query("desc")),
 		withArticleContent(uca.c.Query("content")),
-		withArticleStatus(status),)
+		withArticleStatus(status))
 	if err != nil {
 		uca.c.String(http.StatusBadRequest, err.Error())
 		return articleRsqs, err

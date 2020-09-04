@@ -23,5 +23,5 @@ func Atoi(str string, defaultValue int) (int, error) {
 	if err != nil {
 		return defaultValue, err
 	}
-	return  result, nil
+	return result, nil
 }

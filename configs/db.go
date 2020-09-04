@@ -8,11 +8,11 @@ import (
 
 func newConfigDB() *configDB {
 	config := &configDB{
-		username : viper.GetString("database.username"),
-		password : viper.GetString("database.password"),
-		host : viper.GetString("database.host"),
-		port : viper.GetString("database.port"),
-		dbname : viper.GetString("database.dbname"),
+		username: viper.GetString("database.username"),
+		password: viper.GetString("database.password"),
+		host:     viper.GetString("database.host"),
+		port:     viper.GetString("database.port"),
+		dbname:   viper.GetString("database.dbname"),
 	}
 
 	config.dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",

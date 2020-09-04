@@ -9,7 +9,7 @@ import (
 
 var (
 	ConfigHost *configHost
-	ConfigDB *configDB
+	ConfigDB   *configDB
 )
 
 func init() {
