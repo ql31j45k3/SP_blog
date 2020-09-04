@@ -98,6 +98,7 @@ func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 
 	status, err := tools.Atoi(uca.c.Query("status"), tools.DefaultNotAssignInt)
 	if err != nil {
+		uca.c.String(http.StatusBadRequest, err.Error())
 		return articleRsqs, err
 	}
 
