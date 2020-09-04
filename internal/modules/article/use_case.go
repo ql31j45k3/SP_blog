@@ -3,7 +3,6 @@ package article
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/ql31j45k3/SP_blog/internal/utils"
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"gorm.io/gorm"
 	"net/http"
@@ -91,7 +90,7 @@ func (uca *useCaseArticle) GetID() (ArticleRsp, error) {
 		return articleRsq, err
 	}
 
-	utils.StrconvDataToRsp(&article, &articleRsq)
+	tools.StrconvDataToRsp(&article, &articleRsq)
 	return articleRsq, nil
 }
 
@@ -129,7 +128,7 @@ func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 
 	articleRsqs = make([]ArticleRsp, len(articles))
 	for i := 0; i < len(articles); i++ {
-		utils.StrconvDataToRsp(&articles[i], &articleRsqs[i])
+		tools.StrconvDataToRsp(&articles[i], &articleRsqs[i])
 	}
 
 	return articleRsqs, nil

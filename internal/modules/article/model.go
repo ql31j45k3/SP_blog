@@ -1,7 +1,6 @@
 package article
 
 import (
-	"github.com/ql31j45k3/SP_blog/internal/utils"
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"gorm.io/gorm"
 	"strconv"
@@ -87,7 +86,7 @@ type Article struct {
 }
 
 type ArticleRsp struct {
-	utils.Model
+	tools.Model
 
 	Title   string `json:"title"`
 	Desc    string `json:"desc"`
