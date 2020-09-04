@@ -3,6 +3,7 @@ package configs
 import (
 	"os"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
@@ -27,4 +28,9 @@ func init() {
 
 	ConfigHost = newConfigHost()
 	ConfigDB = newConfigDB()
+
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		ConfigHost.reload()
+	})
 }

@@ -14,6 +14,10 @@ type configHost struct {
 	spBlogApisHost string
 }
 
+func (c *configHost) reload() {
+	c.spBlogApisHost = ":" + viper.GetString("host.sp_blog_apis_host")
+}
+
 func (c *configHost) GetSPBlogApisHost() string {
 	return c.spBlogApisHost
 }
