@@ -1,9 +1,10 @@
 package article
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 func SetupRouter(r *gin.Engine, db *gorm.DB) {
