@@ -42,13 +42,13 @@ func (uca *useCaseArticle) getID(cond *articleCond) (Article, error) {
 func (uca *useCaseArticle) get(cond *articleCond) ([]Article, error) {
 	var articles []Article
 
-	uca.db = tools.SQLAppend(uca.db, cond.ID != 0, "`id` = ?", cond.ID)
+	uca.db = tools.SQLAppend(uca.db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
 
 	uca.db = tools.SQLAppend(uca.db, tools.IsNotEmpty(cond.title), "`title` like ?", "%"+cond.title+"%")
 	uca.db = tools.SQLAppend(uca.db, tools.IsNotEmpty(cond.desc), "`desc` like ?", "%"+cond.desc+"%")
 	uca.db = tools.SQLAppend(uca.db, tools.IsNotEmpty(cond.content), "`content` like ?", "%"+cond.content+"%")
 
-	uca.db = tools.SQLAppend(uca.db, cond.status != -1, "`status` = ?", cond.status)
+	uca.db = tools.SQLAppend(uca.db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
 
 	result := uca.db.Find(&articles)
 	if result.Error != nil {
