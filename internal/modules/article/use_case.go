@@ -57,7 +57,7 @@ func (uca *useCaseArticle) UpdateID() error {
 
 	cond, err := newArticleCond(withArticleID(ID))
 	if err != nil {
-		uca.c.String(http.StatusBadRequest, err.Error())
+		uca.returnError(http.StatusBadRequest, err)
 		return err
 	}
 
@@ -76,7 +76,7 @@ func (uca *useCaseArticle) GetID() (ArticleRsp, error) {
 
 	cond, err := newArticleCond(withArticleID(ID))
 	if err != nil {
-		uca.c.String(http.StatusBadRequest, err.Error())
+		uca.returnError(http.StatusBadRequest, err)
 		return articleRsq, err
 	}
 
@@ -95,7 +95,7 @@ func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 
 	status, err := tools.Atoi(uca.c.Query("status"), tools.DefaultNotAssignInt)
 	if err != nil {
-		uca.c.String(http.StatusBadRequest, err.Error())
+		uca.returnError(http.StatusBadRequest, err)
 		return articleRsqs, err
 	}
 
@@ -105,7 +105,7 @@ func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 		withArticleContent(uca.c.Query("content")),
 		withArticleStatus(status))
 	if err != nil {
-		uca.c.String(http.StatusBadRequest, err.Error())
+		uca.returnError(http.StatusBadRequest, err)
 		return articleRsqs, err
 	}
 

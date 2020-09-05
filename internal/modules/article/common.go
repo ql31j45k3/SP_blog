@@ -29,8 +29,13 @@ func (uca *useCaseArticle) bindJSON(article *Article) error {
 
 func (uca *useCaseArticle) isErrRecordNotFound(err error) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		uca.c.JSON(http.StatusNotFound, tools.NewRspError([]string{err.Error()}))
+		uca.returnError(http.StatusNotFound, err)
 	} else {
-		uca.c.JSON(http.StatusInternalServerError, tools.NewRspError([]string{err.Error()}))
+		uca.returnError(http.StatusInternalServerError, err)
 	}
+}
+
+func (uca *useCaseArticle) returnError(code int, err error) {
+	msgs := []string{err.Error()}
+	uca.c.JSON(code, tools.NewRspError(msgs))
 }
