@@ -69,8 +69,13 @@ func withArticleContent(content string) articleCondOption {
 	}
 }
 
-func withArticleStatus(status int) articleCondOption {
+func withArticleStatus(status string) articleCondOption {
 	return func(ac *articleCond) error {
+		status, err := tools.Atoi(status, tools.DefaultNotAssignInt)
+		if err != nil {
+			return err
+		}
+
 		ac.status = status
 		return nil
 	}

@@ -93,17 +93,11 @@ func (uca *useCaseArticle) GetID() (ArticleRsp, error) {
 func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 	var articleRsqs []ArticleRsp
 
-	status, err := tools.Atoi(uca.c.Query("status"), tools.DefaultNotAssignInt)
-	if err != nil {
-		uca.returnError(http.StatusBadRequest, err)
-		return articleRsqs, err
-	}
-
 	cond, err := newArticleCond(withArticleID(uca.c.Query("id")),
 		withArticleTitle(uca.c.Query("title")),
 		withArticleDesc(uca.c.Query("desc")),
 		withArticleContent(uca.c.Query("content")),
-		withArticleStatus(status))
+		withArticleStatus(uca.c.Query("status")))
 	if err != nil {
 		uca.returnError(http.StatusBadRequest, err)
 		return articleRsqs, err
