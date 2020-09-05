@@ -3,7 +3,6 @@ package article
 import (
 	"errors"
 	ut "github.com/go-playground/universal-translator"
-	"github.com/go-playground/validator/v10"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,20 +34,7 @@ type useCaseArticle struct {
 
 func (uca *useCaseArticle) Create() (uint, error) {
 	var article Article
-	if err := uca.c.ShouldBindJSON(&article); err != nil {
-		var errs []string
-		if _, ok := err.(validator.ValidationErrors); ok {
-			for _, err2 := range err.(validator.ValidationErrors) {
-				errs = append(errs, err2.Translate(uca.trans))
-			}
-		} else {
-			errs = append(errs, err.Error())
-		}
-
-		uca.c.JSON(http.StatusBadRequest,
-			tools.RspError{
-				Msgs: errs,
-			})
+	if err := uca.shouldBindJSON(&article); err != nil {
 		return 0, err
 	}
 
@@ -67,7 +53,9 @@ func (uca *useCaseArticle) Create() (uint, error) {
 
 func (uca *useCaseArticle) UpdateID() error {
 	var article Article
-	uca.c.BindJSON(&article)
+	if err := uca.shouldBindJSON(&article); err != nil {
+		return err
+	}
 
 	ID := uca.c.Param("id")
 

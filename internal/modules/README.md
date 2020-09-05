@@ -9,4 +9,5 @@ e.g. 文章模組
       use_case.go (邏輯處理)
       model.go (資料模型)
       reposity.go (資料相關操作處理)
+      common.go (共用的內部函式)
 ```
