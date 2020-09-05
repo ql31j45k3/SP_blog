@@ -46,6 +46,7 @@ func buildContainer() *dig.Container {
 		locale := "zh"
 		uni := ut.New(zh.New())
 		trans, _ := uni.GetTranslator(locale)
+		// 設定語言地區
 		validatorFunc.SetLocale(locale)
 
 		if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
