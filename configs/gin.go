@@ -1,6 +1,9 @@
 package configs
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+	"strings"
+)
 
 func newConfigGin() *configGin {
 	config := &configGin{
@@ -15,5 +18,5 @@ type configGin struct {
 }
 
 func (c *configGin) GetMode() string {
-	return c.mode
+	return strings.ToLower(c.mode)
 }
