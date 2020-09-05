@@ -21,8 +21,8 @@ func newUseCaseArticle(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCase
 type UseCaseArticler interface {
 	Create() (uint, error)
 	UpdateID() error
-	GetID() (ArticleRsp, error)
-	Get() ([]ArticleRsp, error)
+	GetID() (ResponseArticle, error)
+	Get() ([]ResponseArticle, error)
 }
 
 type useCaseArticle struct {
@@ -69,29 +69,29 @@ func (uca *useCaseArticle) UpdateID() error {
 	return nil
 }
 
-func (uca *useCaseArticle) GetID() (ArticleRsp, error) {
-	var articleRsq ArticleRsp
+func (uca *useCaseArticle) GetID() (ResponseArticle, error) {
+	var responseArticle ResponseArticle
 
 	ID := uca.c.Param("id")
 
 	cond, err := newArticleCond(withArticleID(ID))
 	if err != nil {
 		uca.returnError(http.StatusBadRequest, err)
-		return articleRsq, err
+		return responseArticle, err
 	}
 
 	article, err := uca.getID(cond)
 	if err != nil {
 		uca.isErrRecordNotFound(err)
-		return articleRsq, err
+		return responseArticle, err
 	}
 
-	tools.StrconvDataToRsp(&article, &articleRsq)
-	return articleRsq, nil
+	tools.StrconvDataToRsp(&article, &responseArticle)
+	return responseArticle, nil
 }
 
-func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
-	var articleRsqs []ArticleRsp
+func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
+	var responseArticles []ResponseArticle
 
 	cond, err := newArticleCond(withArticleID(uca.c.Query("id")),
 		withArticleTitle(uca.c.Query("title")),
@@ -100,19 +100,19 @@ func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 		withArticleStatus(uca.c.Query("status")))
 	if err != nil {
 		uca.returnError(http.StatusBadRequest, err)
-		return articleRsqs, err
+		return responseArticles, err
 	}
 
 	articles, err := uca.get(cond)
 	if err != nil {
 		uca.isErrRecordNotFound(err)
-		return articleRsqs, err
+		return responseArticles, err
 	}
 
-	articleRsqs = make([]ArticleRsp, len(articles))
+	responseArticles = make([]ResponseArticle, len(articles))
 	for i := 0; i < len(articles); i++ {
-		tools.StrconvDataToRsp(&articles[i], &articleRsqs[i])
+		tools.StrconvDataToRsp(&articles[i], &responseArticles[i])
 	}
 
-	return articleRsqs, nil
+	return responseArticles, nil
 }

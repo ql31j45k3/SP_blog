@@ -91,7 +91,7 @@ type Article struct {
 	Status int `binding:"articleStatus"`
 }
 
-type ArticleRsp struct {
+type ResponseArticle struct {
 	tools.Model
 
 	Title   string `json:"title"`
