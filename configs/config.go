@@ -10,6 +10,7 @@ import (
 var (
 	ConfigHost *configHost
 	ConfigDB   *configDB
+	ConfigGin  *configGin
 )
 
 func init() {
@@ -28,6 +29,7 @@ func init() {
 
 	ConfigHost = newConfigHost()
 	ConfigDB = newConfigDB()
+	ConfigGin = newConfigGin()
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {

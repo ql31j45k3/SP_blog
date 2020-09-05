@@ -22,6 +22,8 @@ func Start() {
 
 	container.Invoke(article.SetupRouter)
 	container.Invoke(func(r *gin.Engine) {
+		gin.SetMode(configs.ConfigGin.GetMode())
+
 		r.Run(configs.ConfigHost.GetSPBlogApisHost())
 	})
 }
