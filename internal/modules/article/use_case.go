@@ -34,7 +34,7 @@ type useCaseArticle struct {
 
 func (uca *useCaseArticle) Create() (uint, error) {
 	var article Article
-	if err := uca.shouldBindJSON(&article); err != nil {
+	if err := uca.bindJSON(&article); err != nil {
 		return 0, err
 	}
 
@@ -53,7 +53,7 @@ func (uca *useCaseArticle) Create() (uint, error) {
 
 func (uca *useCaseArticle) UpdateID() error {
 	var article Article
-	if err := uca.shouldBindJSON(&article); err != nil {
+	if err := uca.bindJSON(&article); err != nil {
 		return err
 	}
 

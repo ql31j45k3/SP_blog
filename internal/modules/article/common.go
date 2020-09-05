@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-func (uca *useCaseArticle) shouldBindJSON(article *Article) error {
-	if err := uca.c.ShouldBindJSON(article); err != nil {
+func (uca *useCaseArticle) bindJSON(article *Article) error {
+	if err := uca.c.BindJSON(article); err != nil {
 		var errs []string
 		if _, ok := err.(validator.ValidationErrors); ok {
 			for _, err2 := range err.(validator.ValidationErrors) {
