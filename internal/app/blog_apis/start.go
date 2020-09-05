@@ -43,8 +43,10 @@ func buildContainer() *dig.Container {
 	})
 
 	container.Provide(func() ut.Translator {
+		locale := "zh"
 		uni := ut.New(zh.New())
-		trans, _ := uni.GetTranslator("zh")
+		trans, _ := uni.GetTranslator(locale)
+		validatorFunc.SetLocale(locale)
 
 		if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 			// 註冊翻譯器

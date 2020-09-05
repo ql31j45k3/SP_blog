@@ -84,11 +84,11 @@ func withArticleStatus(status string) articleCondOption {
 type Article struct {
 	gorm.Model
 
-	Title   string `binding:"required,min=1,max=100" label:"標題"`
-	Desc    string `binding:"required,min=1,max=255" label:"描敘"`
-	Content string `binding:"required,min=10" label:"內容"`
+	Title   string `binding:"required,min=1,max=100"`
+	Desc    string `binding:"required,min=1,max=255"`
+	Content string `binding:"required,min=10"`
 
-	Status int `binding:"articleStatus" label:"狀態"`
+	Status int `binding:"articleStatus"`
 }
 
 type ArticleRsp struct {

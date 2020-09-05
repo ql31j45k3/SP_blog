@@ -4,6 +4,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"reflect"
+	"strings"
 )
 
 const (
@@ -13,8 +14,17 @@ const (
 	statusDisable = 0
 )
 
+var (
+	locale = ""
+)
+
+func SetLocale(l string) {
+	locale = l
+}
+
 func RegisterTagNameFunc(fld reflect.StructField) string {
-	return fld.Tag.Get("label")
+	fieldName := strings.ToLower(fld.Name)
+	return locale2FieldMap[locale][fieldName]
 }
 
 var StatusValidator validator.Func = func(fl validator.FieldLevel) bool {
