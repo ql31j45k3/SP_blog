@@ -9,6 +9,12 @@ type RspError struct {
 	Msgs []string `json:"msgs"`
 }
 
+func NewRspError(msgs []string) RspError {
+	return RspError{
+		Msgs: msgs,
+	}
+}
+
 // Model 對外回傳基礎欄位
 type Model struct {
 	ID        uint      `json:"id"`

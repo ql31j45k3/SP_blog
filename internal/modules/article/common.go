@@ -20,10 +20,7 @@ func (uca *useCaseArticle) bindJSON(article *Article) error {
 			errs = append(errs, err.Error())
 		}
 
-		uca.c.JSON(http.StatusBadRequest,
-			tools.RspError{
-				Msgs: errs,
-			})
+		uca.c.JSON(http.StatusBadRequest, tools.NewRspError(errs))
 		return err
 	}
 
@@ -32,14 +29,8 @@ func (uca *useCaseArticle) bindJSON(article *Article) error {
 
 func (uca *useCaseArticle) isErrRecordNotFound(err error) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		uca.c.JSON(http.StatusNotFound,
-			tools.RspError{
-				Msgs: []string{err.Error()},
-			})
+		uca.c.JSON(http.StatusNotFound, tools.NewRspError([]string{err.Error()}))
 	} else {
-		uca.c.JSON(http.StatusInternalServerError,
-			tools.RspError{
-				Msgs: []string{err.Error()},
-			})
+		uca.c.JSON(http.StatusInternalServerError, tools.NewRspError([]string{err.Error()}))
 	}
 }
