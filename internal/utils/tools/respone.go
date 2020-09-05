@@ -22,9 +22,9 @@ type Model struct {
 	UpdatedAt time.Time `json:"updated-at"`
 }
 
-// StrconvDataToRsp data = 資料庫資料, rsp = API 回傳資料
+// StrconvDataToResponseStruct data = 資料庫資料, rsp = API 回傳資料
 // 用反射實作達到動態賦值，不需手動一對一比照欄位給值
-func StrconvDataToRsp(data, rsp interface{}) {
+func StrconvDataToResponseStruct(data, rsp interface{}) {
 	rspType := reflect.TypeOf(rsp).Elem()
 	rspValue := reflect.ValueOf(rsp).Elem()
 	dataValue := reflect.ValueOf(data).Elem()

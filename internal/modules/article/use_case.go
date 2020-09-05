@@ -86,7 +86,7 @@ func (uca *useCaseArticle) GetID() (ResponseArticle, error) {
 		return responseArticle, err
 	}
 
-	tools.StrconvDataToRsp(&article, &responseArticle)
+	tools.StrconvDataToResponseStruct(&article, &responseArticle)
 	return responseArticle, nil
 }
 
@@ -111,7 +111,7 @@ func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
 
 	responseArticles = make([]ResponseArticle, len(articles))
 	for i := 0; i < len(articles); i++ {
-		tools.StrconvDataToRsp(&articles[i], &responseArticles[i])
+		tools.StrconvDataToResponseStruct(&articles[i], &responseArticles[i])
 	}
 
 	return responseArticles, nil
