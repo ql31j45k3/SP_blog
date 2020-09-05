@@ -1,9 +1,9 @@
 package article
 
 import (
-	"errors"
-	ut "github.com/go-playground/universal-translator"
 	"net/http"
+
+	ut "github.com/go-playground/universal-translator"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
@@ -40,11 +40,7 @@ func (uca *useCaseArticle) Create() (uint, error) {
 
 	newRowID, err := uca.create(article)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			uca.c.String(http.StatusNotFound, err.Error())
-		} else {
-			uca.c.String(http.StatusInternalServerError, err.Error())
-		}
+		uca.isErrRecordNotFound(err)
 		return newRowID, err
 	}
 
@@ -66,11 +62,7 @@ func (uca *useCaseArticle) UpdateID() error {
 	}
 
 	if err := uca.updateID(cond, article); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			uca.c.String(http.StatusNotFound, err.Error())
-		} else {
-			uca.c.String(http.StatusInternalServerError, err.Error())
-		}
+		uca.isErrRecordNotFound(err)
 		return err
 	}
 
@@ -90,11 +82,7 @@ func (uca *useCaseArticle) GetID() (ArticleRsp, error) {
 
 	article, err := uca.getID(cond)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			uca.c.String(http.StatusNotFound, err.Error())
-		} else {
-			uca.c.String(http.StatusInternalServerError, err.Error())
-		}
+		uca.isErrRecordNotFound(err)
 		return articleRsq, err
 	}
 
@@ -123,11 +111,7 @@ func (uca *useCaseArticle) Get() ([]ArticleRsp, error) {
 
 	articles, err := uca.get(cond)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			uca.c.String(http.StatusNotFound, err.Error())
-		} else {
-			uca.c.String(http.StatusInternalServerError, err.Error())
-		}
+		uca.isErrRecordNotFound(err)
 		return articleRsqs, err
 	}
 

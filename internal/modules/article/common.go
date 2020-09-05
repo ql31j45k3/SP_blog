@@ -1,9 +1,12 @@
 package article
 
 import (
+	"errors"
+	"net/http"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
-	"net/http"
+	"gorm.io/gorm"
 )
 
 func (uca *useCaseArticle) bindJSON(article *Article) error {
@@ -25,4 +28,18 @@ func (uca *useCaseArticle) bindJSON(article *Article) error {
 	}
 
 	return nil
+}
+
+func (uca *useCaseArticle) isErrRecordNotFound(err error) {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		uca.c.JSON(http.StatusNotFound,
+			tools.RspError{
+				Msgs: []string{err.Error()},
+			})
+	} else {
+		uca.c.JSON(http.StatusInternalServerError,
+			tools.RspError{
+				Msgs: []string{err.Error()},
+			})
+	}
 }
