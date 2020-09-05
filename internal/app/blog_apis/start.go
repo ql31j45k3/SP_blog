@@ -9,6 +9,7 @@ import (
 	"go.uber.org/dig"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	ut "github.com/go-playground/universal-translator"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
@@ -36,7 +37,9 @@ func buildContainer() *dig.Container {
 	})
 
 	container.Provide(func() (*gorm.DB, error) {
-		return gorm.Open(mysql.Open(configs.ConfigDB.GetDSN()), &gorm.Config{})
+		return gorm.Open(mysql.Open(configs.ConfigDB.GetDSN()), &gorm.Config{
+			Logger: logger.Default.LogMode(configs.ConfigGorm.GetLogMode()),
+		})
 	})
 
 	container.Provide(func() ut.Translator {
