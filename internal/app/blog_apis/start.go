@@ -43,7 +43,7 @@ func buildContainer() *dig.Container {
 	})
 
 	container.Provide(func() ut.Translator {
-		locale := "zh"
+		locale := configs.ConfigValidator.GetLocale()
 		uni := ut.New(zh.New())
 		trans, _ := uni.GetTranslator(locale)
 		// 設定語言地區

@@ -12,6 +12,8 @@ var (
 	ConfigDB   *configDB
 	ConfigGin  *configGin
 	ConfigGorm *configGorm
+
+	ConfigValidator *configValidator
 )
 
 func init() {
@@ -32,6 +34,7 @@ func init() {
 	ConfigDB = newConfigDB()
 	ConfigGin = newConfigGin()
 	ConfigGorm = newConfigGorm()
+	ConfigValidator = newConfigValidator()
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
