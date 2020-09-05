@@ -6,12 +6,12 @@ import (
 )
 
 type RspError struct {
-	Msgs []string `json:"msgs"`
+	Message []string `json:"messages"`
 }
 
-func NewRspError(msgs []string) RspError {
+func NewRspError(messages []string) RspError {
 	return RspError{
-		Msgs: msgs,
+		Message: messages,
 	}
 }
 

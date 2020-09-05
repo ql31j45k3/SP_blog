@@ -36,6 +36,6 @@ func (uca *useCaseArticle) isErrRecordNotFound(err error) {
 }
 
 func (uca *useCaseArticle) returnError(code int, err error) {
-	msgs := []string{err.Error()}
-	uca.c.JSON(code, tools.NewRspError(msgs))
+	messages := []string{err.Error()}
+	uca.c.JSON(code, tools.NewRspError(messages))
 }
