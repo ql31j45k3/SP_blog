@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-type ResponseError struct {
-	Message []string `json:"messages"`
-}
-
 func NewResponseError(messages []string) ResponseError {
 	return ResponseError{
 		Message: messages,
 	}
+}
+
+type ResponseError struct {
+	Message []string `json:"messages"`
 }
 
 // Model 對外回傳基礎欄位
