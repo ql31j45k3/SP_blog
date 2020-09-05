@@ -5,12 +5,12 @@ import (
 	"time"
 )
 
-type RspError struct {
+type ResponseError struct {
 	Message []string `json:"messages"`
 }
 
-func NewRspError(messages []string) RspError {
-	return RspError{
+func NewResponseError(messages []string) ResponseError {
+	return ResponseError{
 		Message: messages,
 	}
 }

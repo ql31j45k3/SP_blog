@@ -20,7 +20,7 @@ func (uca *useCaseArticle) bindJSON(article *Article) error {
 			errs = append(errs, err.Error())
 		}
 
-		uca.c.JSON(http.StatusBadRequest, tools.NewRspError(errs))
+		uca.c.JSON(http.StatusBadRequest, tools.NewResponseError(errs))
 		return err
 	}
 
@@ -37,5 +37,5 @@ func (uca *useCaseArticle) isErrRecordNotFound(err error) {
 
 func (uca *useCaseArticle) returnError(code int, err error) {
 	messages := []string{err.Error()}
-	uca.c.JSON(code, tools.NewRspError(messages))
+	uca.c.JSON(code, tools.NewResponseError(messages))
 }
