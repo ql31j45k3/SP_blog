@@ -2,6 +2,8 @@ package article
 
 import (
 	"errors"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,10 +11,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func newUseCaseArticle(c *gin.Context, db *gorm.DB) UseCaseArticler {
+func newUseCaseArticle(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCaseArticler {
 	return &useCaseArticle{
-		c:  c,
-		db: db,
+		c:     c,
+		db:    db,
+		trans: trans,
 	}
 }
 
@@ -26,11 +29,28 @@ type UseCaseArticler interface {
 type useCaseArticle struct {
 	c  *gin.Context
 	db *gorm.DB
+
+	trans ut.Translator
 }
 
 func (uca *useCaseArticle) Create() (uint, error) {
 	var article Article
-	uca.c.BindJSON(&article)
+	if err := uca.c.ShouldBindJSON(&article); err != nil {
+		var errs []string
+		if _, ok := err.(validator.ValidationErrors); ok {
+			for _, err2 := range err.(validator.ValidationErrors) {
+				errs = append(errs, err2.Translate(uca.trans))
+			}
+		} else {
+			errs = append(errs, err.Error())
+		}
+
+		uca.c.JSON(http.StatusBadRequest,
+			tools.RspError{
+				Msgs: errs,
+			})
+		return 0, err
+	}
 
 	newRowID, err := uca.create(article)
 	if err != nil {

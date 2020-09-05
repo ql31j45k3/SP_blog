@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+type RspError struct {
+	Msgs []string `json:"msgs"`
+}
+
 // Model 對外回傳基礎欄位
 type Model struct {
 	ID        uint      `json:"id"`
