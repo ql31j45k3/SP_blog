@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"errors"
 	"reflect"
 	"time"
 )
@@ -22,9 +23,56 @@ type Model struct {
 	UpdatedAt time.Time `json:"updated-at"`
 }
 
-// StrconvDataToResponseStruct data = 資料庫資料, rsp = API 回傳資料
+// ConvResponseStruct data = 資料庫資料, rsp = API 回傳資料
 // 用反射實作達到動態賦值，不需手動一對一比照欄位給值
-func StrconvDataToResponseStruct(data, rsp interface{}) {
+// 可支援 []struct or struct，參數需丟入 Ptr 型態
+func ConvResponseStruct(data, rsp interface{}) error {
+	rspType := reflect.TypeOf(rsp)
+	dataType := reflect.TypeOf(data)
+
+	// 判斷型態兩個要一樣
+	if rspType.Kind() != dataType.Kind() {
+		return errors.New("data and rsp type need same kind")
+	}
+
+	// 必須為 Ptr 型態，才可有效修改值
+	if rspType.Kind() != reflect.Ptr {
+		return errors.New("data and rsp need kind is Ptr")
+	}
+
+	// 第二次檢查，判斷型態兩個要一樣，因為前一個會是 Ptr 型態
+	if rspType.Elem().Kind() != dataType.Elem().Kind() {
+		return errors.New("data and rsp elem type need same kind")
+	}
+
+	// 型態為 Struct 直接進行賦值
+	if rspType.Elem().Kind() == reflect.Struct {
+		convFindFieldAndSetFunc(data, rsp)
+		return nil
+	}
+
+	// 需判斷是否 Slice 型態
+	if rspType.Elem().Kind() != reflect.Slice {
+		return errors.New("data and rsp need kind is Slice")
+	}
+
+	// 用 Elem func 取得 data slice
+	dataVale := reflect.ValueOf(data).Elem()
+	// 初始化 rspType 型態的 slice
+	rspVale :=  reflect.MakeSlice(rspType.Elem(), dataVale.Len(), dataVale.Cap())
+
+	for i := 0; i < dataVale.Len(); i++ {
+		// 先取得資料的 Addr 的 Interface 值，才可正常執行 Elem func
+		convFindFieldAndSetFunc(dataVale.Index(i).Addr().Interface(), rspVale.Index(i).Addr().Interface())
+	}
+
+	// 將 rspVale 賦值成功後的結果，塞回 Client rsp 值
+	reflect.ValueOf(rsp).Elem().Set(reflect.ValueOf(rspVale.Interface()))
+
+	return nil
+}
+
+func convFindFieldAndSetFunc(data, rsp interface{}) {
 	rspType := reflect.TypeOf(rsp).Elem()
 	rspValue := reflect.ValueOf(rsp).Elem()
 	dataValue := reflect.ValueOf(data).Elem()
@@ -51,12 +99,16 @@ func findFieldAndSet(rspType reflect.Type, rspValue, dataValue reflect.Value) {
 			findFieldAndSet(rspType2, rspValue2, dataValue2)
 		}
 
-		reflectSetValue(rspType2, rspValue2, dataValue2)
+		// 先判斷是否可更改資料，CanSet == false 時異動資料會造成 panic
+		if rspValue2.CanSet() {
+			reflectSetValue(rspType2, rspValue2, dataValue2)
+		}
 	}
 }
 
 // reflectSetValue 取得 dataValue 值並賦植給 rspValue
 // 目前判斷型態只有 string、Int、Uint、time.Time
+// TODO 增加其它類型的 set 實作
 func reflectSetValue(rspType reflect.Type, rspValue, dataValue reflect.Value) {
 	kind := rspType.Kind()
 	if kind == reflect.String {

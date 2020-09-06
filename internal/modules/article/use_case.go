@@ -86,7 +86,10 @@ func (uca *useCaseArticle) GetID() (ResponseArticle, error) {
 		return responseArticle, err
 	}
 
-	tools.StrconvDataToResponseStruct(&article, &responseArticle)
+	if err := tools.ConvResponseStruct(&article, &responseArticle); err != nil {
+		return responseArticle, err
+	}
+
 	return responseArticle, nil
 }
 
@@ -109,10 +112,8 @@ func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
 		return responseArticles, err
 	}
 
-	// TODO StrconvDataToResponseStruct 增加處理 陣列的 struct 邏輯
-	responseArticles = make([]ResponseArticle, len(articles))
-	for i := 0; i < len(articles); i++ {
-		tools.StrconvDataToResponseStruct(&articles[i], &responseArticles[i])
+	if err := tools.ConvResponseStruct(&articles, &responseArticles); err != nil {
+		return responseArticles, err
 	}
 
 	return responseArticles, nil
