@@ -39,50 +39,58 @@ func Start() {
 // buildContainer 建立 DI 容器，提供各個函式的 input 參數
 func buildContainer() *dig.Container {
 	container := dig.New()
+	provideFunc := containerProvide{}
 
-	// 建立 gin Engine，設定 middleware
-	container.Provide(func() *gin.Engine {
-		return gin.Default()
-	})
-
-	// 建立 gorm.DB 設定，初始化 session 並無實際連線
-	container.Provide(func() (*gorm.DB, error) {
-		return gorm.Open(mysql.Open(configs.ConfigDB.GetDSN()), &gorm.Config{
-			Logger: logger.Default.LogMode(configs.ConfigGorm.GetLogMode()),
-		})
-	})
-
-	// 建立 Translator 設定翻譯語言類型、可自行擴充驗證函式與翻譯訊息 func
-	container.Provide(func() ut.Translator {
-		locale := configs.ConfigValidator.GetLocale()
-		uni := ut.New(zh.New())
-		trans, _ := uni.GetTranslator(locale)
-		// 設定語言地區
-		validatorFunc.SetLocale(locale)
-
-		if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-			// 註冊翻譯器
-			err := zhTranslations.RegisterDefaultTranslations(v, trans)
-			if err != nil {
-				panic(err)
-			}
-
-			// 註冊一個函式，獲取struct tag裡自定義的label作為欄位名
-			v.RegisterTagNameFunc(validatorFunc.RegisterTagNameFunc)
-
-			// 註冊自定義函式
-			if err := v.RegisterValidation(validatorFunc.ArticleStatusTag,
-				validatorFunc.ArticleStatusValidator); err != nil {
-				panic(err)
-			}
-
-			// 根據提供的標記註冊翻譯
-			v.RegisterTranslation(validatorFunc.ArticleStatusTag, trans,
-				validatorFunc.ArticleStatusTranslations, validatorFunc.ArticleStatusTranslation)
-		}
-
-		return trans
-	})
+	container.Provide(provideFunc.gin)
+	container.Provide(provideFunc.gorm)
+	container.Provide(provideFunc.translator)
 
 	return container
+}
+
+type containerProvide struct {
+}
+
+// gin 建立 gin Engine，設定 middleware
+func (cp *containerProvide) gin() *gin.Engine {
+	return gin.Default()
+}
+
+// gorm 建立 gorm.DB 設定，初始化 session 並無實際連線
+func (cp *containerProvide) gorm() (*gorm.DB, error) {
+	return gorm.Open(mysql.Open(configs.ConfigDB.GetDSN()), &gorm.Config{
+		Logger: logger.Default.LogMode(configs.ConfigGorm.GetLogMode()),
+	})
+}
+
+// translator 建立 Translator 設定翻譯語言類型、可自行擴充驗證函式與翻譯訊息 func
+func (cp *containerProvide) translator() ut.Translator {
+	locale := configs.ConfigValidator.GetLocale()
+	uni := ut.New(zh.New())
+	trans, _ := uni.GetTranslator(locale)
+	// 設定語言地區
+	validatorFunc.SetLocale(locale)
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		// 註冊翻譯器
+		err := zhTranslations.RegisterDefaultTranslations(v, trans)
+		if err != nil {
+			panic(err)
+		}
+
+		// 註冊一個函式，獲取struct tag裡自定義的label作為欄位名
+		v.RegisterTagNameFunc(validatorFunc.RegisterTagNameFunc)
+
+		// 註冊自定義函式
+		if err := v.RegisterValidation(validatorFunc.ArticleStatusTag,
+			validatorFunc.ArticleStatusValidator); err != nil {
+			panic(err)
+		}
+
+		// 根據提供的標記註冊翻譯
+		v.RegisterTranslation(validatorFunc.ArticleStatusTag, trans,
+			validatorFunc.ArticleStatusTranslations, validatorFunc.ArticleStatusTranslation)
+	}
+
+	return trans
 }
