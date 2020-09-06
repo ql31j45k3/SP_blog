@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// bindJSON 取得 Request body 資料，JSON 資料轉行為 struct
 func (uca *useCaseArticle) bindJSON(article *Article) error {
 	if err := uca.c.BindJSON(article); err != nil {
 		var errs []string
@@ -27,6 +28,7 @@ func (uca *useCaseArticle) bindJSON(article *Article) error {
 	return nil
 }
 
+// isErrRecordNotFound 驗證 SQL 語法執行但查無資料情況，調整 http status
 func (uca *useCaseArticle) isErrRecordNotFound(err error) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		uca.returnError(http.StatusNotFound, err)
@@ -35,6 +37,7 @@ func (uca *useCaseArticle) isErrRecordNotFound(err error) {
 	}
 }
 
+// returnError 設定回傳錯誤，統一回傳錯誤格式
 func (uca *useCaseArticle) returnError(code int, err error) {
 	messages := []string{err.Error()}
 	uca.c.JSON(code, tools.NewResponseError(messages))

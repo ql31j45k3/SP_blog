@@ -18,15 +18,18 @@ var (
 	locale = ""
 )
 
+// SetLocale 設定語言地區
 func SetLocale(l string) {
 	locale = l
 }
 
+// RegisterTagNameFunc 註冊欄位對應轉譯的文字
 func RegisterTagNameFunc(fld reflect.StructField) string {
 	fieldName := strings.ToLower(fld.Name)
 	return locale2FieldMap[locale][fieldName]
 }
 
+// StatusValidator 提供驗證 Status 資料正確性 func
 var StatusValidator validator.Func = func(fl validator.FieldLevel) bool {
 	if val, ok := fl.Field().Interface().(int); ok {
 		if val == statusDisable || val == statusEnable {
@@ -38,10 +41,12 @@ var StatusValidator validator.Func = func(fl validator.FieldLevel) bool {
 	return true
 }
 
+// ArticleStatusTranslations 提供 ArticleStatus 錯誤訊息格式
 var ArticleStatusTranslations validator.RegisterTranslationsFunc = func(ut ut.Translator) error {
 	return ut.Add(ArticleStatusTag, "{0}只有禁用或啟用", true)
 }
 
+// ArticleStatusTranslation 提供 ArticleStatus 翻譯功能
 var ArticleStatusTranslation validator.TranslationFunc = func(ut ut.Translator, fe validator.FieldError) string {
 	t, err := ut.T(ArticleStatusTag, fe.Field())
 	if err != nil {

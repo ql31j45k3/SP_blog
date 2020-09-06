@@ -16,6 +16,7 @@ var (
 	ConfigValidator *configValidator
 )
 
+// init 控制設定流程
 func init() {
 	path, err := os.Getwd()
 	if err != nil {

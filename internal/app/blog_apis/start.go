@@ -18,30 +18,37 @@ import (
 	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
 )
 
+// Start 控制服務流程、呼叫的依賴性
 func Start() {
 	container := buildContainer()
 
+	// 調用其他函式，函式參數容器會依照 Provide 提供後自行匹配
 	container.Invoke(article.SetupRouter)
 	container.Invoke(func(r *gin.Engine) {
+		// 控制調試日誌 log
 		gin.SetMode(configs.ConfigGin.GetMode())
 
 		r.Run(configs.ConfigHost.GetSPBlogApisHost())
 	})
 }
 
+// buildContainer 建立 DI 容器，提供各個函式的 input 參數
 func buildContainer() *dig.Container {
 	container := binder.Container
 
+	// 建立 gin Engine，設定 middleware
 	container.Provide(func() *gin.Engine {
 		return gin.Default()
 	})
 
+	// 建立 gorm.DB 設定，初始化 session 並無實際連線
 	container.Provide(func() (*gorm.DB, error) {
 		return gorm.Open(mysql.Open(configs.ConfigDB.GetDSN()), &gorm.Config{
 			Logger: logger.Default.LogMode(configs.ConfigGorm.GetLogMode()),
 		})
 	})
 
+	// 建立 Translator 設定翻譯語言類型、可自行擴充驗證函式與翻譯訊息 func
 	container.Provide(func() ut.Translator {
 		locale := configs.ConfigValidator.GetLocale()
 		uni := ut.New(zh.New())

@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// SetupRouter 註冊文章路由器
 func SetupRouter(r *gin.Engine, db *gorm.DB, trans ut.Translator) {
 	articleRouter := newArticleRouter(db, trans)
 
