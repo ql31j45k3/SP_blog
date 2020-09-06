@@ -20,7 +20,7 @@ import (
 // Start 控制服務流程、呼叫的依賴性
 func Start() {
 	// 開始讀取設定檔，順序上必須為容器之前，執行容器內有需要設定檔 struct 取得參數
-	configs.Start()
+	configs.Start("")
 	// 開始讀取翻譯檔案，順序上必須在容器前執行
 	validatorFunc.Start()
 

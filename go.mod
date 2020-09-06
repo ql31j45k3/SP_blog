@@ -9,6 +9,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.2.0
 	github.com/spf13/viper v1.7.1
+	github.com/stretchr/testify v1.4.0
 	go.uber.org/dig v1.10.0
 	golang.org/x/tools v0.0.0-20191112195655-aa38f8e97acc
 	gorm.io/driver/mysql v1.0.0
