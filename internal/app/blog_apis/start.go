@@ -23,7 +23,7 @@ func Start() {
 	container := buildContainer()
 
 	// 調用其他函式，函式參數容器會依照 Provide 提供後自行匹配
-	container.Invoke(article.SetupRouter)
+	container.Invoke(article.RegisterRouter)
 	container.Invoke(func(r *gin.Engine) {
 		// 控制調試日誌 log
 		gin.SetMode(configs.ConfigGin.GetMode())
