@@ -13,7 +13,6 @@ import (
 
 	ut "github.com/go-playground/universal-translator"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
-	"github.com/ql31j45k3/SP_blog/internal/binder"
 	"github.com/ql31j45k3/SP_blog/internal/modules/article"
 	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
 )
@@ -37,7 +36,7 @@ func Start() {
 
 // buildContainer 建立 DI 容器，提供各個函式的 input 參數
 func buildContainer() *dig.Container {
-	container := binder.Container
+	container := dig.New()
 
 	// 建立 gin Engine，設定 middleware
 	container.Provide(func() *gin.Engine {
