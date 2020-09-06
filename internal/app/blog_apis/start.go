@@ -20,6 +20,9 @@ import (
 
 // Start 控制服務流程、呼叫的依賴性
 func Start() {
+	// 開始讀取設定檔，順序上必須為容器之前，執行容器內有需要設定檔 struct 取得參數
+	configs.Start()
+
 	container := buildContainer()
 
 	// 調用其他函式，函式參數容器會依照 Provide 提供後自行匹配

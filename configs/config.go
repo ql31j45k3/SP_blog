@@ -16,8 +16,8 @@ var (
 	ConfigValidator *configValidator
 )
 
-// init 控制設定流程
-func init() {
+// Start 開始 Config 設定參數與讀取檔案並轉成 struct
+func Start() {
 	path, err := os.Getwd()
 	if err != nil {
 		panic(err)
