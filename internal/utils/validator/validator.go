@@ -3,6 +3,7 @@ package validator
 import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	"github.com/ql31j45k3/SP_blog/internal/utils/validator/zh"
 	"reflect"
 	"strings"
 )
@@ -15,8 +16,16 @@ const (
 )
 
 var (
+	locale2FieldMap map[string]map[string]string
+
 	locale = ""
 )
+
+func Start() {
+	locale2FieldMap = make(map[string]map[string]string)
+
+	locale2FieldMap["zh"] = zh.NewField2Name()
+}
 
 // SetLocale 設定語言地區
 func SetLocale(l string) {
