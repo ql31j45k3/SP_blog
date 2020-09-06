@@ -83,13 +83,13 @@ func (cp *containerProvide) translator() ut.Translator {
 
 		// 註冊自定義函式
 		if err := v.RegisterValidation(validatorFunc.ArticleStatusTag,
-			validatorFunc.ArticleStatusValidator); err != nil {
+			validatorFunc.ArticleStatusFunc.Validator); err != nil {
 			panic(err)
 		}
 
 		// 根據提供的標記註冊翻譯
 		v.RegisterTranslation(validatorFunc.ArticleStatusTag, trans,
-			validatorFunc.ArticleStatusTranslations, validatorFunc.ArticleStatusTranslation)
+			validatorFunc.ArticleStatusFunc.Translations, validatorFunc.ArticleStatusFunc.Translation)
 	}
 
 	return trans

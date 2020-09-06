@@ -19,12 +19,16 @@ var (
 	locale2FieldMap map[string]map[string]string
 
 	locale = ""
+
+	ArticleStatusFunc articleStatusFunc
 )
 
 func Start() {
 	locale2FieldMap = make(map[string]map[string]string)
 
 	locale2FieldMap["zh"] = zh.NewField2Name()
+
+	ArticleStatusFunc = articleStatusFunc{}
 }
 
 // SetLocale 設定語言地區
@@ -38,8 +42,11 @@ func RegisterTagNameFunc(fld reflect.StructField) string {
 	return locale2FieldMap[locale][fieldName]
 }
 
-// ArticleStatusValidator 提供驗證 Status 資料正確性 func
-var ArticleStatusValidator validator.Func = func(fl validator.FieldLevel) bool {
+type articleStatusFunc struct {
+}
+
+// Validator 提供驗證 ArticleStatus 資料正確性 func
+func (asf *articleStatusFunc) Validator(fl validator.FieldLevel) bool {
 	if val, ok := fl.Field().Interface().(int); ok {
 		if val == statusDisable || val == statusEnable {
 			return true
@@ -50,13 +57,13 @@ var ArticleStatusValidator validator.Func = func(fl validator.FieldLevel) bool {
 	return true
 }
 
-// ArticleStatusTranslations 提供 ArticleStatus 錯誤訊息格式
-var ArticleStatusTranslations validator.RegisterTranslationsFunc = func(ut ut.Translator) error {
+// Translationsfunc 提供 ArticleStatus 錯誤訊息格式
+func (asf *articleStatusFunc) Translations(ut ut.Translator) error {
 	return ut.Add(ArticleStatusTag, "{0}只有禁用或啟用", true)
 }
 
-// ArticleStatusTranslation 提供 ArticleStatus 翻譯功能
-var ArticleStatusTranslation validator.TranslationFunc = func(ut ut.Translator, fe validator.FieldError) string {
+// Translation 提供 ArticleStatus 翻譯功能
+func (asf *articleStatusFunc) Translation(ut ut.Translator, fe validator.FieldError) string {
 	t, err := ut.T(ArticleStatusTag, fe.Field())
 	if err != nil {
 		panic(err)
