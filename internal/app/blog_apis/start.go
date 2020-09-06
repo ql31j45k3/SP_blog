@@ -68,7 +68,7 @@ func buildContainer() *dig.Container {
 
 			// 註冊自定義函式
 			if err := v.RegisterValidation(validatorFunc.ArticleStatusTag,
-				validatorFunc.StatusValidator); err != nil {
+				validatorFunc.ArticleStatusValidator); err != nil {
 				panic(err)
 			}
 

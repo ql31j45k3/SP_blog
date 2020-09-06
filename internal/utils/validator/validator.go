@@ -29,8 +29,8 @@ func RegisterTagNameFunc(fld reflect.StructField) string {
 	return locale2FieldMap[locale][fieldName]
 }
 
-// StatusValidator 提供驗證 Status 資料正確性 func
-var StatusValidator validator.Func = func(fl validator.FieldLevel) bool {
+// ArticleStatusValidator 提供驗證 Status 資料正確性 func
+var ArticleStatusValidator validator.Func = func(fl validator.FieldLevel) bool {
 	if val, ok := fl.Field().Interface().(int); ok {
 		if val == statusDisable || val == statusEnable {
 			return true
