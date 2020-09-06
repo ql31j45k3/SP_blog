@@ -1,0 +1,57 @@
+package configs
+
+import (
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
+	"os"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
+)
+
+var (
+	ConfigHost *configHost
+	ConfigDB   *configDB
+	ConfigGin  *configGin
+	ConfigGorm *configGorm
+
+	ConfigValidator *configValidator
+)
+
+// Start 開始 Config 設定參數與讀取檔案並轉成 struct
+// 預設會抓取執行程式的啟示點資料夾，可用參數調整路徑來源
+func Start(sourcePath string) {
+	viper.AddConfigPath(getPath(sourcePath))
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+
+	if err := viper.ReadInConfig(); err != nil {
+		panic(err)
+	}
+
+	ConfigHost = newConfigHost()
+	ConfigDB = newConfigDB()
+	ConfigGin = newConfigGin()
+	ConfigGorm = newConfigGorm()
+	ConfigValidator = newConfigValidator()
+
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		ConfigHost.reload()
+	})
+}
+
+// getPath 預設會抓取執行程式的啟示點資料夾
+// e.g. cmd/blog_apis 會抓取到 SP_blog
+// 可用參數調整路徑來源
+func getPath(sourcePath string) string {
+	if tools.IsNotEmpty(sourcePath) {
+		return sourcePath + "/configs"
+	}
+
+	path, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	return path + "/configs"
+}

@@ -1,0 +1,21 @@
+host:
+  sp_blog_apis_host: <value>
+
+database:
+  host: <value>
+  port: <value>
+  username: <value>
+  password: <value>
+  dbname: <value>
+
+gin:
+  # mode: debug、release、test
+  mode: <value>
+
+gorm:
+  # logMode: silent、error、warn、info, default silent
+  logmode: <value>
+
+validator:
+  # 設定錯誤訊息文字語言
+  locale: <value>
