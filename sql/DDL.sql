@@ -8,7 +8,7 @@ CREATE DATABASE IF NOT EXISTS `sp_blog` CHARACTER SET utf8mb4 COLLATE utf8mb4_ge
 -- 文章 Table
 DROP TABLE IF EXISTS `articles`;
 CREATE TABLE `articles` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '',
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號主鍵',
   `created_at` datetime(3) DEFAULT NULL COMMENT '建立時間',
   `updated_at` datetime(3) DEFAULT NULL COMMENT '修改時間',
   `deleted_at` datetime(3) DEFAULT NULL COMMENT '刪除時間',
