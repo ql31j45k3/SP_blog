@@ -11,15 +11,15 @@ import (
 type articleCondOption func(*articleCond) error
 
 func newArticleCond(opts ...articleCondOption) (*articleCond, error) {
-	ac := &articleCond{}
+	cond := &articleCond{}
 
 	for _, o := range opts {
-		if err := o(ac); err != nil {
-			return ac, err
+		if err := o(cond); err != nil {
+			return cond, err
 		}
 	}
 
-	return ac, nil
+	return cond, nil
 }
 
 type articleCond struct {
