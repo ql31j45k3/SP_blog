@@ -1,0 +1,91 @@
+package author
+
+import (
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
+	"gorm.io/gorm"
+	"strconv"
+	"strings"
+)
+
+type authorCondOption func(*authorCond) error
+
+func newAuthorCond(opts ...authorCondOption) (*authorCond, error) {
+	cond := &authorCond{}
+
+	for _, o := range opts {
+		if err := o(cond); err != nil {
+			return nil, err
+		}
+	}
+
+	return cond, nil
+}
+
+type authorCond struct {
+	ID uint
+
+	title   string
+	content string
+
+	status int
+}
+
+func withAuthorID(IDStr string) authorCondOption {
+	return func(cond *authorCond) error {
+		if tools.IsEmpty(IDStr) {
+			return nil
+		}
+
+		ID, err := strconv.ParseUint(IDStr, 10, 64)
+		if err != nil {
+			return err
+		}
+		cond.ID = uint(ID)
+
+		return nil
+	}
+}
+
+func withAuthorTitle(title string) authorCondOption {
+	return func(cond *authorCond) error {
+		cond.title = strings.TrimSpace(title)
+		return nil
+	}
+}
+
+func withAuthorContent(content string) authorCondOption {
+	return func(cond *authorCond) error {
+		cond.content = strings.TrimSpace(content)
+		return nil
+	}
+}
+
+func withAuthorStatus(status string) authorCondOption {
+	return func(cond *authorCond) error {
+		status, err := tools.Atoi(status, tools.DefaultNotAssignInt)
+		if err != nil {
+			return err
+		}
+
+		cond.status = status
+		return nil
+	}
+}
+
+type Author struct {
+	gorm.Model
+
+	Title   string `binding:"required,min=1,max=100"`
+	Content string `binding:"required,min=10"`
+
+	Status int `binding:"authorStatus"`
+}
+
+type ResponseAuthor struct {
+	tools.Model
+
+	Title   string `json:"title"`
+	Content string `json:"content"`
+
+	Status int `json:"status"`
+}
