@@ -33,7 +33,7 @@ type articleCond struct {
 }
 
 func withArticleID(IDStr string) articleCondOption {
-	return func(ac *articleCond) error {
+	return func(cond *articleCond) error {
 		if tools.IsEmpty(IDStr) {
 			return nil
 		}
@@ -42,41 +42,41 @@ func withArticleID(IDStr string) articleCondOption {
 		if err != nil {
 			return err
 		}
-		ac.ID = uint(ID)
+		cond.ID = uint(ID)
 
 		return nil
 	}
 }
 
 func withArticleTitle(title string) articleCondOption {
-	return func(ac *articleCond) error {
-		ac.title = strings.TrimSpace(title)
+	return func(cond *articleCond) error {
+		cond.title = strings.TrimSpace(title)
 		return nil
 	}
 }
 
 func withArticleDesc(desc string) articleCondOption {
-	return func(ac *articleCond) error {
-		ac.desc = strings.TrimSpace(desc)
+	return func(cond *articleCond) error {
+		cond.desc = strings.TrimSpace(desc)
 		return nil
 	}
 }
 
 func withArticleContent(content string) articleCondOption {
-	return func(ac *articleCond) error {
-		ac.content = strings.TrimSpace(content)
+	return func(cond *articleCond) error {
+		cond.content = strings.TrimSpace(content)
 		return nil
 	}
 }
 
 func withArticleStatus(status string) articleCondOption {
-	return func(ac *articleCond) error {
+	return func(cond *articleCond) error {
 		status, err := tools.Atoi(status, tools.DefaultNotAssignInt)
 		if err != nil {
 			return err
 		}
 
-		ac.status = status
+		cond.status = status
 		return nil
 	}
 }
