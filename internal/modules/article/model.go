@@ -15,7 +15,7 @@ func newArticleCond(opts ...articleCondOption) (*articleCond, error) {
 
 	for _, o := range opts {
 		if err := o(cond); err != nil {
-			return cond, err
+			return nil, err
 		}
 	}
 
