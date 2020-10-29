@@ -32,13 +32,13 @@ type useCaseAuthor struct {
 
 func (uca *useCaseAuthor) Create() (uint, error) {
 	var author Author
-	if err := uca.bindJSON(&author); err != nil {
+	if err := tools.BindJSON(uca.c, uca.trans, &author); err != nil {
 		return 0, err
 	}
 
 	newRowID, err := uca.create(author)
 	if err != nil {
-		uca.isErrRecordNotFound(err)
+		tools.IsErrRecordNotFound(uca.c, err)
 		return newRowID, err
 	}
 
@@ -47,7 +47,7 @@ func (uca *useCaseAuthor) Create() (uint, error) {
 
 func (uca *useCaseAuthor) UpdateID() error {
 	var author Author
-	if err := uca.bindJSON(&author); err != nil {
+	if err := tools.BindJSON(uca.c, uca.trans, &author); err != nil {
 		return err
 	}
 
@@ -55,12 +55,12 @@ func (uca *useCaseAuthor) UpdateID() error {
 
 	cond, err := newAuthorCond(withAuthorID(ID))
 	if err != nil {
-		uca.returnError(http.StatusBadRequest, err)
+		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
 		return err
 	}
 
 	if err := uca.updateID(cond, author); err != nil {
-		uca.isErrRecordNotFound(err)
+		tools.IsErrRecordNotFound(uca.c, err)
 		return err
 	}
 
@@ -74,13 +74,13 @@ func (uca *useCaseAuthor) GetID() (ResponseAuthor, error) {
 
 	cond, err := newAuthorCond(withAuthorID(ID))
 	if err != nil {
-		uca.returnError(http.StatusBadRequest, err)
+		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
 		return responseAuthor, err
 	}
 
 	author, err := uca.getID(cond)
 	if err != nil {
-		uca.isErrRecordNotFound(err)
+		tools.IsErrRecordNotFound(uca.c, err)
 		return responseAuthor, err
 	}
 
@@ -99,13 +99,13 @@ func (uca *useCaseAuthor) Get() ([]ResponseAuthor, error) {
 		withAuthorContent(uca.c.Query("content")),
 		withAuthorStatus(uca.c.Query("status")))
 	if err != nil {
-		uca.returnError(http.StatusBadRequest, err)
+		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
 		return responseAuthors, err
 	}
 
 	authors, err := uca.get(cond)
 	if err != nil {
-		uca.isErrRecordNotFound(err)
+		tools.IsErrRecordNotFound(uca.c, err)
 		return responseAuthors, err
 	}
 
