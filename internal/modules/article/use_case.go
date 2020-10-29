@@ -34,13 +34,13 @@ type useCaseArticle struct {
 
 func (uca *useCaseArticle) Create() (uint, error) {
 	var article Article
-	if err := uca.bindJSON(&article); err != nil {
+	if err := tools.BindJSON(uca.c, uca.trans, &article); err != nil {
 		return 0, err
 	}
 
 	newRowID, err := uca.create(article)
 	if err != nil {
-		uca.isErrRecordNotFound(err)
+		tools.IsErrRecordNotFound(uca.c, err)
 		return newRowID, err
 	}
 
@@ -49,7 +49,7 @@ func (uca *useCaseArticle) Create() (uint, error) {
 
 func (uca *useCaseArticle) UpdateID() error {
 	var article Article
-	if err := uca.bindJSON(&article); err != nil {
+	if err := tools.BindJSON(uca.c, uca.trans, &article); err != nil {
 		return err
 	}
 
@@ -57,12 +57,12 @@ func (uca *useCaseArticle) UpdateID() error {
 
 	cond, err := newArticleCond(withArticleID(ID))
 	if err != nil {
-		uca.returnError(http.StatusBadRequest, err)
+		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
 		return err
 	}
 
 	if err := uca.updateID(cond, article); err != nil {
-		uca.isErrRecordNotFound(err)
+		tools.IsErrRecordNotFound(uca.c, err)
 		return err
 	}
 
@@ -76,13 +76,13 @@ func (uca *useCaseArticle) GetID() (ResponseArticle, error) {
 
 	cond, err := newArticleCond(withArticleID(ID))
 	if err != nil {
-		uca.returnError(http.StatusBadRequest, err)
+		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
 		return responseArticle, err
 	}
 
 	article, err := uca.getID(cond)
 	if err != nil {
-		uca.isErrRecordNotFound(err)
+		tools.IsErrRecordNotFound(uca.c, err)
 		return responseArticle, err
 	}
 
@@ -102,13 +102,13 @@ func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
 		withArticleContent(uca.c.Query("content")),
 		withArticleStatus(uca.c.Query("status")))
 	if err != nil {
-		uca.returnError(http.StatusBadRequest, err)
+		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
 		return responseArticles, err
 	}
 
 	articles, err := uca.get(cond)
 	if err != nil {
-		uca.isErrRecordNotFound(err)
+		tools.IsErrRecordNotFound(uca.c, err)
 		return responseArticles, err
 	}
 

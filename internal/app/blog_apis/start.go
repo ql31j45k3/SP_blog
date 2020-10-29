@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/locales/zh"
 	"github.com/go-playground/validator/v10"
 	"github.com/ql31j45k3/SP_blog/configs"
+	"github.com/ql31j45k3/SP_blog/internal/modules/author"
 	"go.uber.org/dig"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -28,6 +29,8 @@ func Start() {
 
 	// 調用其他函式，函式參數容器會依照 Provide 提供後自行匹配
 	container.Invoke(article.RegisterRouter)
+	container.Invoke(author.RegisterRouter)
+
 	container.Invoke(func(r *gin.Engine) {
 		// 控制調試日誌 log
 		gin.SetMode(configs.ConfigGin.GetMode())
@@ -90,6 +93,16 @@ func (cp *containerProvide) translator() ut.Translator {
 		// 根據提供的標記註冊翻譯
 		v.RegisterTranslation(validatorFunc.ArticleStatusTag, trans,
 			validatorFunc.ArticleStatusFunc.Translations, validatorFunc.ArticleStatusFunc.Translation)
+
+		// 註冊自定義函式
+		if err := v.RegisterValidation(validatorFunc.AuthorStatusTag,
+			validatorFunc.AuthorStatusFunc.Validator); err != nil {
+			panic(err)
+		}
+
+		// 根據提供的標記註冊翻譯
+		v.RegisterTranslation(validatorFunc.AuthorStatusTag, trans,
+			validatorFunc.AuthorStatusFunc.Translations, validatorFunc.AuthorStatusFunc.Translation)
 	}
 
 	return trans
