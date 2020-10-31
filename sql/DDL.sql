@@ -21,8 +21,8 @@ CREATE TABLE `articles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章';
 
 -- 標籤 Table
-DROP TABLE IF EXISTS `articles_label`;
-CREATE TABLe `articles_label` (
+DROP TABLE IF EXISTS `article_labels`;
+CREATE TABLe `article_labels` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號主鍵',
     `created_at` datetime(3) DEFAULT NULL COMMENT '建立時間',
     `updated_at` datetime(3) DEFAULT NULL COMMENT '修改時間',
