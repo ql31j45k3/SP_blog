@@ -6,15 +6,31 @@ import (
 )
 
 func (uca *useCaseArticle) create(article Article) (uint, error) {
+	tx := uca.db.Begin()
+
 	result := uca.db.Create(&article)
 	if result.Error != nil {
+		tx.Rollback()
 		return 0, result.Error
 	}
 
+	for i, _ := range article.ArticleLabel {
+		articleLabels := article.ArticleLabel[i]
+		articleLabels.ArticlesID = article.ID
+
+		if _, err := uca.createLabel(articleLabels); err != nil {
+			tx.Rollback()
+			return 0, err
+		}
+	}
+
+	tx.Commit()
 	return article.ID, nil
 }
 
 func (uca *useCaseArticle) updateID(cond *articleCond, article Article) error {
+	tx := uca.db.Begin()
+
 	result := uca.db.Model(Article{}).Where("`id` = ?", cond.ID).
 		Updates(map[string]interface{}{
 			"title":   article.Title,
@@ -23,10 +39,40 @@ func (uca *useCaseArticle) updateID(cond *articleCond, article Article) error {
 			"status":  article.Status,
 		})
 	if result.Error != nil {
+		tx.Rollback()
 		return result.Error
 	}
 
+	if err := uca.deleteLabel(cond.ID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	for i, _ := range article.ArticleLabel {
+		articleLabels := article.ArticleLabel[i]
+		articleLabels.ArticlesID = cond.ID
+
+		if _, err := uca.createLabel(articleLabels); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	tx.Commit()
 	return nil
+}
+
+func (uca *useCaseArticle) createLabel(articleLabel ArticleLabel) (uint, error) {
+	result := uca.db.Create(&articleLabel)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	return articleLabel.ID, nil
+}
+
+func (uca *useCaseArticle) deleteLabel(articlesID uint) error {
+	return uca.db.Where("`articles_id` = ?", articlesID).Delete(ArticleLabel{}).Error
 }
 
 func (uca *useCaseArticle) getID(cond *articleCond) (Article, error) {

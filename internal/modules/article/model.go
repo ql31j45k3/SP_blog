@@ -89,6 +89,15 @@ type Article struct {
 	Content string `binding:"required,min=10"`
 
 	Status int `binding:"articleStatus"`
+
+	ArticleLabel []ArticleLabel `gorm:"-"`
+}
+
+type ArticleLabel struct {
+	gorm.Model
+
+	ArticlesID uint
+	Tag string `binding:"required,min=1,max=100"`
 }
 
 type ResponseArticle struct {
