@@ -23,6 +23,7 @@ type UseCaseArticler interface {
 	UpdateID() error
 	GetID() (ResponseArticle, error)
 	Get() ([]ResponseArticle, error)
+	Search() ([]ResponseArticle, error)
 }
 
 type useCaseArticle struct {
@@ -107,6 +108,28 @@ func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
 	}
 
 	articles, err := uca.get(cond)
+	if err != nil {
+		tools.IsErrRecordNotFound(uca.c, err)
+		return responseArticles, err
+	}
+
+	if err := tools.ConvResponseStruct(&articles, &responseArticles); err != nil {
+		return responseArticles, err
+	}
+
+	return responseArticles, nil
+}
+
+func (uca *useCaseArticle) Search() ([]ResponseArticle, error) {
+	var responseArticles []ResponseArticle
+
+	cond, err := newSearchCond(withSearchKeyword(uca.c.Query("keyword")))
+	if err != nil {
+		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
+		return responseArticles, err
+	}
+
+	articles, err := uca.search(cond)
 	if err != nil {
 		tools.IsErrRecordNotFound(uca.c, err)
 		return responseArticles, err

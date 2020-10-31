@@ -116,6 +116,8 @@ func TestRegisterRouter(t *testing.T) {
 	testGetConditionsDesc(t)
 	testGetConditionsContent(t)
 	testGetConditionsStatus(t)
+
+	testSearchArticle(t)
 }
 
 func testPost(t *testing.T) string {
@@ -292,6 +294,29 @@ func testGetConditionsStatus(t *testing.T) {
 
 	if debug {
 		t.Logf("testGetConditionsStatus, body value = %s", string(body))
+	}
+
+	assert.Equal(t, http.StatusOK, httpStatus)
+}
+
+func testSearchArticle(t *testing.T) {
+	urlValues := url.Values{}
+	urlValues.Add("keyword", "title")
+
+	url, err := url.Parse("/v1/search/article?" + urlValues.Encode())
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	httpStatus, body, err2 := httptestRequest(r, http.MethodGet, url.String(), nil)
+	if err2 != nil {
+		t.Error(err2)
+		return
+	}
+
+	if debug {
+		t.Logf("testSearchArticle, body value = %s", string(body))
 	}
 
 	assert.Equal(t, http.StatusOK, httpStatus)
