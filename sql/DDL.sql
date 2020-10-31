@@ -17,7 +17,7 @@ CREATE TABLE `articles` (
   `content` TEXT COMMENT '內容',
   `status` TINYINT(3) NOT NULL DEFAULT '1' COMMENT '狀態 0:禁用, 1:啟用',
   PRIMARY KEY (`id`),
-  INDEX idx_articles_deleted_at (`deleted_at`)
+  INDEX `idx_articles_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章';
 
 -- 標籤 Table
