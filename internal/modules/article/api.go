@@ -17,6 +17,8 @@ func RegisterRouter(r *gin.Engine, db *gorm.DB, trans ut.Translator) {
 	routerGroup.PUT("/:id", articleRouter.updateID)
 	routerGroup.GET("/:id", articleRouter.getID)
 	routerGroup.GET("", articleRouter.get)
+
+	r.GET("/v1/search/article", articleRouter.search)
 }
 
 func newArticleRouter(db *gorm.DB, trans ut.Translator) articleRouter {
@@ -65,6 +67,16 @@ func (ar *articleRouter) getID(c *gin.Context) {
 func (ar *articleRouter) get(c *gin.Context) {
 	useCase := newUseCaseArticle(c, ar.db, ar.trans)
 	result, err := useCase.Get()
+	if err != nil {
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (ar *articleRouter) search(c *gin.Context) {
+	useCase := newUseCaseArticle(c, ar.db, ar.trans)
+	result, err := useCase.Search()
 	if err != nil {
 		return
 	}

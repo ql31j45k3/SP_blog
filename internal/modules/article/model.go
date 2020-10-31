@@ -100,3 +100,28 @@ type ResponseArticle struct {
 
 	Status int `json:"status"`
 }
+
+type searchCondOption func(*searchCond) error
+
+func newSearchCond(opts ...searchCondOption) (*searchCond, error) {
+	cond := &searchCond{}
+
+	for _, o := range opts {
+		if err := o(cond); err != nil {
+			return nil, err
+		}
+	}
+
+	return cond, nil
+}
+
+type searchCond struct {
+	keyword string
+}
+
+func withSearchKeyword(keyword string) searchCondOption {
+	return func(cond *searchCond) error {
+		cond.keyword = strings.TrimSpace(keyword)
+		return nil
+	}
+}
