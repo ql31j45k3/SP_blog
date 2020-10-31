@@ -126,11 +126,19 @@ func newSearchCond(opts ...searchCondOption) (*searchCond, error) {
 
 type searchCond struct {
 	keyword string
+	tags []string
 }
 
 func withSearchKeyword(keyword string) searchCondOption {
 	return func(cond *searchCond) error {
 		cond.keyword = strings.TrimSpace(keyword)
+		return nil
+	}
+}
+
+func withSearchTags(tags []string) searchCondOption {
+	return func(cond *searchCond) error {
+		cond.tags = tags
 		return nil
 	}
 }
