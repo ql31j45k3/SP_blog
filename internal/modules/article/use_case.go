@@ -123,7 +123,8 @@ func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
 func (uca *useCaseArticle) Search() ([]ResponseArticle, error) {
 	var responseArticles []ResponseArticle
 
-	cond, err := newSearchCond(withSearchKeyword(uca.c.Query("keyword")))
+	cond, err := newSearchCond(withSearchKeyword(uca.c.Query("keyword")),
+		withSearchTags(uca.c.QueryArray("tags")))
 	if err != nil {
 		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
 		return responseArticles, err

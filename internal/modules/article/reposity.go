@@ -107,6 +107,7 @@ func (uca *useCaseArticle) get(cond *articleCond) ([]Article, error) {
 
 func (uca *useCaseArticle) search(cond *searchCond) ([]Article, error) {
 	var sql strings.Builder
+	var values []interface{}
 
 	sql.WriteString("SELECT `articles`.`id`,")
 	sql.WriteString("       `articles`.`created_at`,")
@@ -115,14 +116,20 @@ func (uca *useCaseArticle) search(cond *searchCond) ([]Article, error) {
 	sql.WriteString("       `articles`.`desc`,")
 	sql.WriteString("       `articles`.`content`,")
 	sql.WriteString("       `articles`.`status`")
-	sql.WriteString("  FROM `articles`")
+	sql.WriteString("  FROM `articles` LEFT JOIN `article_labels` ON `articles`.`id` = `article_labels`.`articles_id`")
+
 	sql.WriteString(" WHERE `articles`.`status` = ?")
-	sql.WriteString("   AND (`articles`.`title` LIKE ? OR `articles`.`desc` LIKE ? OR `articles`.`content` LIKE ?)")
+	values = append(values, tools.StatusEnable)
+
+	keywordSqlStr := " AND (`articles`.`title` LIKE ? OR `articles`.`desc` LIKE ? OR `articles`.`content` LIKE ?)"
+	keywordValues := []string{"%"+cond.keyword+"%", "%"+cond.keyword+"%", "%"+cond.keyword+"%"}
+	values = tools.SQLRawAppend(tools.IsNotEmpty(cond.keyword), &sql, keywordSqlStr, values, keywordValues)
+
+	tagsSqlStr := tools.SQLArrayToString(cond.tags, "`article_labels`.`tag`")
+	values = tools.SQLRawAppend(len(cond.tags) > 0, &sql, tagsSqlStr, values, cond.tags)
 
 	var articles []Article
-
-	result := uca.db.Raw(sql.String(),tools.StatusEnable,
-		"%"+cond.keyword+"%", "%"+cond.keyword+"%", "%"+cond.keyword+"%").Scan(&articles)
+	result := uca.db.Raw(sql.String(), values...).Scan(&articles)
 	if result.Error != nil {
 		return articles, result.Error
 	}
