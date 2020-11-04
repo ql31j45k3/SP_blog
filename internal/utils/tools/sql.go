@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+// SQLPagination 增加 sql limit, offset 條件
+func SQLPagination(db *gorm.DB, rowCount, offset int) *gorm.DB {
+	return db.Limit(rowCount).Offset(offset)
+}
+
 // SQLAppend 依照 condition 判斷是否拼湊 SQL Where 條件
 func SQLAppend(db *gorm.DB, condition bool, query, columnValue interface{}) *gorm.DB {
 	if !condition {

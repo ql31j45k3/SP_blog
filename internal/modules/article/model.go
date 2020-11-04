@@ -23,6 +23,8 @@ func newArticleCond(opts ...articleCondOption) (*articleCond, error) {
 }
 
 type articleCond struct {
+	tools.Pagination
+
 	ID uint
 
 	title   string
@@ -30,6 +32,30 @@ type articleCond struct {
 	content string
 
 	status int
+}
+
+func withArticlePageIndex(pageIndex string) articleCondOption {
+	return func(cond *articleCond) error {
+		pageIndex, err := tools.Atoi(pageIndex, tools.DefaultNotAssignInt)
+		if err != nil {
+			return err
+		}
+
+		cond.PageIndex = pageIndex
+		return nil
+	}
+}
+
+func withArticlePageSize(pageSize string) articleCondOption {
+	return func(cond *articleCond) error {
+		pageSize, err := tools.Atoi(pageSize, tools.DefaultNotAssignInt)
+		if err != nil {
+			return err
+		}
+
+		cond.PageSize = pageSize
+		return nil
+	}
 }
 
 func withArticleID(IDStr string) articleCondOption {
@@ -125,8 +151,34 @@ func newSearchCond(opts ...searchCondOption) (*searchCond, error) {
 }
 
 type searchCond struct {
+	tools.Pagination
+
 	keyword string
 	tags []string
+}
+
+func withSearchPageIndex(pageIndex string) searchCondOption {
+	return func(cond *searchCond) error {
+		pageIndex, err := tools.Atoi(pageIndex, tools.DefaultNotAssignInt)
+		if err != nil {
+			return err
+		}
+
+		cond.PageIndex = pageIndex
+		return nil
+	}
+}
+
+func withSearchPageSize(pageSize string) searchCondOption {
+	return func(cond *searchCond) error {
+		pageSize, err := tools.Atoi(pageSize, tools.DefaultNotAssignInt)
+		if err != nil {
+			return err
+		}
+
+		cond.PageSize = pageSize
+		return nil
+	}
 }
 
 func withSearchKeyword(keyword string) searchCondOption {

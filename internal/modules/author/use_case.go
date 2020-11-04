@@ -94,7 +94,9 @@ func (uca *useCaseAuthor) GetID() (ResponseAuthor, error) {
 func (uca *useCaseAuthor) Get() ([]ResponseAuthor, error) {
 	var responseAuthors []ResponseAuthor
 
-	cond, err := newAuthorCond(withAuthorID(uca.c.Query("id")),
+	cond, err := newAuthorCond(withAuthorPageIndex(uca.c.Query("pageIndex")),
+		withAuthorPageSize(uca.c.Query("pageSize")),
+		withAuthorID(uca.c.Query("id")),
 		withAuthorTitle(uca.c.Query("title")),
 		withAuthorContent(uca.c.Query("content")),
 		withAuthorStatus(uca.c.Query("status")))
