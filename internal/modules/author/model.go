@@ -22,12 +22,38 @@ func newAuthorCond(opts ...authorCondOption) (*authorCond, error) {
 }
 
 type authorCond struct {
+	tools.Pagination
+
 	ID uint
 
 	title   string
 	content string
 
 	status int
+}
+
+func withAuthorPageIndex(pageIndex string) authorCondOption {
+	return func(cond *authorCond) error {
+		pageIndex, err := tools.Atoi(pageIndex, tools.DefaultNotAssignInt)
+		if err != nil {
+			return err
+		}
+
+		cond.PageIndex = pageIndex
+		return nil
+	}
+}
+
+func withAuthorPageSize(pageSize string) authorCondOption {
+	return func(cond *authorCond) error {
+		pageSize, err := tools.Atoi(pageSize, tools.DefaultNotAssignInt)
+		if err != nil {
+			return err
+		}
+
+		cond.PageSize = pageSize
+		return nil
+	}
 }
 
 func withAuthorID(IDStr string) authorCondOption {

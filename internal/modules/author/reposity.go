@@ -46,6 +46,8 @@ func (uca *useCaseAuthor) get(cond *authorCond) ([]Author, error) {
 
 	uca.db = tools.SQLAppend(uca.db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
 
+	uca.db = tools.SQLPagination(uca.db, cond.GetRowCount(), cond.GetOffset())
+
 	result := uca.db.Find(&authors)
 	if result.Error != nil {
 		return authors, result.Error

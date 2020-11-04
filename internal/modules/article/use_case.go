@@ -97,7 +97,9 @@ func (uca *useCaseArticle) GetID() (ResponseArticle, error) {
 func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
 	var responseArticles []ResponseArticle
 
-	cond, err := newArticleCond(withArticleID(uca.c.Query("id")),
+	cond, err := newArticleCond(withArticlePageIndex(uca.c.Query("pageIndex")),
+		withArticlePageSize(uca.c.Query("pageSize")),
+		withArticleID(uca.c.Query("id")),
 		withArticleTitle(uca.c.Query("title")),
 		withArticleDesc(uca.c.Query("desc")),
 		withArticleContent(uca.c.Query("content")),
@@ -123,7 +125,9 @@ func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
 func (uca *useCaseArticle) Search() ([]ResponseArticle, error) {
 	var responseArticles []ResponseArticle
 
-	cond, err := newSearchCond(withSearchKeyword(uca.c.Query("keyword")),
+	cond, err := newSearchCond(withSearchPageIndex(uca.c.Query("pageIndex")),
+		withSearchPageSize(uca.c.Query("pageSize")),
+		withSearchKeyword(uca.c.Query("keyword")),
 		withSearchTags(uca.c.QueryArray("tags")))
 	if err != nil {
 		tools.NewReturnError(uca.c, http.StatusBadRequest, err)

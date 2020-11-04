@@ -62,6 +62,28 @@ type Model struct {
 	UpdatedAt time.Time `json:"updated-at"`
 }
 
+// Pagination 查詢分頁欄位
+type Pagination struct {
+	PageIndex int
+	PageSize int
+}
+
+func (p *Pagination) GetOffset() int {
+	if p.PageIndex == DefaultNotAssignInt {
+		return 0
+	}
+
+	return (p.PageIndex - 1) * p.PageSize
+}
+
+func (p *Pagination) GetRowCount() int {
+	if p.PageSize == DefaultNotAssignInt || p.PageSize == 0 {
+		return 25
+	}
+
+	return p.PageSize
+}
+
 // ConvResponseStruct data = 資料庫資料, rsp = API 回傳資料
 // 用反射實作達到動態賦值，不需手動一對一比照欄位給值
 // 可支援 []struct or struct，參數需丟入 Ptr 型態

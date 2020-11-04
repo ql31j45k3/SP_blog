@@ -97,6 +97,8 @@ func (uca *useCaseArticle) get(cond *articleCond) ([]Article, error) {
 
 	uca.db = tools.SQLAppend(uca.db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
 
+	uca.db = tools.SQLPagination(uca.db, cond.GetRowCount(), cond.GetOffset())
+
 	result := uca.db.Find(&articles)
 	if result.Error != nil {
 		return articles, result.Error
@@ -127,6 +129,9 @@ func (uca *useCaseArticle) search(cond *searchCond) ([]Article, error) {
 
 	tagsSqlStr := tools.SQLArrayToString(cond.tags, "`article_labels`.`tag`")
 	values = tools.SQLRawAppend(len(cond.tags) > 0, &sql, tagsSqlStr, values, cond.tags)
+
+	sql.WriteString(" LIMIT ? OFFSET ?")
+	values = append(values, cond.GetRowCount(), cond.GetOffset())
 
 	var articles []Article
 	result := uca.db.Raw(sql.String(), values...).Scan(&articles)
