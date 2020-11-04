@@ -111,7 +111,8 @@ func (uca *useCaseArticle) search(cond *searchCond) ([]Article, error) {
 	var sql strings.Builder
 	var values []interface{}
 
-	sql.WriteString("SELECT `articles`.`id`,")
+	sql.WriteString("SELECT DISTINCT")
+	sql.WriteString("       `articles`.`id`,")
 	sql.WriteString("       `articles`.`created_at`,")
 	sql.WriteString("       `articles`.`updated_at`,")
 	sql.WriteString("       `articles`.`title`,")
