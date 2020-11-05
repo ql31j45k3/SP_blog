@@ -65,7 +65,7 @@ type Model struct {
 // Pagination 查詢分頁欄位
 type Pagination struct {
 	PageIndex int
-	PageSize int
+	PageSize  int
 }
 
 func (p *Pagination) GetOffset() int {
@@ -120,7 +120,7 @@ func ConvResponseStruct(data, rsp interface{}) error {
 	// 用 Elem func 取得 data slice
 	dataVale := reflect.ValueOf(data).Elem()
 	// 初始化 rspType 型態的 slice
-	rspVale :=  reflect.MakeSlice(rspType.Elem(), dataVale.Len(), dataVale.Cap())
+	rspVale := reflect.MakeSlice(rspType.Elem(), dataVale.Len(), dataVale.Cap())
 
 	for i := 0; i < dataVale.Len(); i++ {
 		// 先取得資料的 Addr 的 Interface 值，才可正常執行 Elem func
@@ -188,5 +188,3 @@ func reflectSetValue(rspType reflect.Type, rspValue, dataValue reflect.Value) {
 		rspValue.Set(reflect.ValueOf(dataValue.Interface().(time.Time)))
 	}
 }
-
-

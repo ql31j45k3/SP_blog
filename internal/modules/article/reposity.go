@@ -125,7 +125,7 @@ func (uca *useCaseArticle) search(cond *searchCond) ([]Article, error) {
 	values = append(values, tools.StatusEnable)
 
 	keywordSqlStr := " AND (`articles`.`title` LIKE ? OR `articles`.`desc` LIKE ? OR `articles`.`content` LIKE ?)"
-	keywordValues := []string{"%"+cond.keyword+"%", "%"+cond.keyword+"%", "%"+cond.keyword+"%"}
+	keywordValues := []string{"%" + cond.keyword + "%", "%" + cond.keyword + "%", "%" + cond.keyword + "%"}
 	values = tools.SQLRawAppend(tools.IsNotEmpty(cond.keyword), &sql, keywordSqlStr, values, keywordValues)
 
 	tagsSqlStr := tools.SQLArrayToString(cond.tags, "`article_labels`.`tag`")

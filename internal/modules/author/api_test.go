@@ -137,7 +137,7 @@ func testGetConditionsID(t *testing.T, ID string) {
 	urlValues := url.Values{}
 	urlValues.Add("id", ID)
 
-	url, err := url.Parse(authorURL+"?" + urlValues.Encode())
+	url, err := url.Parse(authorURL + "?" + urlValues.Encode())
 	if err != nil {
 		t.Error(err)
 		return
@@ -160,7 +160,7 @@ func testGetConditionsTitle(t *testing.T) {
 	urlValues := url.Values{}
 	urlValues.Add("title", "title unit test update")
 
-	url, err := url.Parse(authorURL+"?" + urlValues.Encode())
+	url, err := url.Parse(authorURL + "?" + urlValues.Encode())
 	if err != nil {
 		t.Error(err)
 		return
@@ -183,7 +183,7 @@ func testGetConditionsContent(t *testing.T) {
 	urlValues := url.Values{}
 	urlValues.Add("content", "content unit test update")
 
-	url, err := url.Parse(authorURL+"?" + urlValues.Encode())
+	url, err := url.Parse(authorURL + "?" + urlValues.Encode())
 	if err != nil {
 		t.Error(err)
 		return
@@ -206,7 +206,7 @@ func testGetConditionsStatus(t *testing.T) {
 	urlValues := url.Values{}
 	urlValues.Add("status", "1")
 
-	url, err := url.Parse(authorURL+"?" + urlValues.Encode())
+	url, err := url.Parse(authorURL + "?" + urlValues.Encode())
 	if err != nil {
 		t.Error(err)
 		return

@@ -10,7 +10,7 @@ import (
 
 const (
 	ArticleStatusTag = "articleStatus"
-	AuthorStatusTag = "authorStatus"
+	AuthorStatusTag  = "authorStatus"
 
 	statusEnable  = 1
 	statusDisable = 0
@@ -22,7 +22,7 @@ var (
 	locale = ""
 
 	ArticleStatusFunc articleStatusFunc
-	AuthorStatusFunc authorStatusFunc
+	AuthorStatusFunc  authorStatusFunc
 )
 
 func Start() {
