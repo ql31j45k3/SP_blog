@@ -3,27 +3,19 @@ package author
 import (
 	"bytes"
 	"encoding/json"
-	"io"
-	"io/ioutil"
+	"github.com/ql31j45k3/SP_blog/internal/utils/testtools"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
-	"os"
-	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
-	"github.com/ql31j45k3/SP_blog/configs"
 	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var (
@@ -32,39 +24,19 @@ var (
 	translator ut.Translator
 
 	debug bool
+
+	authorURL string
 )
 
 func start() {
 	debug = false
+	authorURL = "/v1/author"
 
-	path, err2 := os.Getwd()
-	if err2 != nil {
-		panic(err2)
-	}
-	path = path[0:strings.Index(path, "SP_blog")] + "SP_blog"
-
-	configs.Start(path)
-	validatorFunc.Start()
-
-	r = gin.Default()
-
-	var err error
-	db, err = gorm.Open(mysql.Open(configs.ConfigDB.GetDSN()), &gorm.Config{
-		Logger: logger.Default.LogMode(configs.ConfigGorm.GetLogMode()),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	locale := configs.ConfigValidator.GetLocale()
-	uni := ut.New(zh.New())
-	trans, _ := uni.GetTranslator(locale)
-	// 設定語言地區
-	validatorFunc.SetLocale(locale)
+	r, db, translator = testtools.Start()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		// 註冊翻譯器
-		err := zhTranslations.RegisterDefaultTranslations(v, trans)
+		err := zhTranslations.RegisterDefaultTranslations(v, translator)
 		if err != nil {
 			panic(err)
 		}
@@ -79,27 +51,9 @@ func start() {
 		}
 
 		// 根據提供的標記註冊翻譯
-		v.RegisterTranslation(validatorFunc.AuthorStatusTag, trans,
+		v.RegisterTranslation(validatorFunc.AuthorStatusTag, translator,
 			validatorFunc.AuthorStatusFunc.Translations, validatorFunc.AuthorStatusFunc.Translation)
 	}
-	translator = trans
-}
-
-// httptestRequest 根據特定請求 URL 和參數 param
-func httptestRequest(r *gin.Engine, method, uri string, reader io.Reader) (int, []byte, error) {
-	req := httptest.NewRequest(method, uri, reader)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-
-	result := w.Result()
-	defer result.Body.Close()
-
-	body, err := ioutil.ReadAll(result.Body)
-	if err != nil {
-		return 0, nil, err
-	}
-
-	return w.Code, body, nil
 }
 
 func TestRegisterRouter(t *testing.T) {
@@ -129,7 +83,7 @@ func testPost(t *testing.T) string {
 		return ""
 	}
 
-	httpStatus, body, err2 := httptestRequest(r, http.MethodPost, "/v1/author", bytes.NewReader(jsonByte))
+	httpStatus, body, err2 := testtools.HttptestRequest(r, http.MethodPost, authorURL, bytes.NewReader(jsonByte))
 	if err2 != nil {
 		t.Error(err2)
 		return ""
@@ -156,7 +110,7 @@ func testUpdateID(t *testing.T, ID string) {
 		return
 	}
 
-	httpStatus, _, err2 := httptestRequest(r, http.MethodPut, "/v1/author/"+ID, bytes.NewReader(jsonByte))
+	httpStatus, _, err2 := testtools.HttptestRequest(r, http.MethodPut, authorURL+"/"+ID, bytes.NewReader(jsonByte))
 	if err2 != nil {
 		t.Error(err2)
 		return
@@ -166,7 +120,7 @@ func testUpdateID(t *testing.T, ID string) {
 }
 
 func testGetID(t *testing.T, ID string) {
-	httpStatus, body, err2 := httptestRequest(r, http.MethodGet, "/v1/author/"+ID, nil)
+	httpStatus, body, err2 := testtools.HttptestRequest(r, http.MethodGet, authorURL+"/"+ID, nil)
 	if err2 != nil {
 		t.Error(err2)
 		return
@@ -183,13 +137,13 @@ func testGetConditionsID(t *testing.T, ID string) {
 	urlValues := url.Values{}
 	urlValues.Add("id", ID)
 
-	url, err := url.Parse("/v1/author?" + urlValues.Encode())
+	url, err := url.Parse(authorURL+"?" + urlValues.Encode())
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	httpStatus, body, err2 := httptestRequest(r, http.MethodGet, url.String(), nil)
+	httpStatus, body, err2 := testtools.HttptestRequest(r, http.MethodGet, url.String(), nil)
 	if err2 != nil {
 		t.Error(err2)
 		return
@@ -206,13 +160,13 @@ func testGetConditionsTitle(t *testing.T) {
 	urlValues := url.Values{}
 	urlValues.Add("title", "title unit test update")
 
-	url, err := url.Parse("/v1/author?" + urlValues.Encode())
+	url, err := url.Parse(authorURL+"?" + urlValues.Encode())
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	httpStatus, body, err2 := httptestRequest(r, http.MethodGet, url.String(), nil)
+	httpStatus, body, err2 := testtools.HttptestRequest(r, http.MethodGet, url.String(), nil)
 	if err2 != nil {
 		t.Error(err2)
 		return
@@ -229,13 +183,13 @@ func testGetConditionsContent(t *testing.T) {
 	urlValues := url.Values{}
 	urlValues.Add("content", "content unit test update")
 
-	url, err := url.Parse("/v1/author?" + urlValues.Encode())
+	url, err := url.Parse(authorURL+"?" + urlValues.Encode())
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	httpStatus, body, err2 := httptestRequest(r, http.MethodGet, url.String(), nil)
+	httpStatus, body, err2 := testtools.HttptestRequest(r, http.MethodGet, url.String(), nil)
 	if err2 != nil {
 		t.Error(err2)
 		return
@@ -252,13 +206,13 @@ func testGetConditionsStatus(t *testing.T) {
 	urlValues := url.Values{}
 	urlValues.Add("status", "1")
 
-	url, err := url.Parse("/v1/author?" + urlValues.Encode())
+	url, err := url.Parse(authorURL+"?" + urlValues.Encode())
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	httpStatus, body, err2 := httptestRequest(r, http.MethodGet, url.String(), nil)
+	httpStatus, body, err2 := testtools.HttptestRequest(r, http.MethodGet, url.String(), nil)
 	if err2 != nil {
 		t.Error(err2)
 		return
