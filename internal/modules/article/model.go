@@ -123,7 +123,7 @@ type ArticleLabel struct {
 	gorm.Model
 
 	ArticlesID uint
-	Tag string `binding:"required,min=1,max=100"`
+	Tag        string `binding:"required,min=1,max=100"`
 }
 
 type ResponseArticle struct {
@@ -154,7 +154,7 @@ type searchCond struct {
 	tools.Pagination
 
 	keyword string
-	tags []string
+	tags    []string
 }
 
 func withSearchPageIndex(pageIndex string) searchCondOption {
