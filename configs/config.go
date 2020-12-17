@@ -3,6 +3,7 @@ package configs
 import (
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"os"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -53,5 +54,9 @@ func getPath(sourcePath string) string {
 		panic(err)
 	}
 
-	return path + "/configs"
+	// "/" 切割字串陣列，e.g. 利用陣列 -2 等於往上資料夾兩層
+	tempPath := strings.Split(path, "/")
+	tempPath = tempPath[:len(tempPath)]
+
+	return strings.Join(tempPath, "/") + "/configs"
 }
