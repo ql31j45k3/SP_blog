@@ -87,7 +87,7 @@ func (uca *useCaseArticle) GetID() (ResponseArticle, error) {
 		return responseArticle, err
 	}
 
-	if err := tools.ConvResponseStruct(&article, &responseArticle); err != nil {
+	if err := tools.ConvSourceToData(&article, &responseArticle); err != nil {
 		return responseArticle, err
 	}
 
@@ -115,7 +115,7 @@ func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
 		return responseArticles, err
 	}
 
-	if err := tools.ConvResponseStruct(&articles, &responseArticles); err != nil {
+	if err := tools.ConvSourceToData(&articles, &responseArticles); err != nil {
 		return responseArticles, err
 	}
 
@@ -140,7 +140,7 @@ func (uca *useCaseArticle) Search() ([]ResponseArticle, error) {
 		return responseArticles, err
 	}
 
-	if err := tools.ConvResponseStruct(&articles, &responseArticles); err != nil {
+	if err := tools.ConvSourceToData(&articles, &responseArticles); err != nil {
 		return responseArticles, err
 	}
 
