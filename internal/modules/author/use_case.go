@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func newUseCaseAuthor(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCaseAuthorer {
+func newUseCaseAuthor(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCaseAuthorEr {
 	return &useCaseAuthor{
 		c:     c,
 		db:    db,
@@ -16,7 +16,7 @@ func newUseCaseAuthor(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCaseA
 	}
 }
 
-type UseCaseAuthorer interface {
+type UseCaseAuthorEr interface {
 	Create() (uint, error)
 	UpdateID() error
 	GetID() (ResponseAuthor, error)
