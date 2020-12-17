@@ -84,7 +84,7 @@ func (uca *useCaseAuthor) GetID() (ResponseAuthor, error) {
 		return responseAuthor, err
 	}
 
-	if err := tools.ConvResponseStruct(&author, &responseAuthor); err != nil {
+	if err := tools.ConvSourceToData(&author, &responseAuthor); err != nil {
 		return responseAuthor, err
 	}
 
@@ -111,7 +111,7 @@ func (uca *useCaseAuthor) Get() ([]ResponseAuthor, error) {
 		return responseAuthors, err
 	}
 
-	if err := tools.ConvResponseStruct(&authors, &responseAuthors); err != nil {
+	if err := tools.ConvSourceToData(&authors, &responseAuthors); err != nil {
 		return responseAuthors, err
 	}
 
