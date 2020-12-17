@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	ConfigHost *configHost
-	ConfigDB   *configDB
-	ConfigGin  *configGin
-	ConfigGorm *configGorm
+	Host *configHost
+	DB   *configDB
+	Gin  *configGin
+	Gorm *configGorm
 
-	ConfigValidator *configValidator
+	Validator *configValidator
 )
 
 // Start 開始 Config 設定參數與讀取檔案並轉成 struct
@@ -29,15 +29,15 @@ func Start(sourcePath string) {
 		panic(err)
 	}
 
-	ConfigHost = newConfigHost()
-	ConfigDB = newConfigDB()
-	ConfigGin = newConfigGin()
-	ConfigGorm = newConfigGorm()
-	ConfigValidator = newConfigValidator()
+	Host = newConfigHost()
+	DB = newConfigDB()
+	Gin = newConfigGin()
+	Gorm = newConfigGorm()
+	Validator = newConfigValidator()
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		ConfigHost.reload()
+		Host.reload()
 	})
 }
 

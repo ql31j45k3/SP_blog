@@ -33,9 +33,9 @@ func Start() {
 
 	container.Invoke(func(r *gin.Engine) {
 		// 控制調試日誌 log
-		gin.SetMode(configs.ConfigGin.GetMode())
+		gin.SetMode(configs.Gin.GetMode())
 
-		r.Run(configs.ConfigHost.GetSPBlogApisHost())
+		r.Run(configs.Host.GetSPBlogApisHost())
 	})
 }
 
@@ -61,14 +61,14 @@ func (cp *containerProvide) gin() *gin.Engine {
 
 // gorm 建立 gorm.DB 設定，初始化 session 並無實際連線
 func (cp *containerProvide) gorm() (*gorm.DB, error) {
-	return gorm.Open(mysql.Open(configs.ConfigDB.GetDSN()), &gorm.Config{
-		Logger: logger.Default.LogMode(configs.ConfigGorm.GetLogMode()),
+	return gorm.Open(mysql.Open(configs.DB.GetDSN()), &gorm.Config{
+		Logger: logger.Default.LogMode(configs.Gorm.GetLogMode()),
 	})
 }
 
 // translator 建立 Translator 設定翻譯語言類型、可自行擴充驗證函式與翻譯訊息 func
 func (cp *containerProvide) translator() ut.Translator {
-	locale := configs.ConfigValidator.GetLocale()
+	locale := configs.Validator.GetLocale()
 	uni := ut.New(zh.New())
 	trans, _ := uni.GetTranslator(locale)
 	// 設定語言地區
