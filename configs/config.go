@@ -3,18 +3,19 @@ package configs
 import (
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"os"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
 var (
-	ConfigHost *configHost
-	ConfigDB   *configDB
-	ConfigGin  *configGin
-	ConfigGorm *configGorm
+	Host *configHost
+	DB   *configDB
+	Gin  *configGin
+	Gorm *configGorm
 
-	ConfigValidator *configValidator
+	Validator *configValidator
 )
 
 // Start 開始 Config 設定參數與讀取檔案並轉成 struct
@@ -28,15 +29,15 @@ func Start(sourcePath string) {
 		panic(err)
 	}
 
-	ConfigHost = newConfigHost()
-	ConfigDB = newConfigDB()
-	ConfigGin = newConfigGin()
-	ConfigGorm = newConfigGorm()
-	ConfigValidator = newConfigValidator()
+	Host = newConfigHost()
+	DB = newConfigDB()
+	Gin = newConfigGin()
+	Gorm = newConfigGorm()
+	Validator = newConfigValidator()
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		ConfigHost.reload()
+		Host.reload()
 	})
 }
 
@@ -53,5 +54,9 @@ func getPath(sourcePath string) string {
 		panic(err)
 	}
 
-	return path + "/configs"
+	// "/" 切割字串陣列，e.g. 利用陣列 -2 等於往上資料夾兩層
+	tempPath := strings.Split(path, "/")
+	tempPath = tempPath[:len(tempPath)]
+
+	return strings.Join(tempPath, "/") + "/configs"
 }
