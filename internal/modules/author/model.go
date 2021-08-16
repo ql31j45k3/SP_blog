@@ -1,10 +1,11 @@
 package author
 
 import (
-	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
-	"gorm.io/gorm"
 	"strconv"
 	"strings"
+
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
+	"gorm.io/gorm"
 )
 
 type authorCondOption func(*authorCond) error
@@ -111,7 +112,7 @@ type Author struct {
 	Status int `binding:"authorStatus"`
 }
 
-type ResponseAuthor struct {
+type responseAuthor struct {
 	_ struct{}
 
 	tools.Model

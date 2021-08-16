@@ -20,8 +20,8 @@ func newUseCaseAuthor(c *gin.Context, db *gorm.DB, trans ut.Translator) useCaseA
 type useCaseAuthor interface {
 	Create() (uint, error)
 	UpdateID() error
-	GetID() (ResponseAuthor, error)
-	Get() ([]ResponseAuthor, error)
+	GetID() (responseAuthor, error)
+	Get() ([]responseAuthor, error)
 }
 
 type author struct {
@@ -70,8 +70,8 @@ func (a *author) UpdateID() error {
 	return nil
 }
 
-func (a *author) GetID() (ResponseAuthor, error) {
-	var responseAuthor ResponseAuthor
+func (a *author) GetID() (responseAuthor, error) {
+	var responseAuthor responseAuthor
 
 	ID := a.c.Param("id")
 
@@ -94,8 +94,8 @@ func (a *author) GetID() (ResponseAuthor, error) {
 	return responseAuthor, nil
 }
 
-func (a *author) Get() ([]ResponseAuthor, error) {
-	var responseAuthors []ResponseAuthor
+func (a *author) Get() ([]responseAuthor, error) {
+	var responseAuthors []responseAuthor
 
 	cond, err := newAuthorCond(withAuthorPageIndex(a.c.Query("pageIndex")),
 		withAuthorPageSize(a.c.Query("pageSize")),
