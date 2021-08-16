@@ -24,14 +24,14 @@ func Start() (*gin.Engine, *gorm.DB, ut.Translator) {
 	r := gin.Default()
 
 	var err error
-	db, err := gorm.Open(mysql.Open(configs.ConfigDB.GetDSN()), &gorm.Config{
-		Logger: logger.Default.LogMode(configs.ConfigGorm.GetLogMode()),
+	db, err := gorm.Open(mysql.Open(configs.DB.GetDSN()), &gorm.Config{
+		Logger: logger.Default.LogMode(configs.Gorm.GetLogMode()),
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	locale := configs.ConfigValidator.GetLocale()
+	locale := configs.Validator.GetLocale()
 	uni := ut.New(zh.New())
 	trans, _ := uni.GetTranslator(locale)
 	// 設定語言地區
