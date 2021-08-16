@@ -36,7 +36,7 @@ type article struct {
 }
 
 func (a *article) Create() (uint, error) {
-	var article Article
+	var article articles
 	if err := tools.BindJSON(a.c, a.trans, &article); err != nil {
 		return 0, err
 	}
@@ -51,7 +51,7 @@ func (a *article) Create() (uint, error) {
 }
 
 func (a *article) UpdateID() error {
-	var article Article
+	var article articles
 	if err := tools.BindJSON(a.c, a.trans, &article); err != nil {
 		return err
 	}

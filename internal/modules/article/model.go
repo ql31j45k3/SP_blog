@@ -109,7 +109,7 @@ func withArticleStatus(status string) articleCondOption {
 	}
 }
 
-type Article struct {
+type articles struct {
 	_ struct{}
 
 	gorm.Model

@@ -6,7 +6,7 @@ import (
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 )
 
-func (a *article) create(article Article) (uint, error) {
+func (a *article) create(article articles) (uint, error) {
 	tx := a.db.Begin()
 
 	result := a.db.Create(&article)
@@ -29,10 +29,10 @@ func (a *article) create(article Article) (uint, error) {
 	return article.ID, nil
 }
 
-func (a *article) updateID(cond *articleCond, article Article) error {
+func (a *article) updateID(cond *articleCond, article articles) error {
 	tx := a.db.Begin()
 
-	result := a.db.Model(Article{}).Where("`id` = ?", cond.ID).
+	result := a.db.Model(articles{}).Where("`id` = ?", cond.ID).
 		Updates(map[string]interface{}{
 			"title":   article.Title,
 			"desc":    article.Desc,
@@ -76,8 +76,8 @@ func (a *article) deleteLabel(articlesID uint) error {
 	return a.db.Where("`articles_id` = ?", articlesID).Delete(ArticleLabel{}).Error
 }
 
-func (a *article) getID(cond *articleCond) (Article, error) {
-	var article Article
+func (a *article) getID(cond *articleCond) (articles, error) {
+	var article articles
 
 	result := a.db.First(&article, cond.ID)
 	if result.Error != nil {
@@ -87,8 +87,8 @@ func (a *article) getID(cond *articleCond) (Article, error) {
 	return article, nil
 }
 
-func (a *article) get(cond *articleCond) ([]Article, error) {
-	var articles []Article
+func (a *article) get(cond *articleCond) ([]articles, error) {
+	var articles []articles
 
 	a.db = tools.SQLAppend(a.db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
 
@@ -108,7 +108,7 @@ func (a *article) get(cond *articleCond) ([]Article, error) {
 	return articles, nil
 }
 
-func (a *article) search(cond *searchCond) ([]Article, error) {
+func (a *article) search(cond *searchCond) ([]articles, error) {
 	var sql strings.Builder
 	var values []interface{}
 
@@ -135,7 +135,7 @@ func (a *article) search(cond *searchCond) ([]Article, error) {
 	sql.WriteString(" LIMIT ? OFFSET ?")
 	values = append(values, cond.GetRowCount(), cond.GetOffset())
 
-	var articles []Article
+	var articles []articles
 	result := a.db.Raw(sql.String(), values...).Scan(&articles)
 	if result.Error != nil {
 		return articles, result.Error
