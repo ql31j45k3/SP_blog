@@ -22,6 +22,8 @@ func newConfigDB() *configDB {
 }
 
 type configDB struct {
+	_ struct{}
+
 	host string
 	port string
 

@@ -66,6 +66,13 @@ func convFindFieldAndSetFunc(sourceData, resultData interface{}) {
 // findFieldAndSet
 // 用遞迴方式處理巢狀 struct 的資料結構
 func findFieldAndSet(resultDataType reflect.Type, resultDataValue, sourceDataValue reflect.Value) {
+	if resultDataType.Kind() != reflect.Struct {
+		if resultDataValue.CanSet() && sourceDataValue.CanSet() {
+			reflectSetValue(resultDataType, resultDataValue, sourceDataValue)
+		}
+		return
+	}
+
 	for i := 0; i < resultDataType.NumField(); i++ {
 		fieldName := resultDataType.Field(i).Name
 		resultDataType2 := resultDataType.Field(i).Type
@@ -83,27 +90,48 @@ func findFieldAndSet(resultDataType reflect.Type, resultDataValue, sourceDataVal
 		}
 
 		// 先判斷是否可更改資料，CanSet == false 時異動資料會造成 panic
-		if resultDataValue2.CanSet() {
+		if resultDataValue2.CanSet() && sourceDataValue2.CanSet() {
 			reflectSetValue(resultDataType2, resultDataValue2, sourceDataValue2)
+		}
+
+		if resultDataType.Field(i).Type.Kind() == reflect.Slice {
+			rspVale2 := reflect.MakeSlice(resultDataType2, sourceDataValue2.Len(), sourceDataValue2.Cap())
+
+			for j := 0; j < sourceDataValue2.Len(); j++ {
+				// 先取得資料的 Addr 的 Interface 值，才可正常執行 Elem func
+				convFindFieldAndSetFunc(sourceDataValue2.Index(j).Addr().Interface(), rspVale2.Index(j).Addr().Interface())
+			}
+
+			resultDataValue2.Set(reflect.ValueOf(rspVale2.Interface()))
 		}
 	}
 }
 
 // reflectSetValue 取得 sourceDataValue2 值並賦植給 resultDataValue2
-// 目前判斷型態只有 string、Uint、Int、Int64、Float64、time.Time
-// TODO: 增加其它類型的 set 實作
 func reflectSetValue(resultDataType reflect.Type, resultDataValue2, sourceDataValue2 reflect.Value) {
 	kind := resultDataType.Kind()
 
 	switch kind {
 	case reflect.String:
 		resultDataValue2.SetString(sourceDataValue2.String())
-	case reflect.Uint:
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		resultDataValue2.SetUint(sourceDataValue2.Uint())
-	case reflect.Int, reflect.Int64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		resultDataValue2.SetInt(sourceDataValue2.Int())
-	case reflect.Float64:
+	case reflect.Float32, reflect.Float64:
 		resultDataValue2.SetFloat(sourceDataValue2.Float())
+	case reflect.Bool:
+		resultDataValue2.SetBool(sourceDataValue2.Bool())
+	case reflect.Map:
+		tempMap := reflect.MakeMap(resultDataType)
+		it := sourceDataValue2.MapRange()
+		for it.Next() {
+			tempMap.SetMapIndex(it.Key(), it.Value())
+		}
+
+		resultDataValue2.Set(reflect.ValueOf(tempMap.Interface()))
+	case reflect.Array:
+		resultDataValue2.Set(reflect.ValueOf(sourceDataValue2.Interface()))
 	}
 
 	if resultDataType.String() == "time.Time" {

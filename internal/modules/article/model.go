@@ -23,6 +23,8 @@ func newArticleCond(opts ...articleCondOption) (*articleCond, error) {
 }
 
 type articleCond struct {
+	_ struct{}
+
 	tools.Pagination
 
 	ID uint
@@ -108,6 +110,8 @@ func withArticleStatus(status string) articleCondOption {
 }
 
 type Article struct {
+	_ struct{}
+
 	gorm.Model
 
 	Title   string `binding:"required,min=1,max=100"`
@@ -120,6 +124,8 @@ type Article struct {
 }
 
 type ArticleLabel struct {
+	_ struct{}
+
 	gorm.Model
 
 	ArticlesID uint
@@ -127,6 +133,8 @@ type ArticleLabel struct {
 }
 
 type ResponseArticle struct {
+	_ struct{}
+
 	tools.Model
 
 	Title   string `json:"title"`
@@ -151,6 +159,8 @@ func newSearchCond(opts ...searchCondOption) (*searchCond, error) {
 }
 
 type searchCond struct {
+	_ struct{}
+
 	tools.Pagination
 
 	keyword string

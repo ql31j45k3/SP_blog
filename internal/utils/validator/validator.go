@@ -46,6 +46,7 @@ func RegisterTagNameFunc(fld reflect.StructField) string {
 }
 
 type articleStatusFunc struct {
+	_ struct{}
 }
 
 // Validator 提供驗證 ArticleStatus 資料正確性 func
@@ -75,6 +76,7 @@ func (asf *articleStatusFunc) Translation(ut ut.Translator, fe validator.FieldEr
 }
 
 type authorStatusFunc struct {
+	_ struct{}
 }
 
 // Validator 提供驗證 AuthorStatus 資料正確性 func

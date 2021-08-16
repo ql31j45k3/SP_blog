@@ -20,6 +20,8 @@ func newConfigGin() *configGin {
 }
 
 type configGin struct {
+	_ struct{}
+
 	mode string
 }
 

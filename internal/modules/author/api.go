@@ -26,6 +26,8 @@ func newAuthorRouter(db *gorm.DB, trans ut.Translator) authorRouter {
 }
 
 type authorRouter struct {
+	_ struct{}
+
 	db *gorm.DB
 
 	trans ut.Translator

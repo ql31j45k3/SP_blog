@@ -52,6 +52,7 @@ func buildContainer() *dig.Container {
 }
 
 type containerProvide struct {
+	_ struct{}
 }
 
 // gin 建立 gin Engine，設定 middleware

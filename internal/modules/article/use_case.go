@@ -27,6 +27,8 @@ type UseCaseArticleEr interface {
 }
 
 type useCaseArticle struct {
+	_ struct{}
+
 	c  *gin.Context
 	db *gorm.DB
 
