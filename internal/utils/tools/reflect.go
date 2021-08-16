@@ -90,7 +90,7 @@ func findFieldAndSet(resultDataType reflect.Type, resultDataValue, sourceDataVal
 		}
 
 		// 先判斷是否可更改資料，CanSet == false 時異動資料會造成 panic
-		if resultDataValue2.CanSet() {
+		if resultDataValue2.CanSet() && sourceDataValue2.CanSet() {
 			reflectSetValue(resultDataType2, resultDataValue2, sourceDataValue2)
 		}
 	}
