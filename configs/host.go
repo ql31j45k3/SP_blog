@@ -11,6 +11,8 @@ func newConfigHost() *configHost {
 }
 
 type configHost struct {
+	_ struct{}
+
 	spBlogApisHost string
 }
 

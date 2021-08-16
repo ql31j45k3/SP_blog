@@ -22,6 +22,8 @@ func newAuthorCond(opts ...authorCondOption) (*authorCond, error) {
 }
 
 type authorCond struct {
+	_ struct{}
+
 	tools.Pagination
 
 	ID uint
@@ -99,6 +101,8 @@ func withAuthorStatus(status string) authorCondOption {
 }
 
 type Author struct {
+	_ struct{}
+
 	gorm.Model
 
 	Title   string `binding:"required,min=1,max=100"`
@@ -108,6 +112,8 @@ type Author struct {
 }
 
 type ResponseAuthor struct {
+	_ struct{}
+
 	tools.Model
 
 	Title   string `json:"title"`

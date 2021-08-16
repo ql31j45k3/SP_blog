@@ -24,6 +24,8 @@ type UseCaseAuthorEr interface {
 }
 
 type useCaseAuthor struct {
+	_ struct{}
+
 	c  *gin.Context
 	db *gorm.DB
 

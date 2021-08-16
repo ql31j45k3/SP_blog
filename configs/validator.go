@@ -14,6 +14,8 @@ func newConfigValidator() *configValidator {
 }
 
 type configValidator struct {
+	_ struct{}
+
 	locale string
 }
 

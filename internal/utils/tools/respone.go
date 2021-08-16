@@ -42,6 +42,8 @@ func NewResponseError(messages []string) ResponseError {
 }
 
 type ResponseError struct {
+	_ struct{}
+
 	Message []string `json:"messages"`
 }
 
@@ -56,6 +58,8 @@ func IsErrRecordNotFound(c *gin.Context, err error) {
 
 // Model 對外回傳基礎欄位
 type Model struct {
+	_ struct{}
+
 	ID        uint      `json:"id"`
 	CreatedAt time.Time `json:"created-at"`
 	UpdatedAt time.Time `json:"updated-at"`
@@ -63,6 +67,8 @@ type Model struct {
 
 // Pagination 查詢分頁欄位
 type Pagination struct {
+	_ struct{}
+
 	PageIndex int
 	PageSize  int
 }

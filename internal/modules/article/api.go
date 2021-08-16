@@ -29,6 +29,8 @@ func newArticleRouter(db *gorm.DB, trans ut.Translator) articleRouter {
 }
 
 type articleRouter struct {
+	_ struct{}
+
 	db *gorm.DB
 
 	trans ut.Translator

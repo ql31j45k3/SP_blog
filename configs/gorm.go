@@ -15,6 +15,8 @@ func newConfigGorm() *configGorm {
 }
 
 type configGorm struct {
+	_ struct{}
+
 	mode string
 }
 
