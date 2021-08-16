@@ -1,14 +1,15 @@
 package article
 
 import (
-	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"strings"
+
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 )
 
-func (uca *useCaseArticle) create(article Article) (uint, error) {
-	tx := uca.db.Begin()
+func (a *article) create(article Article) (uint, error) {
+	tx := a.db.Begin()
 
-	result := uca.db.Create(&article)
+	result := a.db.Create(&article)
 	if result.Error != nil {
 		tx.Rollback()
 		return 0, result.Error
@@ -18,7 +19,7 @@ func (uca *useCaseArticle) create(article Article) (uint, error) {
 		articleLabels := article.ArticleLabel[i]
 		articleLabels.ArticlesID = article.ID
 
-		if _, err := uca.createLabel(articleLabels); err != nil {
+		if _, err := a.createLabel(articleLabels); err != nil {
 			tx.Rollback()
 			return 0, err
 		}
@@ -28,10 +29,10 @@ func (uca *useCaseArticle) create(article Article) (uint, error) {
 	return article.ID, nil
 }
 
-func (uca *useCaseArticle) updateID(cond *articleCond, article Article) error {
-	tx := uca.db.Begin()
+func (a *article) updateID(cond *articleCond, article Article) error {
+	tx := a.db.Begin()
 
-	result := uca.db.Model(Article{}).Where("`id` = ?", cond.ID).
+	result := a.db.Model(Article{}).Where("`id` = ?", cond.ID).
 		Updates(map[string]interface{}{
 			"title":   article.Title,
 			"desc":    article.Desc,
@@ -43,7 +44,7 @@ func (uca *useCaseArticle) updateID(cond *articleCond, article Article) error {
 		return result.Error
 	}
 
-	if err := uca.deleteLabel(cond.ID); err != nil {
+	if err := a.deleteLabel(cond.ID); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -52,7 +53,7 @@ func (uca *useCaseArticle) updateID(cond *articleCond, article Article) error {
 		articleLabels := article.ArticleLabel[i]
 		articleLabels.ArticlesID = cond.ID
 
-		if _, err := uca.createLabel(articleLabels); err != nil {
+		if _, err := a.createLabel(articleLabels); err != nil {
 			tx.Rollback()
 			return err
 		}
@@ -62,8 +63,8 @@ func (uca *useCaseArticle) updateID(cond *articleCond, article Article) error {
 	return nil
 }
 
-func (uca *useCaseArticle) createLabel(articleLabel ArticleLabel) (uint, error) {
-	result := uca.db.Create(&articleLabel)
+func (a *article) createLabel(articleLabel ArticleLabel) (uint, error) {
+	result := a.db.Create(&articleLabel)
 	if result.Error != nil {
 		return 0, result.Error
 	}
@@ -71,14 +72,14 @@ func (uca *useCaseArticle) createLabel(articleLabel ArticleLabel) (uint, error) 
 	return articleLabel.ID, nil
 }
 
-func (uca *useCaseArticle) deleteLabel(articlesID uint) error {
-	return uca.db.Where("`articles_id` = ?", articlesID).Delete(ArticleLabel{}).Error
+func (a *article) deleteLabel(articlesID uint) error {
+	return a.db.Where("`articles_id` = ?", articlesID).Delete(ArticleLabel{}).Error
 }
 
-func (uca *useCaseArticle) getID(cond *articleCond) (Article, error) {
+func (a *article) getID(cond *articleCond) (Article, error) {
 	var article Article
 
-	result := uca.db.First(&article, cond.ID)
+	result := a.db.First(&article, cond.ID)
 	if result.Error != nil {
 		return article, result.Error
 	}
@@ -86,20 +87,20 @@ func (uca *useCaseArticle) getID(cond *articleCond) (Article, error) {
 	return article, nil
 }
 
-func (uca *useCaseArticle) get(cond *articleCond) ([]Article, error) {
+func (a *article) get(cond *articleCond) ([]Article, error) {
 	var articles []Article
 
-	uca.db = tools.SQLAppend(uca.db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
+	a.db = tools.SQLAppend(a.db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
 
-	uca.db = tools.SQLAppend(uca.db, tools.IsNotEmpty(cond.title), "`title` like ?", "%"+cond.title+"%")
-	uca.db = tools.SQLAppend(uca.db, tools.IsNotEmpty(cond.desc), "`desc` like ?", "%"+cond.desc+"%")
-	uca.db = tools.SQLAppend(uca.db, tools.IsNotEmpty(cond.content), "`content` like ?", "%"+cond.content+"%")
+	a.db = tools.SQLAppend(a.db, tools.IsNotEmpty(cond.title), "`title` like ?", "%"+cond.title+"%")
+	a.db = tools.SQLAppend(a.db, tools.IsNotEmpty(cond.desc), "`desc` like ?", "%"+cond.desc+"%")
+	a.db = tools.SQLAppend(a.db, tools.IsNotEmpty(cond.content), "`content` like ?", "%"+cond.content+"%")
 
-	uca.db = tools.SQLAppend(uca.db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
+	a.db = tools.SQLAppend(a.db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
 
-	uca.db = tools.SQLPagination(uca.db, cond.GetRowCount(), cond.GetOffset())
+	a.db = tools.SQLPagination(a.db, cond.GetRowCount(), cond.GetOffset())
 
-	result := uca.db.Find(&articles)
+	result := a.db.Find(&articles)
 	if result.Error != nil {
 		return articles, result.Error
 	}
@@ -107,7 +108,7 @@ func (uca *useCaseArticle) get(cond *articleCond) ([]Article, error) {
 	return articles, nil
 }
 
-func (uca *useCaseArticle) search(cond *searchCond) ([]Article, error) {
+func (a *article) search(cond *searchCond) ([]Article, error) {
 	var sql strings.Builder
 	var values []interface{}
 
@@ -135,7 +136,7 @@ func (uca *useCaseArticle) search(cond *searchCond) ([]Article, error) {
 	values = append(values, cond.GetRowCount(), cond.GetOffset())
 
 	var articles []Article
-	result := uca.db.Raw(sql.String(), values...).Scan(&articles)
+	result := a.db.Raw(sql.String(), values...).Scan(&articles)
 	if result.Error != nil {
 		return articles, result.Error
 	}

@@ -11,7 +11,7 @@ import (
 )
 
 func newUseCaseArticle(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCaseArticleEr {
-	return &useCaseArticle{
+	return &article{
 		c:     c,
 		db:    db,
 		trans: trans,
@@ -26,7 +26,7 @@ type UseCaseArticleEr interface {
 	Search() ([]ResponseArticle, error)
 }
 
-type useCaseArticle struct {
+type article struct {
 	_ struct{}
 
 	c  *gin.Context
@@ -35,57 +35,57 @@ type useCaseArticle struct {
 	trans ut.Translator
 }
 
-func (uca *useCaseArticle) Create() (uint, error) {
+func (a *article) Create() (uint, error) {
 	var article Article
-	if err := tools.BindJSON(uca.c, uca.trans, &article); err != nil {
+	if err := tools.BindJSON(a.c, a.trans, &article); err != nil {
 		return 0, err
 	}
 
-	newRowID, err := uca.create(article)
+	newRowID, err := a.create(article)
 	if err != nil {
-		tools.IsErrRecordNotFound(uca.c, err)
+		tools.IsErrRecordNotFound(a.c, err)
 		return newRowID, err
 	}
 
 	return newRowID, nil
 }
 
-func (uca *useCaseArticle) UpdateID() error {
+func (a *article) UpdateID() error {
 	var article Article
-	if err := tools.BindJSON(uca.c, uca.trans, &article); err != nil {
+	if err := tools.BindJSON(a.c, a.trans, &article); err != nil {
 		return err
 	}
 
-	ID := uca.c.Param("id")
+	ID := a.c.Param("id")
 
 	cond, err := newArticleCond(withArticleID(ID))
 	if err != nil {
-		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
+		tools.NewReturnError(a.c, http.StatusBadRequest, err)
 		return err
 	}
 
-	if err := uca.updateID(cond, article); err != nil {
-		tools.IsErrRecordNotFound(uca.c, err)
+	if err := a.updateID(cond, article); err != nil {
+		tools.IsErrRecordNotFound(a.c, err)
 		return err
 	}
 
 	return nil
 }
 
-func (uca *useCaseArticle) GetID() (ResponseArticle, error) {
+func (a *article) GetID() (ResponseArticle, error) {
 	var responseArticle ResponseArticle
 
-	ID := uca.c.Param("id")
+	ID := a.c.Param("id")
 
 	cond, err := newArticleCond(withArticleID(ID))
 	if err != nil {
-		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
+		tools.NewReturnError(a.c, http.StatusBadRequest, err)
 		return responseArticle, err
 	}
 
-	article, err := uca.getID(cond)
+	article, err := a.getID(cond)
 	if err != nil {
-		tools.IsErrRecordNotFound(uca.c, err)
+		tools.IsErrRecordNotFound(a.c, err)
 		return responseArticle, err
 	}
 
@@ -96,24 +96,24 @@ func (uca *useCaseArticle) GetID() (ResponseArticle, error) {
 	return responseArticle, nil
 }
 
-func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
+func (a *article) Get() ([]ResponseArticle, error) {
 	var responseArticles []ResponseArticle
 
-	cond, err := newArticleCond(withArticlePageIndex(uca.c.Query("pageIndex")),
-		withArticlePageSize(uca.c.Query("pageSize")),
-		withArticleID(uca.c.Query("id")),
-		withArticleTitle(uca.c.Query("title")),
-		withArticleDesc(uca.c.Query("desc")),
-		withArticleContent(uca.c.Query("content")),
-		withArticleStatus(uca.c.Query("status")))
+	cond, err := newArticleCond(withArticlePageIndex(a.c.Query("pageIndex")),
+		withArticlePageSize(a.c.Query("pageSize")),
+		withArticleID(a.c.Query("id")),
+		withArticleTitle(a.c.Query("title")),
+		withArticleDesc(a.c.Query("desc")),
+		withArticleContent(a.c.Query("content")),
+		withArticleStatus(a.c.Query("status")))
 	if err != nil {
-		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
+		tools.NewReturnError(a.c, http.StatusBadRequest, err)
 		return responseArticles, err
 	}
 
-	articles, err := uca.get(cond)
+	articles, err := a.get(cond)
 	if err != nil {
-		tools.IsErrRecordNotFound(uca.c, err)
+		tools.IsErrRecordNotFound(a.c, err)
 		return responseArticles, err
 	}
 
@@ -124,21 +124,21 @@ func (uca *useCaseArticle) Get() ([]ResponseArticle, error) {
 	return responseArticles, nil
 }
 
-func (uca *useCaseArticle) Search() ([]ResponseArticle, error) {
+func (a *article) Search() ([]ResponseArticle, error) {
 	var responseArticles []ResponseArticle
 
-	cond, err := newSearchCond(withSearchPageIndex(uca.c.Query("pageIndex")),
-		withSearchPageSize(uca.c.Query("pageSize")),
-		withSearchKeyword(uca.c.Query("keyword")),
-		withSearchTags(uca.c.QueryArray("tags")))
+	cond, err := newSearchCond(withSearchPageIndex(a.c.Query("pageIndex")),
+		withSearchPageSize(a.c.Query("pageSize")),
+		withSearchKeyword(a.c.Query("keyword")),
+		withSearchTags(a.c.QueryArray("tags")))
 	if err != nil {
-		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
+		tools.NewReturnError(a.c, http.StatusBadRequest, err)
 		return responseArticles, err
 	}
 
-	articles, err := uca.search(cond)
+	articles, err := a.search(cond)
 	if err != nil {
-		tools.IsErrRecordNotFound(uca.c, err)
+		tools.IsErrRecordNotFound(a.c, err)
 		return responseArticles, err
 	}
 
