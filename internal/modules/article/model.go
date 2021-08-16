@@ -132,7 +132,7 @@ type ArticleLabel struct {
 	Tag        string `binding:"required,min=1,max=100"`
 }
 
-type ResponseArticle struct {
+type responseArticle struct {
 	_ struct{}
 
 	tools.Model

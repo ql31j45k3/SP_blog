@@ -21,9 +21,9 @@ func newUseCaseArticle(c *gin.Context, db *gorm.DB, trans ut.Translator) useCase
 type useCaseArticle interface {
 	Create() (uint, error)
 	UpdateID() error
-	GetID() (ResponseArticle, error)
-	Get() ([]ResponseArticle, error)
-	Search() ([]ResponseArticle, error)
+	GetID() (responseArticle, error)
+	Get() ([]responseArticle, error)
+	Search() ([]responseArticle, error)
 }
 
 type article struct {
@@ -72,8 +72,8 @@ func (a *article) UpdateID() error {
 	return nil
 }
 
-func (a *article) GetID() (ResponseArticle, error) {
-	var responseArticle ResponseArticle
+func (a *article) GetID() (responseArticle, error) {
+	var responseArticle responseArticle
 
 	ID := a.c.Param("id")
 
@@ -96,8 +96,8 @@ func (a *article) GetID() (ResponseArticle, error) {
 	return responseArticle, nil
 }
 
-func (a *article) Get() ([]ResponseArticle, error) {
-	var responseArticles []ResponseArticle
+func (a *article) Get() ([]responseArticle, error) {
+	var responseArticles []responseArticle
 
 	cond, err := newArticleCond(withArticlePageIndex(a.c.Query("pageIndex")),
 		withArticlePageSize(a.c.Query("pageSize")),
@@ -124,8 +124,8 @@ func (a *article) Get() ([]ResponseArticle, error) {
 	return responseArticles, nil
 }
 
-func (a *article) Search() ([]ResponseArticle, error) {
-	var responseArticles []ResponseArticle
+func (a *article) Search() ([]responseArticle, error) {
+	var responseArticles []responseArticle
 
 	cond, err := newSearchCond(withSearchPageIndex(a.c.Query("pageIndex")),
 		withSearchPageSize(a.c.Query("pageSize")),
