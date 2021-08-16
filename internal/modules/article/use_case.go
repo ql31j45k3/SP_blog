@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func newUseCaseArticle(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCaseArticleEr {
+func newUseCaseArticle(c *gin.Context, db *gorm.DB, trans ut.Translator) useCaseArticle {
 	return &article{
 		c:     c,
 		db:    db,
@@ -18,7 +18,7 @@ func newUseCaseArticle(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCase
 	}
 }
 
-type UseCaseArticleEr interface {
+type useCaseArticle interface {
 	Create() (uint, error)
 	UpdateID() error
 	GetID() (ResponseArticle, error)
