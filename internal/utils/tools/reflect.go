@@ -66,6 +66,13 @@ func convFindFieldAndSetFunc(sourceData, resultData interface{}) {
 // findFieldAndSet
 // 用遞迴方式處理巢狀 struct 的資料結構
 func findFieldAndSet(resultDataType reflect.Type, resultDataValue, sourceDataValue reflect.Value) {
+	if resultDataType.Kind() != reflect.Struct {
+		if resultDataValue.CanSet() && sourceDataValue.CanSet() {
+			reflectSetValue(resultDataType, resultDataValue, sourceDataValue)
+		}
+		return
+	}
+
 	for i := 0; i < resultDataType.NumField(); i++ {
 		fieldName := resultDataType.Field(i).Name
 		resultDataType2 := resultDataType.Field(i).Type
