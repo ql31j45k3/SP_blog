@@ -108,20 +108,30 @@ func findFieldAndSet(resultDataType reflect.Type, resultDataValue, sourceDataVal
 }
 
 // reflectSetValue 取得 sourceDataValue2 值並賦植給 resultDataValue2
-// 目前判斷型態只有 string、Uint、Int、Int64、Float64、time.Time
-// TODO: 增加其它類型的 set 實作
 func reflectSetValue(resultDataType reflect.Type, resultDataValue2, sourceDataValue2 reflect.Value) {
 	kind := resultDataType.Kind()
 
 	switch kind {
 	case reflect.String:
 		resultDataValue2.SetString(sourceDataValue2.String())
-	case reflect.Uint:
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		resultDataValue2.SetUint(sourceDataValue2.Uint())
-	case reflect.Int, reflect.Int64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		resultDataValue2.SetInt(sourceDataValue2.Int())
-	case reflect.Float64:
+	case reflect.Float32, reflect.Float64:
 		resultDataValue2.SetFloat(sourceDataValue2.Float())
+	case reflect.Bool:
+		resultDataValue2.SetBool(sourceDataValue2.Bool())
+	case reflect.Map:
+		tempMap := reflect.MakeMap(resultDataType)
+		it := sourceDataValue2.MapRange()
+		for it.Next() {
+			tempMap.SetMapIndex(it.Key(), it.Value())
+		}
+
+		resultDataValue2.Set(reflect.ValueOf(tempMap.Interface()))
+	case reflect.Array:
+		resultDataValue2.Set(reflect.ValueOf(sourceDataValue2.Interface()))
 	}
 
 	if resultDataType.String() == "time.Time" {
