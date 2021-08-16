@@ -93,6 +93,17 @@ func findFieldAndSet(resultDataType reflect.Type, resultDataValue, sourceDataVal
 		if resultDataValue2.CanSet() && sourceDataValue2.CanSet() {
 			reflectSetValue(resultDataType2, resultDataValue2, sourceDataValue2)
 		}
+
+		if resultDataType.Field(i).Type.Kind() == reflect.Slice {
+			rspVale2 := reflect.MakeSlice(resultDataType2, sourceDataValue2.Len(), sourceDataValue2.Cap())
+
+			for j := 0; j < sourceDataValue2.Len(); j++ {
+				// 先取得資料的 Addr 的 Interface 值，才可正常執行 Elem func
+				convFindFieldAndSetFunc(sourceDataValue2.Index(j).Addr().Interface(), rspVale2.Index(j).Addr().Interface())
+			}
+
+			resultDataValue2.Set(reflect.ValueOf(rspVale2.Interface()))
+		}
 	}
 }
 
