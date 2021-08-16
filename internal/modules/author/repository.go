@@ -2,7 +2,7 @@ package author
 
 import "github.com/ql31j45k3/SP_blog/internal/utils/tools"
 
-func (a *author) create(author Author) (uint, error) {
+func (a *author) create(author authors) (uint, error) {
 	result := a.db.Create(&author)
 	if result.Error != nil {
 		return 0, result.Error
@@ -11,8 +11,8 @@ func (a *author) create(author Author) (uint, error) {
 	return author.ID, nil
 }
 
-func (a *author) updateID(cond *authorCond, author Author) error {
-	result := a.db.Model(Author{}).Where("`id` = ?", cond.ID).
+func (a *author) updateID(cond *authorCond, author authors) error {
+	result := a.db.Model(authors{}).Where("`id` = ?", cond.ID).
 		Updates(map[string]interface{}{
 			"title":   author.Title,
 			"content": author.Content,
@@ -25,8 +25,8 @@ func (a *author) updateID(cond *authorCond, author Author) error {
 	return nil
 }
 
-func (a *author) getID(cond *authorCond) (Author, error) {
-	var author Author
+func (a *author) getID(cond *authorCond) (authors, error) {
+	var author authors
 
 	result := a.db.First(&author, cond.ID)
 	if result.Error != nil {
@@ -36,8 +36,8 @@ func (a *author) getID(cond *authorCond) (Author, error) {
 	return author, nil
 }
 
-func (a *author) get(cond *authorCond) ([]Author, error) {
-	var authors []Author
+func (a *author) get(cond *authorCond) ([]authors, error) {
+	var authors []authors
 
 	a.db = tools.SQLAppend(a.db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
 

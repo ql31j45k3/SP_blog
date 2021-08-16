@@ -34,7 +34,7 @@ type author struct {
 }
 
 func (a *author) Create() (uint, error) {
-	var author Author
+	var author authors
 	if err := tools.BindJSON(a.c, a.trans, &author); err != nil {
 		return 0, err
 	}
@@ -49,7 +49,7 @@ func (a *author) Create() (uint, error) {
 }
 
 func (a *author) UpdateID() error {
-	var author Author
+	var author authors
 	if err := tools.BindJSON(a.c, a.trans, &author); err != nil {
 		return err
 	}

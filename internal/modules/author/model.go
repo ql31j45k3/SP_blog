@@ -101,7 +101,7 @@ func withAuthorStatus(status string) authorCondOption {
 	}
 }
 
-type Author struct {
+type authors struct {
 	_ struct{}
 
 	gorm.Model
