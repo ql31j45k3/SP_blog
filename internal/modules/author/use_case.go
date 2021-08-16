@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func newUseCaseAuthor(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCaseAuthorEr {
+func newUseCaseAuthor(c *gin.Context, db *gorm.DB, trans ut.Translator) useCaseAuthor {
 	return &author{
 		c:     c,
 		db:    db,
@@ -17,7 +17,7 @@ func newUseCaseAuthor(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCaseA
 	}
 }
 
-type UseCaseAuthorEr interface {
+type useCaseAuthor interface {
 	Create() (uint, error)
 	UpdateID() error
 	GetID() (ResponseAuthor, error)
