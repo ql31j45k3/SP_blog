@@ -120,10 +120,10 @@ type articles struct {
 
 	Status int `binding:"articleStatus"`
 
-	ArticleLabel []ArticleLabel `gorm:"-"`
+	ArticleLabel []articleLabels `gorm:"-"`
 }
 
-type ArticleLabel struct {
+type articleLabels struct {
 	_ struct{}
 
 	gorm.Model

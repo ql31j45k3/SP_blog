@@ -63,7 +63,7 @@ func (a *article) updateID(cond *articleCond, article articles) error {
 	return nil
 }
 
-func (a *article) createLabel(articleLabel ArticleLabel) (uint, error) {
+func (a *article) createLabel(articleLabel articleLabels) (uint, error) {
 	result := a.db.Create(&articleLabel)
 	if result.Error != nil {
 		return 0, result.Error
@@ -73,7 +73,7 @@ func (a *article) createLabel(articleLabel ArticleLabel) (uint, error) {
 }
 
 func (a *article) deleteLabel(articlesID uint) error {
-	return a.db.Where("`articles_id` = ?", articlesID).Delete(ArticleLabel{}).Error
+	return a.db.Where("`articles_id` = ?", articlesID).Delete(articleLabels{}).Error
 }
 
 func (a *article) getID(cond *articleCond) (articles, error) {
