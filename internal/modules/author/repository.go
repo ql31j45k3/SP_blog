@@ -1,9 +1,27 @@
 package author
 
-import "github.com/ql31j45k3/SP_blog/internal/utils/tools"
+import (
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
+	"gorm.io/gorm"
+)
 
-func (a *author) create(author authors) (uint, error) {
-	result := a.db.Create(&author)
+func newRepositoryAuthor() repositoryAuthor {
+	return &authorMysql{}
+}
+
+type repositoryAuthor interface {
+	Create(db *gorm.DB, author authors) (uint, error)
+	UpdateID(db *gorm.DB, cond *authorCond, author authors) error
+	GetID(db *gorm.DB, cond *authorCond) (authors, error)
+	Get(db *gorm.DB, cond *authorCond) ([]authors, error)
+}
+
+type authorMysql struct {
+	_ struct{}
+}
+
+func (am *authorMysql) Create(db *gorm.DB, author authors) (uint, error) {
+	result := db.Create(&author)
 	if result.Error != nil {
 		return 0, result.Error
 	}
@@ -11,8 +29,8 @@ func (a *author) create(author authors) (uint, error) {
 	return author.ID, nil
 }
 
-func (a *author) updateID(cond *authorCond, author authors) error {
-	result := a.db.Model(authors{}).Where("`id` = ?", cond.ID).
+func (am *authorMysql) UpdateID(db *gorm.DB, cond *authorCond, author authors) error {
+	result := db.Model(authors{}).Where("`id` = ?", cond.ID).
 		Updates(map[string]interface{}{
 			"title":   author.Title,
 			"content": author.Content,
@@ -25,10 +43,10 @@ func (a *author) updateID(cond *authorCond, author authors) error {
 	return nil
 }
 
-func (a *author) getID(cond *authorCond) (authors, error) {
+func (am *authorMysql) GetID(db *gorm.DB, cond *authorCond) (authors, error) {
 	var author authors
 
-	result := a.db.First(&author, cond.ID)
+	result := db.First(&author, cond.ID)
 	if result.Error != nil {
 		return author, result.Error
 	}
@@ -36,19 +54,19 @@ func (a *author) getID(cond *authorCond) (authors, error) {
 	return author, nil
 }
 
-func (a *author) get(cond *authorCond) ([]authors, error) {
+func (am *authorMysql) Get(db *gorm.DB, cond *authorCond) ([]authors, error) {
 	var authors []authors
 
-	a.db = tools.SQLAppend(a.db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
+	db = tools.SQLAppend(db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
 
-	a.db = tools.SQLAppend(a.db, tools.IsNotEmpty(cond.title), "`title` like ?", "%"+cond.title+"%")
-	a.db = tools.SQLAppend(a.db, tools.IsNotEmpty(cond.content), "`content` like ?", "%"+cond.content+"%")
+	db = tools.SQLAppend(db, tools.IsNotEmpty(cond.title), "`title` like ?", "%"+cond.title+"%")
+	db = tools.SQLAppend(db, tools.IsNotEmpty(cond.content), "`content` like ?", "%"+cond.content+"%")
 
-	a.db = tools.SQLAppend(a.db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
+	db = tools.SQLAppend(db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
 
-	a.db = tools.SQLPagination(a.db, cond.GetRowCount(), cond.GetOffset())
+	db = tools.SQLPagination(db, cond.GetRowCount(), cond.GetOffset())
 
-	result := a.db.Find(&authors)
+	result := db.Find(&authors)
 	if result.Error != nil {
 		return authors, result.Error
 	}
