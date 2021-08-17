@@ -109,7 +109,7 @@ func withArticleStatus(status string) articleCondOption {
 	}
 }
 
-type Article struct {
+type articles struct {
 	_ struct{}
 
 	gorm.Model
@@ -120,10 +120,10 @@ type Article struct {
 
 	Status int `binding:"articleStatus"`
 
-	ArticleLabel []ArticleLabel `gorm:"-"`
+	ArticleLabel []articleLabels `gorm:"-"`
 }
 
-type ArticleLabel struct {
+type articleLabels struct {
 	_ struct{}
 
 	gorm.Model
@@ -132,7 +132,7 @@ type ArticleLabel struct {
 	Tag        string `binding:"required,min=1,max=100"`
 }
 
-type ResponseArticle struct {
+type responseArticle struct {
 	_ struct{}
 
 	tools.Model

@@ -1,88 +1,91 @@
 package author
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"gorm.io/gorm"
-	"net/http"
 )
 
-func newUseCaseAuthor(c *gin.Context, db *gorm.DB, trans ut.Translator) UseCaseAuthorEr {
-	return &useCaseAuthor{
-		c:     c,
+func newUseCaseAuthor(repositoryAuthor repositoryAuthor, db *gorm.DB, trans ut.Translator) useCaseAuthor {
+	return &author{
+		repositoryAuthor: repositoryAuthor,
+
 		db:    db,
 		trans: trans,
 	}
 }
 
-type UseCaseAuthorEr interface {
-	Create() (uint, error)
-	UpdateID() error
-	GetID() (ResponseAuthor, error)
-	Get() ([]ResponseAuthor, error)
+type useCaseAuthor interface {
+	Create(c *gin.Context) (uint, error)
+	UpdateID(c *gin.Context) error
+	GetID(c *gin.Context) (responseAuthor, error)
+	Get(c *gin.Context) ([]responseAuthor, error)
 }
 
-type useCaseAuthor struct {
+type author struct {
 	_ struct{}
 
-	c  *gin.Context
+	repositoryAuthor
+
 	db *gorm.DB
 
 	trans ut.Translator
 }
 
-func (uca *useCaseAuthor) Create() (uint, error) {
-	var author Author
-	if err := tools.BindJSON(uca.c, uca.trans, &author); err != nil {
+func (a *author) Create(c *gin.Context) (uint, error) {
+	var author authors
+	if err := tools.BindJSON(c, a.trans, &author); err != nil {
 		return 0, err
 	}
 
-	newRowID, err := uca.create(author)
+	newRowID, err := a.repositoryAuthor.Create(a.db, author)
 	if err != nil {
-		tools.IsErrRecordNotFound(uca.c, err)
+		tools.IsErrRecordNotFound(c, err)
 		return newRowID, err
 	}
 
 	return newRowID, nil
 }
 
-func (uca *useCaseAuthor) UpdateID() error {
-	var author Author
-	if err := tools.BindJSON(uca.c, uca.trans, &author); err != nil {
+func (a *author) UpdateID(c *gin.Context) error {
+	var author authors
+	if err := tools.BindJSON(c, a.trans, &author); err != nil {
 		return err
 	}
 
-	ID := uca.c.Param("id")
+	ID := c.Param("id")
 
 	cond, err := newAuthorCond(withAuthorID(ID))
 	if err != nil {
-		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
+		tools.NewReturnError(c, http.StatusBadRequest, err)
 		return err
 	}
 
-	if err := uca.updateID(cond, author); err != nil {
-		tools.IsErrRecordNotFound(uca.c, err)
+	if err := a.repositoryAuthor.UpdateID(a.db, cond, author); err != nil {
+		tools.IsErrRecordNotFound(c, err)
 		return err
 	}
 
 	return nil
 }
 
-func (uca *useCaseAuthor) GetID() (ResponseAuthor, error) {
-	var responseAuthor ResponseAuthor
+func (a *author) GetID(c *gin.Context) (responseAuthor, error) {
+	var responseAuthor responseAuthor
 
-	ID := uca.c.Param("id")
+	ID := c.Param("id")
 
 	cond, err := newAuthorCond(withAuthorID(ID))
 	if err != nil {
-		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
+		tools.NewReturnError(c, http.StatusBadRequest, err)
 		return responseAuthor, err
 	}
 
-	author, err := uca.getID(cond)
+	author, err := a.repositoryAuthor.GetID(a.db, cond)
 	if err != nil {
-		tools.IsErrRecordNotFound(uca.c, err)
+		tools.IsErrRecordNotFound(c, err)
 		return responseAuthor, err
 	}
 
@@ -93,23 +96,23 @@ func (uca *useCaseAuthor) GetID() (ResponseAuthor, error) {
 	return responseAuthor, nil
 }
 
-func (uca *useCaseAuthor) Get() ([]ResponseAuthor, error) {
-	var responseAuthors []ResponseAuthor
+func (a *author) Get(c *gin.Context) ([]responseAuthor, error) {
+	var responseAuthors []responseAuthor
 
-	cond, err := newAuthorCond(withAuthorPageIndex(uca.c.Query("pageIndex")),
-		withAuthorPageSize(uca.c.Query("pageSize")),
-		withAuthorID(uca.c.Query("id")),
-		withAuthorTitle(uca.c.Query("title")),
-		withAuthorContent(uca.c.Query("content")),
-		withAuthorStatus(uca.c.Query("status")))
+	cond, err := newAuthorCond(withAuthorPageIndex(c.Query("pageIndex")),
+		withAuthorPageSize(c.Query("pageSize")),
+		withAuthorID(c.Query("id")),
+		withAuthorTitle(c.Query("title")),
+		withAuthorContent(c.Query("content")),
+		withAuthorStatus(c.Query("status")))
 	if err != nil {
-		tools.NewReturnError(uca.c, http.StatusBadRequest, err)
+		tools.NewReturnError(c, http.StatusBadRequest, err)
 		return responseAuthors, err
 	}
 
-	authors, err := uca.get(cond)
+	authors, err := a.repositoryAuthor.Get(a.db, cond)
 	if err != nil {
-		tools.IsErrRecordNotFound(uca.c, err)
+		tools.IsErrRecordNotFound(c, err)
 		return responseAuthors, err
 	}
 

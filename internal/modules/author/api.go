@@ -1,41 +1,39 @@
 package author
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	ut "github.com/go-playground/universal-translator"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 // RegisterRouter 註冊文章路由器
 func RegisterRouter(r *gin.Engine, db *gorm.DB, trans ut.Translator) {
-	authorRouter := newAuthorRouter(db, trans)
+	author := newUseCaseAuthor(newRepositoryAuthor(), db, trans)
+	authorRouter := newAuthorRouter(author)
 
 	routerGroup := r.Group("/v1/author")
-	routerGroup.POST("", authorRouter.post)
+	routerGroup.POST("", authorRouter.create)
 	routerGroup.PUT("/:id", authorRouter.updateID)
 	routerGroup.GET("/:id", authorRouter.getID)
 	routerGroup.GET("", authorRouter.get)
 }
 
-func newAuthorRouter(db *gorm.DB, trans ut.Translator) authorRouter {
+func newAuthorRouter(author useCaseAuthor) authorRouter {
 	return authorRouter{
-		db:    db,
-		trans: trans,
+		author: author,
 	}
 }
 
 type authorRouter struct {
 	_ struct{}
 
-	db *gorm.DB
-
-	trans ut.Translator
+	author useCaseAuthor
 }
 
-func (ar *authorRouter) post(c *gin.Context) {
-	useCase := newUseCaseAuthor(c, ar.db, ar.trans)
-	result, err := useCase.Create()
+func (ar *authorRouter) create(c *gin.Context) {
+	result, err := ar.author.Create(c)
 	if err != nil {
 		return
 	}
@@ -44,8 +42,7 @@ func (ar *authorRouter) post(c *gin.Context) {
 }
 
 func (ar *authorRouter) updateID(c *gin.Context) {
-	useCase := newUseCaseAuthor(c, ar.db, ar.trans)
-	err := useCase.UpdateID()
+	err := ar.author.UpdateID(c)
 	if err != nil {
 		return
 	}
@@ -54,8 +51,7 @@ func (ar *authorRouter) updateID(c *gin.Context) {
 }
 
 func (ar *authorRouter) getID(c *gin.Context) {
-	useCase := newUseCaseAuthor(c, ar.db, ar.trans)
-	result, err := useCase.GetID()
+	result, err := ar.author.GetID(c)
 	if err != nil {
 		return
 	}
@@ -64,8 +60,7 @@ func (ar *authorRouter) getID(c *gin.Context) {
 }
 
 func (ar *authorRouter) get(c *gin.Context) {
-	useCase := newUseCaseAuthor(c, ar.db, ar.trans)
-	result, err := useCase.Get()
+	result, err := ar.author.Get(c)
 	if err != nil {
 		return
 	}
