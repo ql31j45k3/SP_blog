@@ -15,7 +15,7 @@ func RegisterRouter(r *gin.Engine, db *gorm.DB, trans ut.Translator) {
 	articleRouter := newArticleRouter(article)
 
 	routerGroup := r.Group("/v1/article")
-	routerGroup.POST("", articleRouter.post)
+	routerGroup.POST("", articleRouter.create)
 	routerGroup.PUT("/:id", articleRouter.updateID)
 	routerGroup.GET("/:id", articleRouter.getID)
 	routerGroup.GET("", articleRouter.get)
@@ -35,7 +35,7 @@ type articleRouter struct {
 	article useCaseArticle
 }
 
-func (ar *articleRouter) post(c *gin.Context) {
+func (ar *articleRouter) create(c *gin.Context) {
 	result, err := ar.article.Create(c)
 	if err != nil {
 		return
