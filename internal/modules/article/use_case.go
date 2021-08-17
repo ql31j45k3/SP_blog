@@ -10,8 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func newUseCaseArticle(db *gorm.DB, trans ut.Translator) useCaseArticle {
+func newUseCaseArticle(repositoryArticle repositoryArticle, db *gorm.DB, trans ut.Translator) useCaseArticle {
 	return &article{
+		repositoryArticle: repositoryArticle,
+
 		db:    db,
 		trans: trans,
 	}
@@ -28,6 +30,8 @@ type useCaseArticle interface {
 type article struct {
 	_ struct{}
 
+	repositoryArticle
+
 	db *gorm.DB
 
 	trans ut.Translator
@@ -39,7 +43,7 @@ func (a *article) Create(c *gin.Context) (uint, error) {
 		return 0, err
 	}
 
-	newRowID, err := create(article)
+	newRowID, err := a.repositoryArticle.Create(a.db, article)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
 		return newRowID, err
@@ -62,7 +66,7 @@ func (a *article) UpdateID(c *gin.Context) error {
 		return err
 	}
 
-	if err := a.updateID(cond, article); err != nil {
+	if err := a.repositoryArticle.UpdateID(a.db, cond, article); err != nil {
 		tools.IsErrRecordNotFound(c, err)
 		return err
 	}
@@ -81,7 +85,7 @@ func (a *article) GetID(c *gin.Context) (responseArticle, error) {
 		return responseArticle, err
 	}
 
-	article, err := a.getID(cond)
+	article, err := a.repositoryArticle.GetID(a.db, cond)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
 		return responseArticle, err
@@ -109,7 +113,7 @@ func (a *article) Get(c *gin.Context) ([]responseArticle, error) {
 		return responseArticles, err
 	}
 
-	articles, err := a.get(cond)
+	articles, err := a.repositoryArticle.Get(a.db, cond)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
 		return responseArticles, err
@@ -134,7 +138,7 @@ func (a *article) Search(c *gin.Context) ([]responseArticle, error) {
 		return responseArticles, err
 	}
 
-	articles, err := a.search(cond)
+	articles, err := a.repositoryArticle.Search(a.db, cond)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
 		return responseArticles, err
