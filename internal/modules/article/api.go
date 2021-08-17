@@ -1,8 +1,9 @@
 package article
 
 import (
-	ut "github.com/go-playground/universal-translator"
 	"net/http"
+
+	ut "github.com/go-playground/universal-translator"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -10,7 +11,8 @@ import (
 
 // RegisterRouter 註冊文章路由器
 func RegisterRouter(r *gin.Engine, db *gorm.DB, trans ut.Translator) {
-	articleRouter := newArticleRouter(db, trans)
+	article := newUseCaseArticle(newRepositoryArticle(), db, trans)
+	articleRouter := newArticleRouter(article)
 
 	routerGroup := r.Group("/v1/article")
 	routerGroup.POST("", articleRouter.post)
@@ -21,24 +23,20 @@ func RegisterRouter(r *gin.Engine, db *gorm.DB, trans ut.Translator) {
 	r.GET("/v1/search/article", articleRouter.search)
 }
 
-func newArticleRouter(db *gorm.DB, trans ut.Translator) articleRouter {
+func newArticleRouter(article useCaseArticle) articleRouter {
 	return articleRouter{
-		db:    db,
-		trans: trans,
+		article: article,
 	}
 }
 
 type articleRouter struct {
 	_ struct{}
 
-	db *gorm.DB
-
-	trans ut.Translator
+	article useCaseArticle
 }
 
 func (ar *articleRouter) post(c *gin.Context) {
-	useCase := newUseCaseArticle(c, ar.db, ar.trans)
-	result, err := useCase.Create()
+	result, err := ar.article.Create(c)
 	if err != nil {
 		return
 	}
@@ -47,8 +45,7 @@ func (ar *articleRouter) post(c *gin.Context) {
 }
 
 func (ar *articleRouter) updateID(c *gin.Context) {
-	useCase := newUseCaseArticle(c, ar.db, ar.trans)
-	err := useCase.UpdateID()
+	err := ar.article.UpdateID(c)
 	if err != nil {
 		return
 	}
@@ -57,8 +54,7 @@ func (ar *articleRouter) updateID(c *gin.Context) {
 }
 
 func (ar *articleRouter) getID(c *gin.Context) {
-	useCase := newUseCaseArticle(c, ar.db, ar.trans)
-	result, err := useCase.GetID()
+	result, err := ar.article.GetID(c)
 	if err != nil {
 		return
 	}
@@ -67,8 +63,7 @@ func (ar *articleRouter) getID(c *gin.Context) {
 }
 
 func (ar *articleRouter) get(c *gin.Context) {
-	useCase := newUseCaseArticle(c, ar.db, ar.trans)
-	result, err := useCase.Get()
+	result, err := ar.article.Get(c)
 	if err != nil {
 		return
 	}
@@ -77,8 +72,7 @@ func (ar *articleRouter) get(c *gin.Context) {
 }
 
 func (ar *articleRouter) search(c *gin.Context) {
-	useCase := newUseCaseArticle(c, ar.db, ar.trans)
-	result, err := useCase.Search()
+	result, err := ar.article.Search(c)
 	if err != nil {
 		return
 	}
