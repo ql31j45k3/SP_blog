@@ -3,13 +3,31 @@ package article
 import (
 	"strings"
 
+	"gorm.io/gorm"
+
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 )
 
-func (a *article) create(article articles) (uint, error) {
-	tx := a.db.Begin()
+func newRepositoryArticle() repositoryArticle {
+	return &articleMysql{}
+}
 
-	result := a.db.Create(&article)
+type repositoryArticle interface {
+	Create(db *gorm.DB, article articles) (uint, error)
+	UpdateID(db *gorm.DB, cond *articleCond, article articles) error
+	GetID(db *gorm.DB, cond *articleCond) (articles, error)
+	Get(db *gorm.DB, cond *articleCond) ([]articles, error)
+	Search(db *gorm.DB, cond *searchCond) ([]articles, error)
+}
+
+type articleMysql struct {
+	_ struct{}
+}
+
+func (am *articleMysql) Create(db *gorm.DB, article articles) (uint, error) {
+	tx := db.Begin()
+
+	result := db.Create(&article)
 	if result.Error != nil {
 		tx.Rollback()
 		return 0, result.Error
@@ -19,7 +37,7 @@ func (a *article) create(article articles) (uint, error) {
 		articleLabels := article.ArticleLabel[i]
 		articleLabels.ArticlesID = article.ID
 
-		if _, err := a.createLabel(articleLabels); err != nil {
+		if _, err := am.createLabel(db, articleLabels); err != nil {
 			tx.Rollback()
 			return 0, err
 		}
@@ -29,10 +47,10 @@ func (a *article) create(article articles) (uint, error) {
 	return article.ID, nil
 }
 
-func (a *article) updateID(cond *articleCond, article articles) error {
-	tx := a.db.Begin()
+func (am *articleMysql) UpdateID(db *gorm.DB, cond *articleCond, article articles) error {
+	tx := db.Begin()
 
-	result := a.db.Model(articles{}).Where("`id` = ?", cond.ID).
+	result := db.Model(articles{}).Where("`id` = ?", cond.ID).
 		Updates(map[string]interface{}{
 			"title":   article.Title,
 			"desc":    article.Desc,
@@ -44,7 +62,7 @@ func (a *article) updateID(cond *articleCond, article articles) error {
 		return result.Error
 	}
 
-	if err := a.deleteLabel(cond.ID); err != nil {
+	if err := am.deleteLabel(db, cond.ID); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -53,7 +71,7 @@ func (a *article) updateID(cond *articleCond, article articles) error {
 		articleLabels := article.ArticleLabel[i]
 		articleLabels.ArticlesID = cond.ID
 
-		if _, err := a.createLabel(articleLabels); err != nil {
+		if _, err := am.createLabel(db, articleLabels); err != nil {
 			tx.Rollback()
 			return err
 		}
@@ -63,8 +81,8 @@ func (a *article) updateID(cond *articleCond, article articles) error {
 	return nil
 }
 
-func (a *article) createLabel(articleLabel articleLabels) (uint, error) {
-	result := a.db.Create(&articleLabel)
+func (am *articleMysql) createLabel(db *gorm.DB, articleLabel articleLabels) (uint, error) {
+	result := db.Create(&articleLabel)
 	if result.Error != nil {
 		return 0, result.Error
 	}
@@ -72,14 +90,14 @@ func (a *article) createLabel(articleLabel articleLabels) (uint, error) {
 	return articleLabel.ID, nil
 }
 
-func (a *article) deleteLabel(articlesID uint) error {
-	return a.db.Where("`articles_id` = ?", articlesID).Delete(articleLabels{}).Error
+func (am *articleMysql) deleteLabel(db *gorm.DB, articlesID uint) error {
+	return db.Where("`articles_id` = ?", articlesID).Delete(articleLabels{}).Error
 }
 
-func (a *article) getID(cond *articleCond) (articles, error) {
+func (am *articleMysql) GetID(db *gorm.DB, cond *articleCond) (articles, error) {
 	var article articles
 
-	result := a.db.First(&article, cond.ID)
+	result := db.First(&article, cond.ID)
 	if result.Error != nil {
 		return article, result.Error
 	}
@@ -87,20 +105,20 @@ func (a *article) getID(cond *articleCond) (articles, error) {
 	return article, nil
 }
 
-func (a *article) get(cond *articleCond) ([]articles, error) {
+func (am *articleMysql) Get(db *gorm.DB, cond *articleCond) ([]articles, error) {
 	var articles []articles
 
-	a.db = tools.SQLAppend(a.db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
+	db = tools.SQLAppend(db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
 
-	a.db = tools.SQLAppend(a.db, tools.IsNotEmpty(cond.title), "`title` like ?", "%"+cond.title+"%")
-	a.db = tools.SQLAppend(a.db, tools.IsNotEmpty(cond.desc), "`desc` like ?", "%"+cond.desc+"%")
-	a.db = tools.SQLAppend(a.db, tools.IsNotEmpty(cond.content), "`content` like ?", "%"+cond.content+"%")
+	db = tools.SQLAppend(db, tools.IsNotEmpty(cond.title), "`title` like ?", "%"+cond.title+"%")
+	db = tools.SQLAppend(db, tools.IsNotEmpty(cond.desc), "`desc` like ?", "%"+cond.desc+"%")
+	db = tools.SQLAppend(db, tools.IsNotEmpty(cond.content), "`content` like ?", "%"+cond.content+"%")
 
-	a.db = tools.SQLAppend(a.db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
+	db = tools.SQLAppend(db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
 
-	a.db = tools.SQLPagination(a.db, cond.GetRowCount(), cond.GetOffset())
+	db = tools.SQLPagination(db, cond.GetRowCount(), cond.GetOffset())
 
-	result := a.db.Find(&articles)
+	result := db.Find(&articles)
 	if result.Error != nil {
 		return articles, result.Error
 	}
@@ -108,7 +126,7 @@ func (a *article) get(cond *articleCond) ([]articles, error) {
 	return articles, nil
 }
 
-func (a *article) search(cond *searchCond) ([]articles, error) {
+func (am *articleMysql) Search(db *gorm.DB, cond *searchCond) ([]articles, error) {
 	var sql strings.Builder
 	var values []interface{}
 
@@ -136,7 +154,7 @@ func (a *article) search(cond *searchCond) ([]articles, error) {
 	values = append(values, cond.GetRowCount(), cond.GetOffset())
 
 	var articles []articles
-	result := a.db.Raw(sql.String(), values...).Scan(&articles)
+	result := db.Raw(sql.String(), values...).Scan(&articles)
 	if result.Error != nil {
 		return articles, result.Error
 	}
