@@ -33,7 +33,7 @@ func (am *articleMysql) Create(db *gorm.DB, article articles) (uint, error) {
 		return 0, result.Error
 	}
 
-	for i, _ := range article.ArticleLabel {
+	for i := range article.ArticleLabel {
 		articleLabels := article.ArticleLabel[i]
 		articleLabels.ArticlesID = article.ID
 
@@ -67,7 +67,7 @@ func (am *articleMysql) UpdateID(db *gorm.DB, cond *articleCond, article article
 		return err
 	}
 
-	for i, _ := range article.ArticleLabel {
+	for i := range article.ArticleLabel {
 		articleLabels := article.ArticleLabel[i]
 		articleLabels.ArticlesID = cond.ID
 
