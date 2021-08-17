@@ -14,7 +14,7 @@ func RegisterRouter(r *gin.Engine, db *gorm.DB, trans ut.Translator) {
 	authorRouter := newAuthorRouter(author)
 
 	routerGroup := r.Group("/v1/author")
-	routerGroup.POST("", authorRouter.post)
+	routerGroup.POST("", authorRouter.create)
 	routerGroup.PUT("/:id", authorRouter.updateID)
 	routerGroup.GET("/:id", authorRouter.getID)
 	routerGroup.GET("", authorRouter.get)
@@ -32,7 +32,7 @@ type authorRouter struct {
 	author useCaseAuthor
 }
 
-func (ar *authorRouter) post(c *gin.Context) {
+func (ar *authorRouter) create(c *gin.Context) {
 	result, err := ar.author.Create(c)
 	if err != nil {
 		return
