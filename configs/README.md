@@ -10,9 +10,9 @@
     system.log.level: "warn"
     system.log.path: /var/log/ostrich/def_log
 
-    database.conn.maxIdle: 10
-    database.conn.maxOpen: 100
-    database.conn.maxLifetime: 600
+    database.mysql.master.conn.maxIdle: 10
+    database.mysql.master.conn.maxOpen: 100
+    database.mysql.master.conn.maxLifetime: 600
 
     gin.mode: "debug"
 
@@ -32,5 +32,5 @@
         silent、error、warn、info, default silent
 
 # 欄位單位
-    database.conn.maxLifetime
+    database.mysql.master.conn.maxLifetime
         單位 Second

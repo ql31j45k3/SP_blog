@@ -9,22 +9,22 @@ import (
 )
 
 func newConfigGorm() *configGorm {
-	viper.SetDefault("database.conn.maxIdle", 10)
-	viper.SetDefault("database.conn.maxOpen", 100)
-	viper.SetDefault("database.conn.maxLifetime", time.Duration(600))
+	viper.SetDefault("database.mysql.master.conn.maxIdle", 10)
+	viper.SetDefault("database.mysql.master.conn.maxOpen", 100)
+	viper.SetDefault("database.mysql.master.conn.maxLifetime", time.Duration(600))
 
 	config := &configGorm{
 		mode: viper.GetString("gorm.log.mode"),
 
-		username: viper.GetString("database.username"),
-		password: viper.GetString("database.password"),
-		host:     viper.GetString("database.host"),
-		port:     viper.GetString("database.port"),
-		dbName:   viper.GetString("database.dbName"),
+		username: viper.GetString("database.mysql.master.username"),
+		password: viper.GetString("database.mysql.master.password"),
+		host:     viper.GetString("database.mysql.master.host"),
+		port:     viper.GetString("database.mysql.master.port"),
+		dbName:   viper.GetString("database.mysql.master.dbName"),
 
-		maxIdle:     viper.GetInt("database.conn.maxIdle"),
-		maxOpen:     viper.GetInt("database.conn.maxOpen"),
-		maxLifetime: viper.GetDuration("database.conn.maxLifetime") * time.Second,
+		maxIdle:     viper.GetInt("database.mysql.master.conn.maxIdle"),
+		maxOpen:     viper.GetInt("database.mysql.master.conn.maxOpen"),
+		maxLifetime: viper.GetDuration("database.mysql.master.conn.maxLifetime") * time.Second,
 	}
 
 	return config
@@ -65,34 +65,34 @@ func (c *configGorm) GetLogMode() logger.LogLevel {
 	return logger.Silent
 }
 
-func (c *configGorm) GetHost() string {
+func (c *configGorm) GetMasterHost() string {
 	return c.host
 }
 
-func (c *configGorm) GetPort() string {
+func (c *configGorm) GetMasterPort() string {
 	return c.port
 }
 
-func (c *configGorm) GetUsername() string {
+func (c *configGorm) GetMasterUsername() string {
 	return c.username
 }
 
-func (c *configGorm) GetPassword() string {
+func (c *configGorm) GetMasterPassword() string {
 	return c.password
 }
 
-func (c *configGorm) GetDBName() string {
+func (c *configGorm) GetMasterDBName() string {
 	return c.dbName
 }
 
-func (c *configGorm) GetMaxIdle() int {
+func (c *configGorm) GetMasterMaxIdle() int {
 	return c.maxIdle
 }
 
-func (c *configGorm) GetMaxOpen() int {
+func (c *configGorm) GetMasterMaxOpen() int {
 	return c.maxOpen
 }
 
-func (c *configGorm) GetMaxLifetime() time.Duration {
+func (c *configGorm) GetMasterMaxLifetime() time.Duration {
 	return c.maxLifetime
 }

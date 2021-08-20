@@ -7,15 +7,17 @@ host:
   spBlogAPIHost: <value>
 
 database:
-  host: <value>
-  port: <value>
-  username: <value>
-  password: <value>
-  dbName: <value>
-  conn:
-      maxIdle: <value>
-      maxOpen: <value>
-      maxLifetime: <value>
+  mysql:
+    master:
+      host: <value>
+      port: <value>
+      username: <value>
+      password: <value>
+      dbName: <value>
+      conn:
+        maxIdle: <value>
+        maxOpen: <value>
+        maxLifetime: <value>
 
 gin:
   # mode: debug、release、test

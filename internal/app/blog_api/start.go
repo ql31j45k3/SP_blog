@@ -71,9 +71,9 @@ func (cp *containerProvide) gin() *gin.Engine {
 
 // gorm 建立 gorm.DB 設定，初始化 session 並無實際連線
 func (cp *containerProvide) gorm() (*gorm.DB, error) {
-	return utilsDriver.NewMysql(configs.Gorm.GetHost(), configs.Gorm.GetUsername(), configs.Gorm.GetPassword(),
-		configs.Gorm.GetDBName(), configs.Gorm.GetPort(), configs.Gorm.GetLogMode(),
-		configs.Gorm.GetMaxIdle(), configs.Gorm.GetMaxOpen(), configs.Gorm.GetMaxLifetime())
+	return utilsDriver.NewMysql(configs.Gorm.GetMasterHost(), configs.Gorm.GetMasterUsername(), configs.Gorm.GetMasterPassword(),
+		configs.Gorm.GetMasterDBName(), configs.Gorm.GetMasterPort(), configs.Gorm.GetLogMode(),
+		configs.Gorm.GetMasterMaxIdle(), configs.Gorm.GetMasterMaxOpen(), configs.Gorm.GetMasterMaxLifetime())
 }
 
 // translator 建立 Translator 設定翻譯語言類型、可自行擴充驗證函式與翻譯訊息 func
