@@ -1,8 +1,11 @@
 package configs
 
 import (
+	"fmt"
 	"os"
 	"strings"
+
+	"github.com/spf13/pflag"
 
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 
@@ -29,13 +32,22 @@ func SetReloadFunc(f func()) {
 
 // Start 開始 Config 設定參數與讀取檔案並轉成 struct
 // 預設會抓取執行程式的啟示點資料夾，可用參數調整路徑來源
-func Start(sourcePath string) {
+func Start(sourcePath string) error {
+	// 設定自定義 flag to viper
+	if err := parseFlag(); err != nil {
+		return fmt.Errorf("parseFlag - %w", err)
+	}
+
 	viper.AddConfigPath(getPath(sourcePath))
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
 	if err := viper.ReadInConfig(); err != nil {
-		panic(err)
+		if IsUseVersion() {
+			return nil
+		}
+
+		return fmt.Errorf("viper.ReadInConfig - %w", err)
 	}
 
 	Host = newConfigHost()
@@ -56,6 +68,20 @@ func Start(sourcePath string) {
 			f()
 		}
 	})
+
+	return nil
+}
+
+func parseFlag() error {
+	pflag.Bool("version", false, "version")
+
+	pflag.Parse()
+
+	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
+		return fmt.Errorf("viper.BindPFlags - %w", err)
+	}
+
+	return nil
 }
 
 // getPath 預設會抓取執行程式的啟示點資料夾

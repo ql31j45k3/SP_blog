@@ -1,6 +1,8 @@
 package blog_api
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/zh"
@@ -23,7 +25,15 @@ import (
 // Start 控制服務流程、呼叫的依賴性
 func Start() {
 	// 開始讀取設定檔，順序上必須為容器之前，執行容器內有需要設定檔 struct 取得參數
-	configs.Start("")
+	if err := configs.Start(""); err != nil {
+		panic(fmt.Errorf("start - configs.Start - %w", err))
+	}
+
+	// 順序必須在 configs 之後，需取得 設定參數
+	if configs.IsPrintVersion() {
+		return
+	}
+
 	// 開始讀取翻譯檔案，順序上必須在容器前執行
 	validatorFunc.Start()
 
