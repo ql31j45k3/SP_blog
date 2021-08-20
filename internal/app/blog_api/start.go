@@ -47,10 +47,7 @@ func Start() {
 	container.Invoke(author.RegisterRouter)
 
 	container.Invoke(func(r *gin.Engine) {
-		// 控制調試日誌 log
-		gin.SetMode(configs.Gin.GetMode())
-
-		r.Run(configs.Host.GetSPBlogAPIHost())
+		utilsDriver.StartGin(r)
 	})
 }
 
