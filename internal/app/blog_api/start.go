@@ -67,7 +67,7 @@ func (cp *containerProvide) gin() *gin.Engine {
 
 // gorm 建立 gorm.DB 設定，初始化 session 並無實際連線
 func (cp *containerProvide) gorm() (*gorm.DB, error) {
-	return gorm.Open(mysql.Open(configs.DB.GetDSN()), &gorm.Config{
+	return gorm.Open(mysql.Open(configs.Gorm.GetDSN()), &gorm.Config{
 		Logger: logger.Default.LogMode(configs.Gorm.GetLogMode()),
 	})
 }

@@ -12,7 +12,7 @@ import (
 
 var (
 	Host *configHost
-	DB   *configDB
+
 	Gin  *configGin
 	Gorm *configGorm
 
@@ -39,7 +39,7 @@ func Start(sourcePath string) {
 	}
 
 	Host = newConfigHost()
-	DB = newConfigDB()
+
 	Gin = newConfigGin()
 	Gorm = newConfigGorm()
 
