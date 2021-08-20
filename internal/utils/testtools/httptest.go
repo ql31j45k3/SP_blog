@@ -24,7 +24,7 @@ func Start() (*gin.Engine, *gorm.DB, ut.Translator) {
 	r := gin.Default()
 
 	var err error
-	db, err := gorm.Open(mysql.Open(configs.DB.GetDSN()), &gorm.Config{
+	db, err := gorm.Open(mysql.Open(configs.Gorm.GetDSN()), &gorm.Config{
 		Logger: logger.Default.LogMode(configs.Gorm.GetLogMode()),
 	})
 	if err != nil {
