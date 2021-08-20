@@ -10,6 +10,10 @@
     system.log.level: "warn"
     system.log.path: /var/log/ostrich/def_log
 
+    database.conn.maxIdle: 10
+    database.conn.maxOpen: 100
+    database.conn.maxLifetime: 600
+
     gin.mode: "debug"
 
     gorm.log.mode: "silent"
@@ -28,4 +32,5 @@
         silent、error、warn、info, default silent
 
 # 欄位單位
-    
+    database.conn.maxLifetime
+        單位 Second

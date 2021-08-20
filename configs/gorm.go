@@ -2,12 +2,17 @@ package configs
 
 import (
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 	"gorm.io/gorm/logger"
 )
 
 func newConfigGorm() *configGorm {
+	viper.SetDefault("database.conn.maxIdle", 10)
+	viper.SetDefault("database.conn.maxOpen", 100)
+	viper.SetDefault("database.conn.maxLifetime", time.Duration(600))
+
 	config := &configGorm{
 		mode: viper.GetString("gorm.log.mode"),
 
@@ -16,6 +21,10 @@ func newConfigGorm() *configGorm {
 		host:     viper.GetString("database.host"),
 		port:     viper.GetString("database.port"),
 		dbName:   viper.GetString("database.dbName"),
+
+		maxIdle:     viper.GetInt("database.conn.maxIdle"),
+		maxOpen:     viper.GetInt("database.conn.maxOpen"),
+		maxLifetime: viper.GetDuration("database.conn.maxLifetime") * time.Second,
 	}
 
 	return config
@@ -33,6 +42,10 @@ type configGorm struct {
 	password string
 
 	dbName string
+
+	maxIdle     int
+	maxOpen     int
+	maxLifetime time.Duration
 }
 
 func (c *configGorm) GetLogMode() logger.LogLevel {
@@ -70,4 +83,16 @@ func (c *configGorm) GetPassword() string {
 
 func (c *configGorm) GetDBName() string {
 	return c.dbName
+}
+
+func (c *configGorm) GetMaxIdle() int {
+	return c.maxIdle
+}
+
+func (c *configGorm) GetMaxOpen() int {
+	return c.maxOpen
+}
+
+func (c *configGorm) GetMaxLifetime() time.Duration {
+	return c.maxLifetime
 }
