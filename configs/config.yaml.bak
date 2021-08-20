@@ -13,8 +13,9 @@ gin:
   mode: <value>
 
 gorm:
-  # logMode: silent、error、warn、info, default silent
-  logmode: <value>
+  log:
+    # logMode: silent、error、warn、info, default silent
+    mode: <value>
 
 validator:
   # 設定錯誤訊息文字語言

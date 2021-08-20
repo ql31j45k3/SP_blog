@@ -1,14 +1,15 @@
 package configs
 
 import (
+	"strings"
+
 	"github.com/spf13/viper"
 	"gorm.io/gorm/logger"
-	"strings"
 )
 
 func newConfigGorm() *configGorm {
 	config := &configGorm{
-		mode: viper.GetString("gorm.logmode"),
+		mode: viper.GetString("gorm.log.mode"),
 	}
 
 	return config
