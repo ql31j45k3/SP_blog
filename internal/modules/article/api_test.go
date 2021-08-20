@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/spf13/viper"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	ut "github.com/go-playground/universal-translator"
@@ -32,11 +34,16 @@ var (
 func start() {
 	viper.Set("configFile", "/Users/michael_kao/go/src/github.com/ql31j45k3/SP_blog/configs")
 
+	var err error
+
 	debug = false
 	articleURL = "/v1/article"
 	searchArticleURL = "/v1/search/article"
 
-	r, db, translator = testtools.Start()
+	r, db, translator, err = testtools.Start()
+	if err != nil {
+		panic(err)
+	}
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		// 註冊翻譯器
