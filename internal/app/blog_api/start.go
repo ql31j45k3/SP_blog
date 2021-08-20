@@ -6,18 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/zh"
-	"github.com/go-playground/validator/v10"
-	"github.com/ql31j45k3/SP_blog/configs"
-	"github.com/ql31j45k3/SP_blog/internal/modules/author"
-	"go.uber.org/dig"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-
 	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
+	"github.com/ql31j45k3/SP_blog/configs"
 	"github.com/ql31j45k3/SP_blog/internal/modules/article"
+	"github.com/ql31j45k3/SP_blog/internal/modules/author"
 	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
+	"go.uber.org/dig"
+	"gorm.io/gorm"
 
 	utilsDriver "github.com/ql31j45k3/SP_blog/internal/utils/driver"
 )
@@ -74,9 +71,8 @@ func (cp *containerProvide) gin() *gin.Engine {
 
 // gorm 建立 gorm.DB 設定，初始化 session 並無實際連線
 func (cp *containerProvide) gorm() (*gorm.DB, error) {
-	return gorm.Open(mysql.Open(configs.Gorm.GetDSN()), &gorm.Config{
-		Logger: logger.Default.LogMode(configs.Gorm.GetLogMode()),
-	})
+	return utilsDriver.NewMysql(configs.Gorm.GetHost(), configs.Gorm.GetUsername(), configs.Gorm.GetPassword(),
+		configs.Gorm.GetDBName(), configs.Gorm.GetPort(), configs.Gorm.GetLogMode())
 }
 
 // translator 建立 Translator 設定翻譯語言類型、可自行擴充驗證函式與翻譯訊息 func

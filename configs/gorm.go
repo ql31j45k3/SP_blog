@@ -1,7 +1,6 @@
 package configs
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -18,9 +17,6 @@ func newConfigGorm() *configGorm {
 		port:     viper.GetString("database.port"),
 		dbname:   viper.GetString("database.dbname"),
 	}
-
-	config.dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		config.username, config.password, config.host, config.port, config.dbname)
 
 	return config
 }
@@ -58,6 +54,22 @@ func (c *configGorm) GetLogMode() logger.LogLevel {
 	return logger.Silent
 }
 
-func (c *configGorm) GetDSN() string {
-	return c.dsn
+func (c *configGorm) GetHost() string {
+	return c.host
+}
+
+func (c *configGorm) GetPort() string {
+	return c.port
+}
+
+func (c *configGorm) GetUsername() string {
+	return c.username
+}
+
+func (c *configGorm) GetPassword() string {
+	return c.password
+}
+
+func (c *configGorm) GetDBName() string {
+	return c.dbname
 }
