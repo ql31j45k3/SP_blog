@@ -33,8 +33,6 @@ type configGorm struct {
 	password string
 
 	dbName string
-
-	dsn string
 }
 
 func (c *configGorm) GetLogMode() logger.LogLevel {
