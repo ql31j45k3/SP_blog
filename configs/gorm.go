@@ -15,7 +15,7 @@ func newConfigGorm() *configGorm {
 		password: viper.GetString("database.password"),
 		host:     viper.GetString("database.host"),
 		port:     viper.GetString("database.port"),
-		dbname:   viper.GetString("database.dbname"),
+		dbName:   viper.GetString("database.dbName"),
 	}
 
 	return config
@@ -32,7 +32,7 @@ type configGorm struct {
 	username string
 	password string
 
-	dbname string
+	dbName string
 
 	dsn string
 }
@@ -71,5 +71,5 @@ func (c *configGorm) GetPassword() string {
 }
 
 func (c *configGorm) GetDBName() string {
-	return c.dbname
+	return c.dbName
 }

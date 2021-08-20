@@ -11,7 +11,7 @@ database:
   port: <value>
   username: <value>
   password: <value>
-  dbname: <value>
+  dbName: <value>
 
 gin:
   # mode: debug、release、test
