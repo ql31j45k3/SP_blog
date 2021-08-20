@@ -1,5 +1,5 @@
 host:
-  sp_blog_apis_host: <value>
+  spBlogApisHost: <value>
 
 database:
   host: <value>

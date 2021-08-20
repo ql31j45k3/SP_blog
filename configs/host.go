@@ -8,7 +8,7 @@ import (
 
 func newConfigHost() *configHost {
 	config := &configHost{
-		spBlogApisHost: ":" + viper.GetString("host.sp_blog_apis_host"),
+		spBlogApisHost: ":" + viper.GetString("host.spBlogApisHost"),
 	}
 
 	return config
@@ -26,7 +26,7 @@ func (c *configHost) reload() {
 	c.Lock()
 	defer c.Unlock()
 
-	c.spBlogApisHost = ":" + viper.GetString("host.sp_blog_apis_host")
+	c.spBlogApisHost = ":" + viper.GetString("host.spBlogApisHost")
 }
 
 func (c *configHost) GetSPBlogApisHost() string {
