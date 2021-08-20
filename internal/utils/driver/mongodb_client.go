@@ -2,11 +2,13 @@ package driver
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/event"
 
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
+	log "github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -91,10 +93,17 @@ func WithMongoPoolMonitor() mongoOption {
 		var po *event.MonitorPoolOptions
 		m := &event.PoolMonitor{
 			Event: func(poolEvent *event.PoolEvent) {
+				log.WithFields(log.Fields{
+					"poolEvent val": fmt.Sprintf("%+v", poolEvent),
+				}).Debug("poolEvent")
 
 				if poolEvent.Type == event.PoolCreated {
 					po = poolEvent.PoolOptions
 				}
+
+				log.WithFields(log.Fields{
+					"poolEvent.PoolOptions": fmt.Sprintf("%+v", po),
+				}).Debug("PoolOptions")
 			},
 		}
 
