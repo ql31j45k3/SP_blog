@@ -30,6 +30,8 @@ var (
 )
 
 func start() {
+	viper.Set("configFile", "/Users/michael_kao/go/src/github.com/ql31j45k3/SP_blog/configs")
+
 	debug = false
 	articleURL = "/v1/article"
 	searchArticleURL = "/v1/search/article"

@@ -2,12 +2,8 @@ package configs
 
 import (
 	"fmt"
-	"os"
-	"strings"
 
 	"github.com/spf13/pflag"
-
-	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -38,7 +34,7 @@ func Start(sourcePath string) error {
 		return fmt.Errorf("parseFlag - %w", err)
 	}
 
-	viper.AddConfigPath(getPath(sourcePath))
+	viper.AddConfigPath(viper.GetString("configFile"))
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
@@ -74,6 +70,7 @@ func Start(sourcePath string) error {
 
 func parseFlag() error {
 	pflag.Bool("version", false, "version")
+	pflag.String("configFile", "", "configFile path")
 
 	pflag.Parse()
 
@@ -82,24 +79,4 @@ func parseFlag() error {
 	}
 
 	return nil
-}
-
-// getPath 預設會抓取執行程式的啟示點資料夾
-// e.g. cmd/blog_api 會抓取到 SP_blog
-// 可用參數調整路徑來源
-func getPath(sourcePath string) string {
-	if tools.IsNotEmpty(sourcePath) {
-		return sourcePath + "/configs"
-	}
-
-	path, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-
-	// "/" 切割字串陣列，e.g. 利用陣列 -2 等於往上資料夾兩層
-	tempPath := strings.Split(path, "/")
-	tempPath = tempPath[:len(tempPath)]
-
-	return strings.Join(tempPath, "/") + "/configs"
 }
