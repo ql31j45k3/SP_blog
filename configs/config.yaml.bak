@@ -4,7 +4,7 @@ system:
     path: <value>
 
 host:
-  spBlogApisHost: <value>
+  spBlogAPIHost: <value>
 
 database:
   host: <value>
