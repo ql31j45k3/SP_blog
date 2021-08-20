@@ -1,15 +1,16 @@
 package testtools
 
 import (
-	"github.com/go-playground/locales/zh"
-	ut "github.com/go-playground/universal-translator"
-	"github.com/ql31j45k3/SP_blog/configs"
-	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
 	"io"
 	"io/ioutil"
 	"net/http/httptest"
 	"os"
 	"strings"
+
+	"github.com/go-playground/locales/zh"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/ql31j45k3/SP_blog/configs"
+	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -17,14 +18,17 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func Start() (*gin.Engine, *gorm.DB, ut.Translator) {
-	configs.Start(getPath())
+func Start() (*gin.Engine, *gorm.DB, ut.Translator, error) {
+	if err := configs.Start(getPath()); err != nil {
+		return nil, nil, nil, err
+	}
+
 	validatorFunc.Start()
 
 	r := gin.Default()
 
 	var err error
-	db, err := gorm.Open(mysql.Open(configs.DB.GetDSN()), &gorm.Config{
+	db, err := gorm.Open(mysql.Open(configs.Gorm.GetDSN()), &gorm.Config{
 		Logger: logger.Default.LogMode(configs.Gorm.GetLogMode()),
 	})
 	if err != nil {
@@ -37,7 +41,7 @@ func Start() (*gin.Engine, *gorm.DB, ut.Translator) {
 	// 設定語言地區
 	validatorFunc.SetLocale(locale)
 
-	return r, db, trans
+	return r, db, trans, nil
 }
 
 func getPath() string {

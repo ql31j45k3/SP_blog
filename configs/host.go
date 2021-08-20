@@ -1,10 +1,14 @@
 package configs
 
-import "github.com/spf13/viper"
+import (
+	"sync"
+
+	"github.com/spf13/viper"
+)
 
 func newConfigHost() *configHost {
 	config := &configHost{
-		spBlogApisHost: ":" + viper.GetString("host.sp_blog_apis_host"),
+		spBlogAPIHost: ":" + viper.GetString("host.spBlogAPIHost"),
 	}
 
 	return config
@@ -13,13 +17,21 @@ func newConfigHost() *configHost {
 type configHost struct {
 	_ struct{}
 
-	spBlogApisHost string
+	sync.RWMutex
+
+	spBlogAPIHost string
 }
 
 func (c *configHost) reload() {
-	c.spBlogApisHost = ":" + viper.GetString("host.sp_blog_apis_host")
+	c.Lock()
+	defer c.Unlock()
+
+	c.spBlogAPIHost = ":" + viper.GetString("host.spBlogAPIHost")
 }
 
-func (c *configHost) GetSPBlogApisHost() string {
-	return c.spBlogApisHost
+func (c *configHost) GetSPBlogAPIHost() string {
+	c.RLock()
+	defer c.RUnlock()
+
+	return c.spBlogAPIHost
 }

@@ -1,29 +1,41 @@
-package blog_apis
+package blog_api
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/zh"
-	"github.com/go-playground/validator/v10"
-	"github.com/ql31j45k3/SP_blog/configs"
-	"github.com/ql31j45k3/SP_blog/internal/modules/author"
-	"go.uber.org/dig"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-
 	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
+	"github.com/ql31j45k3/SP_blog/configs"
 	"github.com/ql31j45k3/SP_blog/internal/modules/article"
+	"github.com/ql31j45k3/SP_blog/internal/modules/author"
 	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
+	"go.uber.org/dig"
+	"gorm.io/gorm"
+
+	utilsDriver "github.com/ql31j45k3/SP_blog/internal/utils/driver"
 )
 
 // Start 控制服務流程、呼叫的依賴性
 func Start() {
 	// 開始讀取設定檔，順序上必須為容器之前，執行容器內有需要設定檔 struct 取得參數
-	configs.Start("")
+	if err := configs.Start(""); err != nil {
+		panic(fmt.Errorf("start - configs.Start - %w", err))
+	}
+
+	// 順序必須在 configs 之後，需取得 設定參數
+	if configs.IsPrintVersion() {
+		return
+	}
+
 	// 開始讀取翻譯檔案，順序上必須在容器前執行
 	validatorFunc.Start()
+
+	utilsDriver.SetLogEnv()
+	configs.SetReloadFunc(utilsDriver.ReloadSetLogLevel)
 
 	container := buildContainer()
 
@@ -32,10 +44,7 @@ func Start() {
 	container.Invoke(author.RegisterRouter)
 
 	container.Invoke(func(r *gin.Engine) {
-		// 控制調試日誌 log
-		gin.SetMode(configs.Gin.GetMode())
-
-		r.Run(configs.Host.GetSPBlogApisHost())
+		utilsDriver.StartGin(r)
 	})
 }
 
@@ -62,9 +71,9 @@ func (cp *containerProvide) gin() *gin.Engine {
 
 // gorm 建立 gorm.DB 設定，初始化 session 並無實際連線
 func (cp *containerProvide) gorm() (*gorm.DB, error) {
-	return gorm.Open(mysql.Open(configs.DB.GetDSN()), &gorm.Config{
-		Logger: logger.Default.LogMode(configs.Gorm.GetLogMode()),
-	})
+	return utilsDriver.NewMysql(configs.Gorm.GetMasterHost(), configs.Gorm.GetMasterUsername(), configs.Gorm.GetMasterPassword(),
+		configs.Gorm.GetMasterDBName(), configs.Gorm.GetMasterPort(), configs.Gorm.GetLogMode(),
+		configs.Gorm.GetMasterMaxIdle(), configs.Gorm.GetMasterMaxOpen(), configs.Gorm.GetMasterMaxLifetime())
 }
 
 // translator 建立 Translator 設定翻譯語言類型、可自行擴充驗證函式與翻譯訊息 func
