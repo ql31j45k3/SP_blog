@@ -16,6 +16,8 @@ import (
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
 	"github.com/ql31j45k3/SP_blog/internal/modules/article"
 	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
+
+	utilsDriver "github.com/ql31j45k3/SP_blog/internal/utils/driver"
 )
 
 // Start 控制服務流程、呼叫的依賴性
@@ -24,6 +26,9 @@ func Start() {
 	configs.Start("")
 	// 開始讀取翻譯檔案，順序上必須在容器前執行
 	validatorFunc.Start()
+
+	utilsDriver.SetLogEnv()
+	configs.SetReloadFunc(utilsDriver.ReloadSetLogLevel)
 
 	container := buildContainer()
 

@@ -1,9 +1,10 @@
 package configs
 
 import (
-	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"os"
 	"strings"
+
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -15,8 +16,16 @@ var (
 	Gin  *configGin
 	Gorm *configGorm
 
+	Env *configEnv
+
 	Validator *configValidator
+
+	reloadFunc []func()
 )
+
+func SetReloadFunc(f func()) {
+	reloadFunc = append(reloadFunc, f)
+}
 
 // Start 開始 Config 設定參數與讀取檔案並轉成 struct
 // 預設會抓取執行程式的啟示點資料夾，可用參數調整路徑來源
@@ -33,11 +42,19 @@ func Start(sourcePath string) {
 	DB = newConfigDB()
 	Gin = newConfigGin()
 	Gorm = newConfigGorm()
+
+	Env = newConfigEnv()
+
 	Validator = newConfigValidator()
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		Host.reload()
+		Env.reload()
+
+		for _, f := range reloadFunc {
+			f()
+		}
 	})
 }
 
