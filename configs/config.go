@@ -42,7 +42,7 @@ func Start(sourcePath string) {
 }
 
 // getPath 預設會抓取執行程式的啟示點資料夾
-// e.g. cmd/blog_apis 會抓取到 SP_blog
+// e.g. cmd/blog_api 會抓取到 SP_blog
 // 可用參數調整路徑來源
 func getPath(sourcePath string) string {
 	if tools.IsNotEmpty(sourcePath) {

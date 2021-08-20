@@ -1,4 +1,4 @@
-package blog_apis
+package blog_api
 
 import (
 	"github.com/gin-gonic/gin"
@@ -35,7 +35,7 @@ func Start() {
 		// 控制調試日誌 log
 		gin.SetMode(configs.Gin.GetMode())
 
-		r.Run(configs.Host.GetSPBlogApisHost())
+		r.Run(configs.Host.GetSPBlogAPIHost())
 	})
 }
 

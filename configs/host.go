@@ -8,7 +8,7 @@ import (
 
 func newConfigHost() *configHost {
 	config := &configHost{
-		spBlogApisHost: ":" + viper.GetString("host.spBlogApisHost"),
+		spBlogAPIHost: ":" + viper.GetString("host.spBlogAPIHost"),
 	}
 
 	return config
@@ -19,19 +19,19 @@ type configHost struct {
 
 	sync.RWMutex
 
-	spBlogApisHost string
+	spBlogAPIHost string
 }
 
 func (c *configHost) reload() {
 	c.Lock()
 	defer c.Unlock()
 
-	c.spBlogApisHost = ":" + viper.GetString("host.spBlogApisHost")
+	c.spBlogAPIHost = ":" + viper.GetString("host.spBlogAPIHost")
 }
 
-func (c *configHost) GetSPBlogApisHost() string {
+func (c *configHost) GetSPBlogAPIHost() string {
 	c.RLock()
 	defer c.RUnlock()
 
-	return c.spBlogApisHost
+	return c.spBlogAPIHost
 }
