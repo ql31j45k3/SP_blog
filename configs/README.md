@@ -10,6 +10,12 @@
     system.log.level: "warn"
     system.log.path: /var/log/ostrich/def_log
 
+    system.pprof.status: false
+    system.pprof.block.status: false
+    system.pprof.block.rate: 1000000000
+    system.pprof.mutex.status: false
+    system.pprof.mutex.rate: 1000000000
+
     database.mysql.master.conn.maxIdle: 10
     database.mysql.master.conn.maxOpen: 100
     database.mysql.master.conn.maxLifetime: 600
@@ -32,5 +38,9 @@
         silent、error、warn、info, default silent
 
 # 欄位單位
+    system.pprof.block.rate
+        單位 nanoseconds
+    system.pprof.mutex.rate
+        單位 nanoseconds
     database.mysql.master.conn.maxLifetime
         單位 Second

@@ -1,33 +1,44 @@
 system:
   log:
-    level: <value>
-    path: <value>
+    level: info
+    path: /Users/log
+  pprof:
+    status: true
+    block:
+      status: true
+      rate: 1000000000
+    mutex:
+      status: true
+      rate: 1000000000
 
-host:
-  spBlogAPIHost: <value>
+api:
+  spBlog:
+    port: 8080
+  pprof:
+    port: 6060
 
 database:
   mysql:
     master:
-      host: <value>
-      port: <value>
-      username: <value>
-      password: <value>
-      dbName: <value>
+      host: localhost
+      port: 3306
+      username: username
+      password: password
+      dbName: dbName
       conn:
-        maxIdle: <value>
-        maxOpen: <value>
-        maxLifetime: <value>
+        maxIdle: 10
+        maxOpen: 100
+        maxLifetime: 600
 
 gin:
   # mode: debug、release、test
-  mode: <value>
+  mode: debug
 
 gorm:
   log:
     # logMode: silent、error、warn、info, default silent
-    mode: <value>
+    mode: silent
 
 validator:
   # 設定錯誤訊息文字語言
-  locale: <value>
+  locale: zh
