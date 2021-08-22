@@ -2,6 +2,14 @@ system:
   log:
     level: info
     path: /Users/log
+  pprof:
+    status: true
+    block:
+      status: true
+      rate: 1000000000
+    mutex:
+      status: true
+      rate: 1000000000
 
 api:
   spBlog:
