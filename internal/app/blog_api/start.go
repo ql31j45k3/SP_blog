@@ -2,6 +2,8 @@ package blog_api
 
 import (
 	"fmt"
+	"net/http"
+	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -17,6 +19,8 @@ import (
 	"gorm.io/gorm"
 
 	utilsDriver "github.com/ql31j45k3/SP_blog/internal/utils/driver"
+
+	_ "net/http/pprof"
 )
 
 // Start 控制服務流程、呼叫的依賴性
@@ -36,6 +40,20 @@ func Start() {
 
 	utilsDriver.SetLogEnv()
 	configs.SetReloadFunc(utilsDriver.ReloadSetLogLevel)
+
+	go func() {
+		if configs.Env.GetPPROFBlockStatus() {
+			runtime.SetBlockProfileRate(configs.Env.GetPPROFBlockRate())
+		}
+
+		if configs.Env.GetPPROFMutexStatus() {
+			runtime.SetMutexProfileFraction(configs.Env.GetPPROFMutexRate())
+		}
+
+		if configs.Env.GetPPROFStatus() {
+			_ = http.ListenAndServe(configs.Host.GetPPROFAPIHost(), nil)
+		}
+	}()
 
 	container := buildContainer()
 
