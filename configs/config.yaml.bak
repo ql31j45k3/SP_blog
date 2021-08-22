@@ -3,8 +3,9 @@ system:
     level: info
     path: /Users/log
 
-host:
-  spBlogAPIHost: 8080
+api:
+  spBlog:
+    port: 8080
 
 database:
   mysql:
