@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"runtime"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/zh"
@@ -55,27 +57,57 @@ func Start() {
 		}
 	}()
 
-	container := buildContainer()
+	container, err := buildContainer()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - buildContainer")
+		return
+	}
 
 	// 調用其他函式，函式參數容器會依照 Provide 提供後自行匹配
-	container.Invoke(article.RegisterRouter)
-	container.Invoke(author.RegisterRouter)
+	if err := container.Invoke(article.RegisterRouter); err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - container.Invoke(article.RegisterRouter)")
+		return
+	}
 
-	container.Invoke(func(r *gin.Engine) {
+	if err := container.Invoke(author.RegisterRouter); err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - container.Invoke(author.RegisterRouter)")
+		return
+	}
+
+	if err := container.Invoke(func(r *gin.Engine) {
 		utilsDriver.StartGin(r)
-	})
+	}); err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - utilsDriver.StartGin")
+		return
+	}
 }
 
 // buildContainer 建立 DI 容器，提供各個函式的 input 參數
-func buildContainer() *dig.Container {
+func buildContainer() (*dig.Container, error) {
 	container := dig.New()
 	provideFunc := containerProvide{}
 
-	container.Provide(provideFunc.gin)
-	container.Provide(provideFunc.mysqlMaster, dig.Name("dbM"))
-	container.Provide(provideFunc.translator)
+	if err := container.Provide(provideFunc.gin); err != nil {
+		return nil, fmt.Errorf("container.Provide(provideFunc.gin) - %w", err)
+	}
 
-	return container
+	if err := container.Provide(provideFunc.mysqlMaster, dig.Name("dbM")); err != nil {
+		return nil, fmt.Errorf("container.Provide(provideFunc.mysqlMaster) - %w", err)
+	}
+
+	if err := container.Provide(provideFunc.translator); err != nil {
+		return nil, fmt.Errorf("container.Provide(provideFunc.translator) - %w", err)
+	}
+
+	return container, nil
 }
 
 type containerProvide struct {
