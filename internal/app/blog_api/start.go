@@ -1,9 +1,13 @@
 package blog_api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"runtime"
+	"sync"
+
+	"github.com/ql31j45k3/SP_blog/internal/modules/example"
 
 	log "github.com/sirupsen/logrus"
 
@@ -57,6 +61,12 @@ func Start() {
 		}
 	}()
 
+	ctxStopNotify, cancelCtxStopNotify := context.WithCancel(context.Background())
+	// 注意: cancelCtx 底層保證多個調用，只會執行一次
+	defer cancelCtxStopNotify()
+
+	stopJobFunc := stopJob{}
+
 	container, err := buildContainer()
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -66,6 +76,15 @@ func Start() {
 	}
 
 	// 調用其他函式，函式參數容器會依照 Provide 提供後自行匹配
+	if err := container.Invoke(func(condAPI example.APIExampleCond) {
+		example.RegisterRouter(ctxStopNotify, stopJobFunc.add, condAPI)
+	}); err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - container.Invoke(example.RegisterRouter)")
+		return
+	}
+
 	if err := container.Invoke(article.RegisterRouter); err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
@@ -81,13 +100,46 @@ func Start() {
 	}
 
 	if err := container.Invoke(func(r *gin.Engine) {
-		utilsDriver.StartGin(r)
+		utilsDriver.StartGin(cancelCtxStopNotify, stopJobFunc.stop, r)
 	}); err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
 		}).Error("Start - utilsDriver.StartGin")
 		return
 	}
+}
+
+// stopJob 為避免其它 package 需 import 此包 package，故用傳遞 func 方式提供功能給其它模組使用，
+// 依賴關係都是 start.go 單向 import 其它 package 包功能
+type stopJob struct {
+	_ struct{}
+
+	sync.Mutex
+	stopFunctions []func()
+}
+
+func (s *stopJob) stop() context.Context {
+	ctx, cancelCtx := context.WithCancel(context.Background())
+
+	go func(s *stopJob, cancelCtx context.CancelFunc) {
+		s.Lock()
+		defer s.Unlock()
+
+		defer cancelCtx()
+
+		for _, f := range s.stopFunctions {
+			f()
+		}
+	}(s, cancelCtx)
+
+	return ctx
+}
+
+func (s *stopJob) add(f func()) {
+	s.Lock()
+	defer s.Unlock()
+
+	s.stopFunctions = append(s.stopFunctions, f)
 }
 
 // buildContainer 建立 DI 容器，提供各個函式的 input 參數
