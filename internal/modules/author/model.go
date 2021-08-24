@@ -4,9 +4,23 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gin-gonic/gin"
+	ut "github.com/go-playground/universal-translator"
+	"go.uber.org/dig"
+
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"gorm.io/gorm"
 )
+
+type APIAuthorCond struct {
+	dig.In
+
+	R *gin.Engine
+
+	Trans ut.Translator
+
+	DBM *gorm.DB `name:"dbM"`
+}
 
 type authorCondOption func(*authorCond) error
 
