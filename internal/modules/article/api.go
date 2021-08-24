@@ -3,24 +3,21 @@ package article
 import (
 	"net/http"
 
-	ut "github.com/go-playground/universal-translator"
-
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 // RegisterRouter 註冊文章路由器
-func RegisterRouter(r *gin.Engine, db *gorm.DB, trans ut.Translator) {
-	article := newUseCaseArticle(newRepositoryArticle(), db, trans)
+func RegisterRouter(condAPI APIArticleCond) {
+	article := newUseCaseArticle(newRepositoryArticle(), condAPI.DBM, condAPI.Trans)
 	articleRouter := newArticleRouter(article)
 
-	routerGroup := r.Group("/v1/article")
+	routerGroup := condAPI.R.Group("/v1/article")
 	routerGroup.POST("", articleRouter.create)
 	routerGroup.PUT("/:id", articleRouter.updateID)
 	routerGroup.GET("/:id", articleRouter.getID)
 	routerGroup.GET("", articleRouter.get)
 
-	r.GET("/v1/search/article", articleRouter.search)
+	condAPI.R.GET("/v1/search/article", articleRouter.search)
 }
 
 func newArticleRouter(article useCaseArticle) articleRouter {

@@ -4,16 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	ut "github.com/go-playground/universal-translator"
-	"gorm.io/gorm"
 )
 
 // RegisterRouter 註冊文章路由器
-func RegisterRouter(r *gin.Engine, db *gorm.DB, trans ut.Translator) {
-	author := newUseCaseAuthor(newRepositoryAuthor(), db, trans)
+func RegisterRouter(condAPI APIAuthorCond) {
+	author := newUseCaseAuthor(newRepositoryAuthor(), condAPI.DBM, condAPI.Trans)
 	authorRouter := newAuthorRouter(author)
 
-	routerGroup := r.Group("/v1/author")
+	routerGroup := condAPI.R.Group("/v1/author")
 	routerGroup.POST("", authorRouter.create)
 	routerGroup.PUT("/:id", authorRouter.updateID)
 	routerGroup.GET("/:id", authorRouter.getID)

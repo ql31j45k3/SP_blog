@@ -1,9 +1,15 @@
 package blog_api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"runtime"
+	"sync"
+
+	"github.com/ql31j45k3/SP_blog/internal/modules/example"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -55,27 +61,105 @@ func Start() {
 		}
 	}()
 
-	container := buildContainer()
+	ctxStopNotify, cancelCtxStopNotify := context.WithCancel(context.Background())
+	// 注意: cancelCtx 底層保證多個調用，只會執行一次
+	defer cancelCtxStopNotify()
+
+	stopJobFunc := stopJob{}
+
+	container, err := buildContainer()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - buildContainer")
+		return
+	}
 
 	// 調用其他函式，函式參數容器會依照 Provide 提供後自行匹配
-	container.Invoke(article.RegisterRouter)
-	container.Invoke(author.RegisterRouter)
+	if err := container.Invoke(func(condAPI example.APIExampleCond) {
+		example.RegisterRouter(ctxStopNotify, stopJobFunc.add, condAPI)
+	}); err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - container.Invoke(example.RegisterRouter)")
+		return
+	}
 
-	container.Invoke(func(r *gin.Engine) {
-		utilsDriver.StartGin(r)
-	})
+	if err := container.Invoke(article.RegisterRouter); err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - container.Invoke(article.RegisterRouter)")
+		return
+	}
+
+	if err := container.Invoke(author.RegisterRouter); err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - container.Invoke(author.RegisterRouter)")
+		return
+	}
+
+	if err := container.Invoke(func(r *gin.Engine) {
+		utilsDriver.StartGin(cancelCtxStopNotify, stopJobFunc.stop, r)
+	}); err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Start - utilsDriver.StartGin")
+		return
+	}
+}
+
+// stopJob 為避免其它 package 需 import 此包 package，故用傳遞 func 方式提供功能給其它模組使用，
+// 依賴關係都是 start.go 單向 import 其它 package 包功能
+type stopJob struct {
+	_ struct{}
+
+	sync.Mutex
+	stopFunctions []func()
+}
+
+func (s *stopJob) stop() context.Context {
+	ctx, cancelCtx := context.WithCancel(context.Background())
+
+	go func(s *stopJob, cancelCtx context.CancelFunc) {
+		s.Lock()
+		defer s.Unlock()
+
+		defer cancelCtx()
+
+		for _, f := range s.stopFunctions {
+			f()
+		}
+	}(s, cancelCtx)
+
+	return ctx
+}
+
+func (s *stopJob) add(f func()) {
+	s.Lock()
+	defer s.Unlock()
+
+	s.stopFunctions = append(s.stopFunctions, f)
 }
 
 // buildContainer 建立 DI 容器，提供各個函式的 input 參數
-func buildContainer() *dig.Container {
+func buildContainer() (*dig.Container, error) {
 	container := dig.New()
 	provideFunc := containerProvide{}
 
-	container.Provide(provideFunc.gin)
-	container.Provide(provideFunc.gorm)
-	container.Provide(provideFunc.translator)
+	if err := container.Provide(provideFunc.gin); err != nil {
+		return nil, fmt.Errorf("container.Provide(provideFunc.gin) - %w", err)
+	}
 
-	return container
+	if err := container.Provide(provideFunc.mysqlMaster, dig.Name("dbM")); err != nil {
+		return nil, fmt.Errorf("container.Provide(provideFunc.mysqlMaster) - %w", err)
+	}
+
+	if err := container.Provide(provideFunc.translator); err != nil {
+		return nil, fmt.Errorf("container.Provide(provideFunc.translator) - %w", err)
+	}
+
+	return container, nil
 }
 
 type containerProvide struct {
@@ -88,7 +172,7 @@ func (cp *containerProvide) gin() *gin.Engine {
 }
 
 // gorm 建立 gorm.DB 設定，初始化 session 並無實際連線
-func (cp *containerProvide) gorm() (*gorm.DB, error) {
+func (cp *containerProvide) mysqlMaster() (*gorm.DB, error) {
 	return utilsDriver.NewMysql(configs.Gorm.GetMasterHost(), configs.Gorm.GetMasterUsername(), configs.Gorm.GetMasterPassword(),
 		configs.Gorm.GetMasterDBName(), configs.Gorm.GetMasterPort(), configs.Gorm.GetLogMode(),
 		configs.Gorm.GetMasterMaxIdle(), configs.Gorm.GetMasterMaxOpen(), configs.Gorm.GetMasterMaxLifetime())
