@@ -10,6 +10,8 @@ system:
     mutex:
       status: true
       rate: 1000000000
+  shutdown:
+    timeout: 10
 
 api:
   spBlog:

@@ -2,6 +2,7 @@ package configs
 
 import (
 	"sync"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -18,6 +19,8 @@ func newConfigEnv() *configEnv {
 	viper.SetDefault("system.pprof.mutex.status", false)
 	viper.SetDefault("system.pprof.mutex.rate", 1000000000)
 
+	viper.SetDefault("system.shutdown.timeout", time.Duration(10))
+
 	return &configEnv{
 		logLevel: viper.GetString("system.log.level"),
 		logPath:  viper.GetString("system.log.path"),
@@ -29,6 +32,8 @@ func newConfigEnv() *configEnv {
 
 		pprofMutexStatus: viper.GetBool("system.pprof.mutex.status"),
 		pprofMutexRate:   viper.GetInt("system.pprof.mutex.rate"),
+
+		shutdownTimeout: viper.GetDuration("system.shutdown.timeout") * time.Second,
 	}
 }
 
@@ -47,6 +52,8 @@ type configEnv struct {
 
 	pprofMutexStatus bool
 	pprofMutexRate   int
+
+	shutdownTimeout time.Duration
 }
 
 func (c *configEnv) reload() {
@@ -85,4 +92,8 @@ func (c *configEnv) GetPPROFMutexStatus() bool {
 
 func (c *configEnv) GetPPROFMutexRate() int {
 	return c.pprofMutexRate
+}
+
+func (c *configEnv) GetShutdownTimeout() time.Duration {
+	return c.shutdownTimeout
 }
