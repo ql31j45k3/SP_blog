@@ -24,6 +24,7 @@ type useCaseExample interface {
 }
 
 type example struct {
+	_ struct{}
 }
 
 func (e *example) createGoroutine(ctxStopNotify context.Context, taskID string, task *taskMap, goCount int) {
