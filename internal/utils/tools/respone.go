@@ -73,16 +73,16 @@ type Model struct {
 	_ struct{}
 
 	ID        uint      `json:"id"`
-	CreatedAt time.Time `json:"created-at"`
-	UpdatedAt time.Time `json:"updated-at"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // Pagination 查詢分頁欄位
 type Pagination struct {
 	_ struct{}
 
-	PageIndex int
-	PageSize  int
+	PageIndex int `json:"page_index"`
+	PageSize  int `json:"page_size"`
 }
 
 func (p *Pagination) GetOffset() int {
