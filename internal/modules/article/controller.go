@@ -42,12 +42,7 @@ func (ar *articleRouter) create(c *gin.Context) {
 		return
 	}
 
-	result, err := ar.article.Create(c, article)
-	if err != nil {
-		return
-	}
-
-	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(result))
+	ar.article.Create(c, article)
 }
 
 func (ar *articleRouter) updateID(c *gin.Context) {
@@ -59,37 +54,17 @@ func (ar *articleRouter) updateID(c *gin.Context) {
 		return
 	}
 
-	err := ar.article.UpdateID(c, id, article)
-	if err != nil {
-		return
-	}
-
-	c.Status(http.StatusNoContent)
+	ar.article.UpdateID(c, id, article)
 }
 
 func (ar *articleRouter) getID(c *gin.Context) {
-	result, err := ar.article.GetID(c)
-	if err != nil {
-		return
-	}
-
-	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
+	ar.article.GetID(c)
 }
 
 func (ar *articleRouter) get(c *gin.Context) {
-	result, err := ar.article.Get(c)
-	if err != nil {
-		return
-	}
-
-	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
+	ar.article.Get(c)
 }
 
 func (ar *articleRouter) search(c *gin.Context) {
-	result, err := ar.article.Search(c)
-	if err != nil {
-		return
-	}
-
-	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
+	ar.article.Search(c)
 }

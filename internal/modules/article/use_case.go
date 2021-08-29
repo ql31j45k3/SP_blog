@@ -18,11 +18,11 @@ func newUseCaseArticle(repositoryArticle repositoryArticle, db *gorm.DB) useCase
 }
 
 type useCaseArticle interface {
-	Create(c *gin.Context, article articles) (responseArticleCreate, error)
-	UpdateID(c *gin.Context, id string, article articles) error
-	GetID(c *gin.Context) (responseArticle, error)
-	Get(c *gin.Context) ([]responseArticle, error)
-	Search(c *gin.Context) ([]responseArticle, error)
+	Create(c *gin.Context, article articles)
+	UpdateID(c *gin.Context, id string, article articles)
+	GetID(c *gin.Context)
+	Get(c *gin.Context)
+	Search(c *gin.Context)
 }
 
 type article struct {
@@ -33,36 +33,36 @@ type article struct {
 	db *gorm.DB
 }
 
-func (a *article) Create(c *gin.Context, article articles) (responseArticleCreate, error) {
+func (a *article) Create(c *gin.Context, article articles) {
 	newRowID, err := a.repositoryArticle.Create(a.db, article)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return responseArticleCreate{}, err
+		return
 	}
 
 	result := responseArticleCreate{
 		ID: fmt.Sprint(newRowID),
 	}
 
-	return result, nil
+	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(result))
 }
 
-func (a *article) UpdateID(c *gin.Context, id string, article articles) error {
+func (a *article) UpdateID(c *gin.Context, id string, article articles) {
 	cond, err := newArticleCond(withArticleID(id))
 	if err != nil {
 		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return err
+		return
 	}
 
 	if err := a.repositoryArticle.UpdateID(a.db, cond, article); err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return err
+		return
 	}
 
-	return nil
+	c.Status(http.StatusNoContent)
 }
 
-func (a *article) GetID(c *gin.Context) (responseArticle, error) {
+func (a *article) GetID(c *gin.Context) {
 	var responseArticle responseArticle
 
 	ID := c.Param("id")
@@ -70,23 +70,24 @@ func (a *article) GetID(c *gin.Context) (responseArticle, error) {
 	cond, err := newArticleCond(withArticleID(ID))
 	if err != nil {
 		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return responseArticle, err
+		return
 	}
 
 	article, err := a.repositoryArticle.GetID(a.db, cond)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return responseArticle, err
+		return
 	}
 
 	if err := tools.ConvSourceToData(&article, &responseArticle); err != nil {
-		return responseArticle, err
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
 	}
 
-	return responseArticle, nil
+	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseArticle))
 }
 
-func (a *article) Get(c *gin.Context) ([]responseArticle, error) {
+func (a *article) Get(c *gin.Context) {
 	var responseArticles []responseArticle
 
 	cond, err := newArticleCond(withArticlePageIndex(c.Query("page_index")),
@@ -98,23 +99,24 @@ func (a *article) Get(c *gin.Context) ([]responseArticle, error) {
 		withArticleStatus(c.Query("status")))
 	if err != nil {
 		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return responseArticles, err
+		return
 	}
 
 	articles, err := a.repositoryArticle.Get(a.db, cond)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return responseArticles, err
+		return
 	}
 
 	if err := tools.ConvSourceToData(&articles, &responseArticles); err != nil {
-		return responseArticles, err
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
 	}
 
-	return responseArticles, nil
+	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseArticles))
 }
 
-func (a *article) Search(c *gin.Context) ([]responseArticle, error) {
+func (a *article) Search(c *gin.Context) {
 	var responseArticles []responseArticle
 
 	cond, err := newSearchCond(withSearchPageIndex(c.Query("page_index")),
@@ -123,18 +125,19 @@ func (a *article) Search(c *gin.Context) ([]responseArticle, error) {
 		withSearchTags(c.QueryArray("tags")))
 	if err != nil {
 		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return responseArticles, err
+		return
 	}
 
 	articles, err := a.repositoryArticle.Search(a.db, cond)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return responseArticles, err
+		return
 	}
 
 	if err := tools.ConvSourceToData(&articles, &responseArticles); err != nil {
-		return responseArticles, err
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
 	}
 
-	return responseArticles, nil
+	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseArticles))
 }
