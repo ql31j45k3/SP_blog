@@ -128,13 +128,13 @@ type articles struct {
 
 	gorm.Model
 
-	Title   string `binding:"required,min=1,max=100"`
-	Desc    string `binding:"required,min=1,max=255"`
-	Content string `binding:"required,min=10"`
+	Title   string `json:"title" binding:"required,min=1,max=100"`
+	Desc    string `json:"desc" binding:"required,min=1,max=255"`
+	Content string `json:"content" binding:"required,min=10"`
 
-	Status int `binding:"articleStatus"`
+	Status int `json:"status" binding:"articleStatus"`
 
-	ArticleLabel []articleLabels `gorm:"-"`
+	ArticleLabel []articleLabels `json:"article_label" gorm:"-"`
 }
 
 type articleLabels struct {
