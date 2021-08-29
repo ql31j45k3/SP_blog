@@ -3,9 +3,12 @@ package author
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
 	"testing"
+
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 
 	"github.com/spf13/viper"
 
@@ -14,7 +17,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	ut "github.com/go-playground/universal-translator"
+
+	//nolint:typecheck
 	"github.com/go-playground/validator/v10"
+
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
 	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
 	"github.com/stretchr/testify/assert"
@@ -69,7 +75,12 @@ func start() {
 func TestRegisterRouter(t *testing.T) {
 	start()
 
-	RegisterRouter(r, db, translator)
+	condAPI := APIAuthorCond{
+		R:     r,
+		DBM:   db,
+		Trans: translator,
+	}
+	RegisterRouter(condAPI)
 
 	ID := testPost(t)
 	testUpdateID(t, ID)
@@ -105,7 +116,31 @@ func testPost(t *testing.T) string {
 
 	assert.Equal(t, http.StatusCreated, httpStatus)
 
-	return string(body)
+	result := tools.ResponseBasic{}
+	if err := json.Unmarshal(body, &result); err != nil {
+		t.Error(err)
+		return ""
+	}
+
+	response, ok := result.Data.(map[string]interface{})
+	if !ok {
+		t.Error(errors.New("result.Data.(map[string]interface{}) fail"))
+		return ""
+	}
+
+	id, ok := response["id"]
+	if !ok {
+		t.Error(errors.New(`response["id"] not find key`))
+		return ""
+	}
+
+	idStr, ok := id.(string)
+	if !ok {
+		t.Error(errors.New("id.(string) fail"))
+		return ""
+	}
+
+	return idStr
 }
 
 func testUpdateID(t *testing.T, ID string) {

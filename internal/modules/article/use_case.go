@@ -70,7 +70,7 @@ func (a *article) GetID(c *gin.Context, cond articleCond) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseArticle))
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(responseArticle))
 }
 
 func (a *article) Get(c *gin.Context, cond articleCond) {
@@ -87,7 +87,7 @@ func (a *article) Get(c *gin.Context, cond articleCond) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseArticles))
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(responseArticles))
 }
 
 func (a *article) Search(c *gin.Context, cond searchCond) {
@@ -104,5 +104,5 @@ func (a *article) Search(c *gin.Context, cond searchCond) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseArticles))
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(responseArticles))
 }

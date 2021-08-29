@@ -69,7 +69,7 @@ func (a *author) GetID(c *gin.Context, cond authorCond) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseAuthor))
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(responseAuthor))
 }
 
 func (a *author) Get(c *gin.Context, cond authorCond) {
@@ -86,5 +86,5 @@ func (a *author) Get(c *gin.Context, cond authorCond) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseAuthors))
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(responseAuthors))
 }

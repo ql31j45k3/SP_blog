@@ -7,15 +7,15 @@ import (
 	"os"
 	"strings"
 
+	utilsDriver "github.com/ql31j45k3/SP_blog/internal/utils/driver"
+
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/ql31j45k3/SP_blog/configs"
 	validatorFunc "github.com/ql31j45k3/SP_blog/internal/utils/validator"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 func Start() (*gin.Engine, *gorm.DB, ut.Translator, error) {
@@ -27,10 +27,9 @@ func Start() (*gin.Engine, *gorm.DB, ut.Translator, error) {
 
 	r := gin.Default()
 
-	var err error
-	db, err := gorm.Open(mysql.Open(configs.Gorm.GetDSN()), &gorm.Config{
-		Logger: logger.Default.LogMode(configs.Gorm.GetLogMode()),
-	})
+	db, err := utilsDriver.NewMysql(configs.Gorm.GetMasterHost(), configs.Gorm.GetMasterUsername(), configs.Gorm.GetMasterPassword(),
+		configs.Gorm.GetMasterDBName(), configs.Gorm.GetMasterPort(), configs.Gorm.GetLogMode(),
+		configs.Gorm.GetMasterMaxIdle(), configs.Gorm.GetMasterMaxOpen(), configs.Gorm.GetMasterMaxLifetime())
 	if err != nil {
 		panic(err)
 	}
