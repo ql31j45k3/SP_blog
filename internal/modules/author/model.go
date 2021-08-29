@@ -126,6 +126,12 @@ type authors struct {
 	Status int `json:"status" binding:"authorStatus"`
 }
 
+type responseAuthorCreate struct {
+	_ struct{}
+
+	ID string `json:"id"`
+}
+
 type responseAuthor struct {
 	_ struct{}
 
