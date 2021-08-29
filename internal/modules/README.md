@@ -5,7 +5,7 @@ e.g. 文章模組
 ```
  - modules
    - article
-      api.go (API 註冊)
+      controller.go (API 註冊)
       use_case.go (邏輯處理)
       model.go (資料模型)
       repository.go (資料相關操作處理)
