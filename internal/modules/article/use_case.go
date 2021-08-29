@@ -4,25 +4,22 @@ import (
 	"fmt"
 	"net/http"
 
-	ut "github.com/go-playground/universal-translator"
-
 	"github.com/gin-gonic/gin"
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"gorm.io/gorm"
 )
 
-func newUseCaseArticle(repositoryArticle repositoryArticle, db *gorm.DB, trans ut.Translator) useCaseArticle {
+func newUseCaseArticle(repositoryArticle repositoryArticle, db *gorm.DB) useCaseArticle {
 	return &article{
 		repositoryArticle: repositoryArticle,
 
-		db:    db,
-		trans: trans,
+		db: db,
 	}
 }
 
 type useCaseArticle interface {
-	Create(c *gin.Context) (responseArticleCreate, error)
-	UpdateID(c *gin.Context) error
+	Create(c *gin.Context, article articles) (responseArticleCreate, error)
+	UpdateID(c *gin.Context, id string, article articles) error
 	GetID(c *gin.Context) (responseArticle, error)
 	Get(c *gin.Context) ([]responseArticle, error)
 	Search(c *gin.Context) ([]responseArticle, error)
@@ -34,16 +31,9 @@ type article struct {
 	repositoryArticle
 
 	db *gorm.DB
-
-	trans ut.Translator
 }
 
-func (a *article) Create(c *gin.Context) (responseArticleCreate, error) {
-	var article articles
-	if err := tools.BindJSON(c, a.trans, &article); err != nil {
-		return responseArticleCreate{}, err
-	}
-
+func (a *article) Create(c *gin.Context, article articles) (responseArticleCreate, error) {
 	newRowID, err := a.repositoryArticle.Create(a.db, article)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
@@ -57,15 +47,8 @@ func (a *article) Create(c *gin.Context) (responseArticleCreate, error) {
 	return result, nil
 }
 
-func (a *article) UpdateID(c *gin.Context) error {
-	var article articles
-	if err := tools.BindJSON(c, a.trans, &article); err != nil {
-		return err
-	}
-
-	ID := c.Param("id")
-
-	cond, err := newArticleCond(withArticleID(ID))
+func (a *article) UpdateID(c *gin.Context, id string, article articles) error {
+	cond, err := newArticleCond(withArticleID(id))
 	if err != nil {
 		tools.NewReturnError(c, http.StatusBadRequest, err)
 		return err

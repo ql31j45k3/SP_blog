@@ -3,6 +3,8 @@ package article
 import (
 	"net/http"
 
+	ut "github.com/go-playground/universal-translator"
+
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 
 	"github.com/gin-gonic/gin"
@@ -10,8 +12,11 @@ import (
 
 // RegisterRouter 註冊文章路由器
 func RegisterRouter(condAPI APIArticleCond) {
-	article := newUseCaseArticle(newRepositoryArticle(), condAPI.DBM, condAPI.Trans)
-	articleRouter := newArticleRouter(article)
+	article := newUseCaseArticle(newRepositoryArticle(), condAPI.DBM)
+	articleRouter := articleRouter{
+		article: article,
+		trans:   condAPI.Trans,
+	}
 
 	routerGroup := condAPI.R.Group("/v1/article")
 	routerGroup.POST("", articleRouter.create)
@@ -22,20 +27,22 @@ func RegisterRouter(condAPI APIArticleCond) {
 	condAPI.R.GET("/v1/search/article", articleRouter.search)
 }
 
-func newArticleRouter(article useCaseArticle) articleRouter {
-	return articleRouter{
-		article: article,
-	}
-}
-
 type articleRouter struct {
 	_ struct{}
 
 	article useCaseArticle
+
+	trans ut.Translator
 }
 
 func (ar *articleRouter) create(c *gin.Context) {
-	result, err := ar.article.Create(c)
+	var article articles
+	if err := tools.BindJSON(c, ar.trans, &article); err != nil {
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	result, err := ar.article.Create(c, article)
 	if err != nil {
 		return
 	}
@@ -44,7 +51,15 @@ func (ar *articleRouter) create(c *gin.Context) {
 }
 
 func (ar *articleRouter) updateID(c *gin.Context) {
-	err := ar.article.UpdateID(c)
+	id := c.Param("id")
+
+	var article articles
+	if err := tools.BindJSON(c, ar.trans, &article); err != nil {
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	err := ar.article.UpdateID(c, id, article)
 	if err != nil {
 		return
 	}
