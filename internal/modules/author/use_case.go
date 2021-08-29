@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	ut "github.com/go-playground/universal-translator"
 	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
 	"gorm.io/gorm"
 )
@@ -31,8 +30,6 @@ type author struct {
 	repositoryAuthor
 
 	db *gorm.DB
-
-	trans ut.Translator
 }
 
 func (a *author) Create(c *gin.Context, author authors) {
