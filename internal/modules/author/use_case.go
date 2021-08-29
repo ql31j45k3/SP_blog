@@ -99,8 +99,8 @@ func (a *author) GetID(c *gin.Context) (responseAuthor, error) {
 func (a *author) Get(c *gin.Context) ([]responseAuthor, error) {
 	var responseAuthors []responseAuthor
 
-	cond, err := newAuthorCond(withAuthorPageIndex(c.Query("pageIndex")),
-		withAuthorPageSize(c.Query("pageSize")),
+	cond, err := newAuthorCond(withAuthorPageIndex(c.Query("page_index")),
+		withAuthorPageSize(c.Query("page_size")),
 		withAuthorID(c.Query("id")),
 		withAuthorTitle(c.Query("title")),
 		withAuthorContent(c.Query("content")),

@@ -101,8 +101,8 @@ func (a *article) GetID(c *gin.Context) (responseArticle, error) {
 func (a *article) Get(c *gin.Context) ([]responseArticle, error) {
 	var responseArticles []responseArticle
 
-	cond, err := newArticleCond(withArticlePageIndex(c.Query("pageIndex")),
-		withArticlePageSize(c.Query("pageSize")),
+	cond, err := newArticleCond(withArticlePageIndex(c.Query("page_index")),
+		withArticlePageSize(c.Query("page_size")),
 		withArticleID(c.Query("id")),
 		withArticleTitle(c.Query("title")),
 		withArticleDesc(c.Query("desc")),
@@ -129,8 +129,8 @@ func (a *article) Get(c *gin.Context) ([]responseArticle, error) {
 func (a *article) Search(c *gin.Context) ([]responseArticle, error) {
 	var responseArticles []responseArticle
 
-	cond, err := newSearchCond(withSearchPageIndex(c.Query("pageIndex")),
-		withSearchPageSize(c.Query("pageSize")),
+	cond, err := newSearchCond(withSearchPageIndex(c.Query("page_index")),
+		withSearchPageSize(c.Query("page_size")),
 		withSearchKeyword(c.Query("keyword")),
 		withSearchTags(c.QueryArray("tags")))
 	if err != nil {
