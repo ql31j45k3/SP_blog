@@ -35,6 +35,7 @@ func (am *articleMysql) Create(db *gorm.DB, article articles) (uint, error) {
 
 	for i := range article.ArticleLabel {
 		articleLabels := article.ArticleLabel[i]
+		//nolint:typecheck
 		articleLabels.ArticlesID = article.ID
 
 		if _, err := am.createLabel(db, articleLabels); err != nil {
@@ -44,6 +45,8 @@ func (am *articleMysql) Create(db *gorm.DB, article articles) (uint, error) {
 	}
 
 	tx.Commit()
+
+	//nolint:typecheck
 	return article.ID, nil
 }
 
@@ -87,6 +90,7 @@ func (am *articleMysql) createLabel(db *gorm.DB, articleLabel articleLabels) (ui
 		return 0, result.Error
 	}
 
+	//nolint:typecheck
 	return articleLabel.ID, nil
 }
 
@@ -116,6 +120,7 @@ func (am *articleMysql) Get(db *gorm.DB, cond articleCond) ([]articles, error) {
 
 	db = tools.SQLAppend(db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
 
+	//nolint:typecheck
 	db = tools.SQLPagination(db, cond.GetRowCount(), cond.GetOffset())
 
 	result := db.Find(&articles)
@@ -151,6 +156,7 @@ func (am *articleMysql) Search(db *gorm.DB, cond searchCond) ([]articles, error)
 	values = tools.SQLRawAppend(len(cond.tags) > 0, &sql, tagsSqlStr, values, cond.tags)
 
 	sql.WriteString(" LIMIT ? OFFSET ?")
+	//nolint:typecheck
 	values = append(values, cond.GetRowCount(), cond.GetOffset())
 
 	var articles []articles

@@ -69,11 +69,13 @@ func (cond *authorCond) parseGet(c *gin.Context) error {
 		return err
 	}
 
+	//nolint:typecheck
 	cond.PageIndex, err = tools.Atoi(c.Query("page_index"), tools.DefaultNotAssignInt)
 	if err != nil {
 		return err
 	}
 
+	//nolint:typecheck
 	cond.PageSize, err = tools.Atoi(c.Query("page_size"), tools.DefaultNotAssignInt)
 	if err != nil {
 		return err

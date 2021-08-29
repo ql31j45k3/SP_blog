@@ -26,6 +26,7 @@ func (am *authorMysql) Create(db *gorm.DB, author authors) (uint, error) {
 		return 0, result.Error
 	}
 
+	//nolint:typecheck
 	return author.ID, nil
 }
 
@@ -64,6 +65,7 @@ func (am *authorMysql) Get(db *gorm.DB, cond authorCond) ([]authors, error) {
 
 	db = tools.SQLAppend(db, tools.IsNotNegativeOne(cond.status), "`status` = ?", cond.status)
 
+	//nolint:typecheck
 	db = tools.SQLPagination(db, cond.GetRowCount(), cond.GetOffset())
 
 	result := db.Find(&authors)
