@@ -22,20 +22,6 @@ type APIArticleCond struct {
 	DBM *gorm.DB `name:"dbM"`
 }
 
-type articleCondOption func(*articleCond) error
-
-func newArticleCond(opts ...articleCondOption) (*articleCond, error) {
-	cond := &articleCond{}
-
-	for _, o := range opts {
-		if err := o(cond); err != nil {
-			return nil, err
-		}
-	}
-
-	return cond, nil
-}
-
 type articleCond struct {
 	_ struct{}
 
@@ -50,77 +36,60 @@ type articleCond struct {
 	status int
 }
 
-func withArticlePageIndex(pageIndex string) articleCondOption {
-	return func(cond *articleCond) error {
-		pageIndex, err := tools.Atoi(pageIndex, tools.DefaultNotAssignInt)
-		if err != nil {
-			return err
-		}
+func (cond *articleCond) parseArticleID(c *gin.Context) error {
+	var err error
+	idStr := c.Param("id")
 
-		cond.PageIndex = pageIndex
-		return nil
+	cond.ID, err = cond.getID(idStr)
+	if err != nil {
+		return err
 	}
+
+	return nil
 }
 
-func withArticlePageSize(pageSize string) articleCondOption {
-	return func(cond *articleCond) error {
-		pageSize, err := tools.Atoi(pageSize, tools.DefaultNotAssignInt)
-		if err != nil {
-			return err
-		}
-
-		cond.PageSize = pageSize
-		return nil
+func (cond *articleCond) getID(idStr string) (uint, error) {
+	if tools.IsEmpty(idStr) {
+		return 0, nil
 	}
+
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(id), nil
 }
 
-func withArticleID(IDStr string) articleCondOption {
-	return func(cond *articleCond) error {
-		if tools.IsEmpty(IDStr) {
-			return nil
-		}
+func (cond *articleCond) parseGet(c *gin.Context) error {
+	var err error
+	idStr := c.Query("id")
 
-		ID, err := strconv.ParseUint(IDStr, 10, 64)
-		if err != nil {
-			return err
-		}
-		cond.ID = uint(ID)
-
-		return nil
+	cond.ID, err = cond.getID(idStr)
+	if err != nil {
+		return err
 	}
-}
 
-func withArticleTitle(title string) articleCondOption {
-	return func(cond *articleCond) error {
-		cond.title = strings.TrimSpace(title)
-		return nil
+	cond.PageIndex, err = tools.Atoi(c.Query("page_index"), tools.DefaultNotAssignInt)
+	if err != nil {
+		return err
 	}
-}
 
-func withArticleDesc(desc string) articleCondOption {
-	return func(cond *articleCond) error {
-		cond.desc = strings.TrimSpace(desc)
-		return nil
+	cond.PageSize, err = tools.Atoi(c.Query("page_size"), tools.DefaultNotAssignInt)
+	if err != nil {
+		return err
 	}
-}
 
-func withArticleContent(content string) articleCondOption {
-	return func(cond *articleCond) error {
-		cond.content = strings.TrimSpace(content)
-		return nil
+	cond.title = strings.TrimSpace(c.Query("title"))
+	cond.desc = strings.TrimSpace(c.Query("desc"))
+	cond.content = strings.TrimSpace(c.Query("content"))
+
+	cond.status, err = tools.Atoi(c.Query("status"), tools.DefaultNotAssignInt)
+	if err != nil {
+		return err
 	}
-}
 
-func withArticleStatus(status string) articleCondOption {
-	return func(cond *articleCond) error {
-		status, err := tools.Atoi(status, tools.DefaultNotAssignInt)
-		if err != nil {
-			return err
-		}
-
-		cond.status = status
-		return nil
-	}
+	return nil
 }
 
 type articles struct {
@@ -164,20 +133,6 @@ type responseArticle struct {
 	Status int `json:"status"`
 }
 
-type searchCondOption func(*searchCond) error
-
-func newSearchCond(opts ...searchCondOption) (*searchCond, error) {
-	cond := &searchCond{}
-
-	for _, o := range opts {
-		if err := o(cond); err != nil {
-			return nil, err
-		}
-	}
-
-	return cond, nil
-}
-
 type searchCond struct {
 	_ struct{}
 
@@ -187,40 +142,22 @@ type searchCond struct {
 	tags    []string
 }
 
-func withSearchPageIndex(pageIndex string) searchCondOption {
-	return func(cond *searchCond) error {
-		pageIndex, err := tools.Atoi(pageIndex, tools.DefaultNotAssignInt)
-		if err != nil {
-			return err
-		}
+func (cond *searchCond) parseGet(c *gin.Context) error {
+	var err error
 
-		cond.PageIndex = pageIndex
-		return nil
+	cond.PageIndex, err = tools.Atoi(c.Query("page_index"), tools.DefaultNotAssignInt)
+	if err != nil {
+		return err
 	}
-}
 
-func withSearchPageSize(pageSize string) searchCondOption {
-	return func(cond *searchCond) error {
-		pageSize, err := tools.Atoi(pageSize, tools.DefaultNotAssignInt)
-		if err != nil {
-			return err
-		}
-
-		cond.PageSize = pageSize
-		return nil
+	cond.PageSize, err = tools.Atoi(c.Query("page_size"), tools.DefaultNotAssignInt)
+	if err != nil {
+		return err
 	}
-}
 
-func withSearchKeyword(keyword string) searchCondOption {
-	return func(cond *searchCond) error {
-		cond.keyword = strings.TrimSpace(keyword)
-		return nil
-	}
-}
+	cond.keyword = strings.TrimSpace(c.Query("keyword"))
 
-func withSearchTags(tags []string) searchCondOption {
-	return func(cond *searchCond) error {
-		cond.tags = tags
-		return nil
-	}
+	cond.tags = c.QueryArray("tags")
+
+	return nil
 }

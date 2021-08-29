@@ -46,7 +46,11 @@ func (ar *articleRouter) create(c *gin.Context) {
 }
 
 func (ar *articleRouter) updateID(c *gin.Context) {
-	id := c.Param("id")
+	cond := articleCond{}
+	if err := cond.parseArticleID(c); err != nil {
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
+	}
 
 	var article articles
 	if err := tools.BindJSON(c, ar.trans, &article); err != nil {
@@ -54,17 +58,35 @@ func (ar *articleRouter) updateID(c *gin.Context) {
 		return
 	}
 
-	ar.article.UpdateID(c, id, article)
+	ar.article.UpdateID(c, cond, article)
 }
 
 func (ar *articleRouter) getID(c *gin.Context) {
-	ar.article.GetID(c)
+	cond := articleCond{}
+	if err := cond.parseArticleID(c); err != nil {
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	ar.article.GetID(c, cond)
 }
 
 func (ar *articleRouter) get(c *gin.Context) {
-	ar.article.Get(c)
+	cond := articleCond{}
+	if err := cond.parseGet(c); err != nil {
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	ar.article.Get(c, cond)
 }
 
 func (ar *articleRouter) search(c *gin.Context) {
-	ar.article.Search(c)
+	cond := searchCond{}
+	if err := cond.parseGet(c); err != nil {
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	ar.article.Search(c, cond)
 }

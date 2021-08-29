@@ -14,10 +14,10 @@ func newRepositoryArticle() repositoryArticle {
 
 type repositoryArticle interface {
 	Create(db *gorm.DB, article articles) (uint, error)
-	UpdateID(db *gorm.DB, cond *articleCond, article articles) error
-	GetID(db *gorm.DB, cond *articleCond) (articles, error)
-	Get(db *gorm.DB, cond *articleCond) ([]articles, error)
-	Search(db *gorm.DB, cond *searchCond) ([]articles, error)
+	UpdateID(db *gorm.DB, cond articleCond, article articles) error
+	GetID(db *gorm.DB, cond articleCond) (articles, error)
+	Get(db *gorm.DB, cond articleCond) ([]articles, error)
+	Search(db *gorm.DB, cond searchCond) ([]articles, error)
 }
 
 type articleMysql struct {
@@ -47,7 +47,7 @@ func (am *articleMysql) Create(db *gorm.DB, article articles) (uint, error) {
 	return article.ID, nil
 }
 
-func (am *articleMysql) UpdateID(db *gorm.DB, cond *articleCond, article articles) error {
+func (am *articleMysql) UpdateID(db *gorm.DB, cond articleCond, article articles) error {
 	tx := db.Begin()
 
 	result := db.Model(articles{}).Where("`id` = ?", cond.ID).
@@ -94,7 +94,7 @@ func (am *articleMysql) deleteLabel(db *gorm.DB, articlesID uint) error {
 	return db.Where("`articles_id` = ?", articlesID).Delete(articleLabels{}).Error
 }
 
-func (am *articleMysql) GetID(db *gorm.DB, cond *articleCond) (articles, error) {
+func (am *articleMysql) GetID(db *gorm.DB, cond articleCond) (articles, error) {
 	var article articles
 
 	result := db.First(&article, cond.ID)
@@ -105,7 +105,7 @@ func (am *articleMysql) GetID(db *gorm.DB, cond *articleCond) (articles, error) 
 	return article, nil
 }
 
-func (am *articleMysql) Get(db *gorm.DB, cond *articleCond) ([]articles, error) {
+func (am *articleMysql) Get(db *gorm.DB, cond articleCond) ([]articles, error) {
 	var articles []articles
 
 	db = tools.SQLAppend(db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)
@@ -126,7 +126,7 @@ func (am *articleMysql) Get(db *gorm.DB, cond *articleCond) ([]articles, error) 
 	return articles, nil
 }
 
-func (am *articleMysql) Search(db *gorm.DB, cond *searchCond) ([]articles, error) {
+func (am *articleMysql) Search(db *gorm.DB, cond searchCond) ([]articles, error) {
 	var sql strings.Builder
 	var values []interface{}
 
