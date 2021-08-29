@@ -41,12 +41,7 @@ func (ar *authorRouter) create(c *gin.Context) {
 		return
 	}
 
-	result, err := ar.author.Create(c, author)
-	if err != nil {
-		return
-	}
-
-	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(result))
+	ar.author.Create(c, author)
 }
 
 func (ar *authorRouter) updateID(c *gin.Context) {
@@ -58,28 +53,13 @@ func (ar *authorRouter) updateID(c *gin.Context) {
 		return
 	}
 
-	err := ar.author.UpdateID(c, id, author)
-	if err != nil {
-		return
-	}
-
-	c.Status(http.StatusNoContent)
+	ar.author.UpdateID(c, id, author)
 }
 
 func (ar *authorRouter) getID(c *gin.Context) {
-	result, err := ar.author.GetID(c)
-	if err != nil {
-		return
-	}
-
-	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
+	ar.author.GetID(c)
 }
 
 func (ar *authorRouter) get(c *gin.Context) {
-	result, err := ar.author.Get(c)
-	if err != nil {
-		return
-	}
-
-	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
+	ar.author.Get(c)
 }

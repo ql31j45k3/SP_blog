@@ -19,10 +19,10 @@ func newUseCaseAuthor(repositoryAuthor repositoryAuthor, db *gorm.DB) useCaseAut
 }
 
 type useCaseAuthor interface {
-	Create(c *gin.Context, author authors) (responseAuthorCreate, error)
-	UpdateID(c *gin.Context, id string, author authors) error
-	GetID(c *gin.Context) (responseAuthor, error)
-	Get(c *gin.Context) ([]responseAuthor, error)
+	Create(c *gin.Context, author authors)
+	UpdateID(c *gin.Context, id string, author authors)
+	GetID(c *gin.Context)
+	Get(c *gin.Context)
 }
 
 type author struct {
@@ -35,36 +35,36 @@ type author struct {
 	trans ut.Translator
 }
 
-func (a *author) Create(c *gin.Context, author authors) (responseAuthorCreate, error) {
+func (a *author) Create(c *gin.Context, author authors) {
 	newRowID, err := a.repositoryAuthor.Create(a.db, author)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return responseAuthorCreate{}, err
+		return
 	}
 
 	result := responseAuthorCreate{
 		ID: fmt.Sprint(newRowID),
 	}
 
-	return result, nil
+	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(result))
 }
 
-func (a *author) UpdateID(c *gin.Context, id string, author authors) error {
+func (a *author) UpdateID(c *gin.Context, id string, author authors) {
 	cond, err := newAuthorCond(withAuthorID(id))
 	if err != nil {
 		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return err
+		return
 	}
 
 	if err := a.repositoryAuthor.UpdateID(a.db, cond, author); err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return err
+		return
 	}
 
-	return nil
+	c.Status(http.StatusNoContent)
 }
 
-func (a *author) GetID(c *gin.Context) (responseAuthor, error) {
+func (a *author) GetID(c *gin.Context) {
 	var responseAuthor responseAuthor
 
 	ID := c.Param("id")
@@ -72,23 +72,24 @@ func (a *author) GetID(c *gin.Context) (responseAuthor, error) {
 	cond, err := newAuthorCond(withAuthorID(ID))
 	if err != nil {
 		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return responseAuthor, err
+		return
 	}
 
 	author, err := a.repositoryAuthor.GetID(a.db, cond)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return responseAuthor, err
+		return
 	}
 
 	if err := tools.ConvSourceToData(&author, &responseAuthor); err != nil {
-		return responseAuthor, err
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
 	}
 
-	return responseAuthor, nil
+	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseAuthor))
 }
 
-func (a *author) Get(c *gin.Context) ([]responseAuthor, error) {
+func (a *author) Get(c *gin.Context) {
 	var responseAuthors []responseAuthor
 
 	cond, err := newAuthorCond(withAuthorPageIndex(c.Query("page_index")),
@@ -99,18 +100,19 @@ func (a *author) Get(c *gin.Context) ([]responseAuthor, error) {
 		withAuthorStatus(c.Query("status")))
 	if err != nil {
 		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return responseAuthors, err
+		return
 	}
 
 	authors, err := a.repositoryAuthor.Get(a.db, cond)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return responseAuthors, err
+		return
 	}
 
 	if err := tools.ConvSourceToData(&authors, &responseAuthors); err != nil {
-		return responseAuthors, err
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
 	}
 
-	return responseAuthors, nil
+	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseAuthors))
 }
