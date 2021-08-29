@@ -11,9 +11,9 @@ func newRepositoryAuthor() repositoryAuthor {
 
 type repositoryAuthor interface {
 	Create(db *gorm.DB, author authors) (uint, error)
-	UpdateID(db *gorm.DB, cond *authorCond, author authors) error
-	GetID(db *gorm.DB, cond *authorCond) (authors, error)
-	Get(db *gorm.DB, cond *authorCond) ([]authors, error)
+	UpdateID(db *gorm.DB, cond authorCond, author authors) error
+	GetID(db *gorm.DB, cond authorCond) (authors, error)
+	Get(db *gorm.DB, cond authorCond) ([]authors, error)
 }
 
 type authorMysql struct {
@@ -29,7 +29,7 @@ func (am *authorMysql) Create(db *gorm.DB, author authors) (uint, error) {
 	return author.ID, nil
 }
 
-func (am *authorMysql) UpdateID(db *gorm.DB, cond *authorCond, author authors) error {
+func (am *authorMysql) UpdateID(db *gorm.DB, cond authorCond, author authors) error {
 	result := db.Model(authors{}).Where("`id` = ?", cond.ID).
 		Updates(map[string]interface{}{
 			"title":   author.Title,
@@ -43,7 +43,7 @@ func (am *authorMysql) UpdateID(db *gorm.DB, cond *authorCond, author authors) e
 	return nil
 }
 
-func (am *authorMysql) GetID(db *gorm.DB, cond *authorCond) (authors, error) {
+func (am *authorMysql) GetID(db *gorm.DB, cond authorCond) (authors, error) {
 	var author authors
 
 	result := db.First(&author, cond.ID)
@@ -54,7 +54,7 @@ func (am *authorMysql) GetID(db *gorm.DB, cond *authorCond) (authors, error) {
 	return author, nil
 }
 
-func (am *authorMysql) Get(db *gorm.DB, cond *authorCond) ([]authors, error) {
+func (am *authorMysql) Get(db *gorm.DB, cond authorCond) ([]authors, error) {
 	var authors []authors
 
 	db = tools.SQLAppend(db, tools.IsNotZero(int(cond.ID)), "`id` = ?", cond.ID)

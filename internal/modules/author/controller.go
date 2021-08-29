@@ -45,7 +45,11 @@ func (ar *authorRouter) create(c *gin.Context) {
 }
 
 func (ar *authorRouter) updateID(c *gin.Context) {
-	id := c.Param("id")
+	cond := authorCond{}
+	if err := cond.parseArticleID(c); err != nil {
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
+	}
 
 	var author authors
 	if err := tools.BindJSON(c, ar.trans, &author); err != nil {
@@ -53,13 +57,25 @@ func (ar *authorRouter) updateID(c *gin.Context) {
 		return
 	}
 
-	ar.author.UpdateID(c, id, author)
+	ar.author.UpdateID(c, cond, author)
 }
 
 func (ar *authorRouter) getID(c *gin.Context) {
-	ar.author.GetID(c)
+	cond := authorCond{}
+	if err := cond.parseArticleID(c); err != nil {
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	ar.author.GetID(c, cond)
 }
 
 func (ar *authorRouter) get(c *gin.Context) {
-	ar.author.Get(c)
+	cond := authorCond{}
+	if err := cond.parseGet(c); err != nil {
+		tools.NewReturnError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	ar.author.Get(c, cond)
 }

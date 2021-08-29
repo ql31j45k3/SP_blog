@@ -20,9 +20,9 @@ func newUseCaseAuthor(repositoryAuthor repositoryAuthor, db *gorm.DB) useCaseAut
 
 type useCaseAuthor interface {
 	Create(c *gin.Context, author authors)
-	UpdateID(c *gin.Context, id string, author authors)
-	GetID(c *gin.Context)
-	Get(c *gin.Context)
+	UpdateID(c *gin.Context, cond authorCond, author authors)
+	GetID(c *gin.Context, cond authorCond)
+	Get(c *gin.Context, cond authorCond)
 }
 
 type author struct {
@@ -49,13 +49,7 @@ func (a *author) Create(c *gin.Context, author authors) {
 	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(result))
 }
 
-func (a *author) UpdateID(c *gin.Context, id string, author authors) {
-	cond, err := newAuthorCond(withAuthorID(id))
-	if err != nil {
-		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return
-	}
-
+func (a *author) UpdateID(c *gin.Context, cond authorCond, author authors) {
 	if err := a.repositoryAuthor.UpdateID(a.db, cond, author); err != nil {
 		tools.IsErrRecordNotFound(c, err)
 		return
@@ -64,16 +58,8 @@ func (a *author) UpdateID(c *gin.Context, id string, author authors) {
 	c.Status(http.StatusNoContent)
 }
 
-func (a *author) GetID(c *gin.Context) {
+func (a *author) GetID(c *gin.Context, cond authorCond) {
 	var responseAuthor responseAuthor
-
-	ID := c.Param("id")
-
-	cond, err := newAuthorCond(withAuthorID(ID))
-	if err != nil {
-		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return
-	}
 
 	author, err := a.repositoryAuthor.GetID(a.db, cond)
 	if err != nil {
@@ -89,19 +75,8 @@ func (a *author) GetID(c *gin.Context) {
 	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(responseAuthor))
 }
 
-func (a *author) Get(c *gin.Context) {
+func (a *author) Get(c *gin.Context, cond authorCond) {
 	var responseAuthors []responseAuthor
-
-	cond, err := newAuthorCond(withAuthorPageIndex(c.Query("page_index")),
-		withAuthorPageSize(c.Query("page_size")),
-		withAuthorID(c.Query("id")),
-		withAuthorTitle(c.Query("title")),
-		withAuthorContent(c.Query("content")),
-		withAuthorStatus(c.Query("status")))
-	if err != nil {
-		tools.NewReturnError(c, http.StatusBadRequest, err)
-		return
-	}
 
 	authors, err := a.repositoryAuthor.Get(a.db, cond)
 	if err != nil {

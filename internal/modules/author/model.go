@@ -22,20 +22,6 @@ type APIAuthorCond struct {
 	DBM *gorm.DB `name:"dbM"`
 }
 
-type authorCondOption func(*authorCond) error
-
-func newAuthorCond(opts ...authorCondOption) (*authorCond, error) {
-	cond := &authorCond{}
-
-	for _, o := range opts {
-		if err := o(cond); err != nil {
-			return nil, err
-		}
-	}
-
-	return cond, nil
-}
-
 type authorCond struct {
 	_ struct{}
 
@@ -49,70 +35,59 @@ type authorCond struct {
 	status int
 }
 
-func withAuthorPageIndex(pageIndex string) authorCondOption {
-	return func(cond *authorCond) error {
-		pageIndex, err := tools.Atoi(pageIndex, tools.DefaultNotAssignInt)
-		if err != nil {
-			return err
-		}
+func (cond *authorCond) parseArticleID(c *gin.Context) error {
+	var err error
+	idStr := c.Param("id")
 
-		cond.PageIndex = pageIndex
-		return nil
+	cond.ID, err = cond.getID(idStr)
+	if err != nil {
+		return err
 	}
+
+	return nil
 }
 
-func withAuthorPageSize(pageSize string) authorCondOption {
-	return func(cond *authorCond) error {
-		pageSize, err := tools.Atoi(pageSize, tools.DefaultNotAssignInt)
-		if err != nil {
-			return err
-		}
-
-		cond.PageSize = pageSize
-		return nil
+func (cond *authorCond) getID(idStr string) (uint, error) {
+	if tools.IsEmpty(idStr) {
+		return 0, nil
 	}
+
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(id), nil
 }
 
-func withAuthorID(IDStr string) authorCondOption {
-	return func(cond *authorCond) error {
-		if tools.IsEmpty(IDStr) {
-			return nil
-		}
+func (cond *authorCond) parseGet(c *gin.Context) error {
+	var err error
+	idStr := c.Query("id")
 
-		ID, err := strconv.ParseUint(IDStr, 10, 64)
-		if err != nil {
-			return err
-		}
-		cond.ID = uint(ID)
-
-		return nil
+	cond.ID, err = cond.getID(idStr)
+	if err != nil {
+		return err
 	}
-}
 
-func withAuthorTitle(title string) authorCondOption {
-	return func(cond *authorCond) error {
-		cond.title = strings.TrimSpace(title)
-		return nil
+	cond.PageIndex, err = tools.Atoi(c.Query("page_index"), tools.DefaultNotAssignInt)
+	if err != nil {
+		return err
 	}
-}
 
-func withAuthorContent(content string) authorCondOption {
-	return func(cond *authorCond) error {
-		cond.content = strings.TrimSpace(content)
-		return nil
+	cond.PageSize, err = tools.Atoi(c.Query("page_size"), tools.DefaultNotAssignInt)
+	if err != nil {
+		return err
 	}
-}
 
-func withAuthorStatus(status string) authorCondOption {
-	return func(cond *authorCond) error {
-		status, err := tools.Atoi(status, tools.DefaultNotAssignInt)
-		if err != nil {
-			return err
-		}
+	cond.title = strings.TrimSpace(c.Query("title"))
+	cond.content = strings.TrimSpace(c.Query("content"))
 
-		cond.status = status
-		return nil
+	cond.status, err = tools.Atoi(c.Query("status"), tools.DefaultNotAssignInt)
+	if err != nil {
+		return err
 	}
+
+	return nil
 }
 
 type authors struct {
