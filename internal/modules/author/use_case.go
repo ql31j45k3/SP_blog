@@ -1,6 +1,7 @@
 package author
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,7 @@ func newUseCaseAuthor(repositoryAuthor repositoryAuthor, db *gorm.DB, trans ut.T
 }
 
 type useCaseAuthor interface {
-	Create(c *gin.Context) (uint, error)
+	Create(c *gin.Context) (responseAuthorCreate, error)
 	UpdateID(c *gin.Context) error
 	GetID(c *gin.Context) (responseAuthor, error)
 	Get(c *gin.Context) ([]responseAuthor, error)
@@ -35,19 +36,23 @@ type author struct {
 	trans ut.Translator
 }
 
-func (a *author) Create(c *gin.Context) (uint, error) {
+func (a *author) Create(c *gin.Context) (responseAuthorCreate, error) {
 	var author authors
 	if err := tools.BindJSON(c, a.trans, &author); err != nil {
-		return 0, err
+		return responseAuthorCreate{}, err
 	}
 
 	newRowID, err := a.repositoryAuthor.Create(a.db, author)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return newRowID, err
+		return responseAuthorCreate{}, err
 	}
 
-	return newRowID, nil
+	result := responseAuthorCreate{
+		ID: fmt.Sprint(newRowID),
+	}
+
+	return result, nil
 }
 
 func (a *author) UpdateID(c *gin.Context) error {
@@ -99,8 +104,8 @@ func (a *author) GetID(c *gin.Context) (responseAuthor, error) {
 func (a *author) Get(c *gin.Context) ([]responseAuthor, error) {
 	var responseAuthors []responseAuthor
 
-	cond, err := newAuthorCond(withAuthorPageIndex(c.Query("pageIndex")),
-		withAuthorPageSize(c.Query("pageSize")),
+	cond, err := newAuthorCond(withAuthorPageIndex(c.Query("page_index")),
+		withAuthorPageSize(c.Query("page_size")),
 		withAuthorID(c.Query("id")),
 		withAuthorTitle(c.Query("title")),
 		withAuthorContent(c.Query("content")),

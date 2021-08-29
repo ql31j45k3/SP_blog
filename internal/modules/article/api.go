@@ -3,6 +3,8 @@ package article
 import (
 	"net/http"
 
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,7 +40,7 @@ func (ar *articleRouter) create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(result))
 }
 
 func (ar *articleRouter) updateID(c *gin.Context) {
@@ -56,7 +58,7 @@ func (ar *articleRouter) getID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
 }
 
 func (ar *articleRouter) get(c *gin.Context) {
@@ -65,7 +67,7 @@ func (ar *articleRouter) get(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
 }
 
 func (ar *articleRouter) search(c *gin.Context) {
@@ -74,5 +76,5 @@ func (ar *articleRouter) search(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
 }

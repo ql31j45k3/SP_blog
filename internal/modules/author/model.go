@@ -120,10 +120,16 @@ type authors struct {
 
 	gorm.Model
 
-	Title   string `binding:"required,min=1,max=100"`
-	Content string `binding:"required,min=10"`
+	Title   string `json:"title" binding:"required,min=1,max=100"`
+	Content string `json:"content" binding:"required,min=10"`
 
-	Status int `binding:"authorStatus"`
+	Status int `json:"status" binding:"authorStatus"`
+}
+
+type responseAuthorCreate struct {
+	_ struct{}
+
+	ID string `json:"id"`
 }
 
 type responseAuthor struct {
