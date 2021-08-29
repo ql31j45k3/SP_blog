@@ -3,6 +3,8 @@ package author
 import (
 	"net/http"
 
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,7 +38,7 @@ func (ar *authorRouter) create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusCreated, tools.NewResponseBasicSuccess(result))
 }
 
 func (ar *authorRouter) updateID(c *gin.Context) {
@@ -54,7 +56,7 @@ func (ar *authorRouter) getID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
 }
 
 func (ar *authorRouter) get(c *gin.Context) {
@@ -63,5 +65,5 @@ func (ar *authorRouter) get(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
 }

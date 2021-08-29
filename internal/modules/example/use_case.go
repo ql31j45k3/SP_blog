@@ -138,5 +138,5 @@ func (e *example) getGoroutineStatus(c *gin.Context, ids []string, task *taskMap
 		result = append(result, temp)
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
 }

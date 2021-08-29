@@ -2,12 +2,13 @@ package tools
 
 import (
 	"errors"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
-	"net/http"
-	"time"
 )
 
 // BindJSON 取得 Request body 資料，JSON 資料轉行為 struct
@@ -22,7 +23,7 @@ func BindJSON(c *gin.Context, trans ut.Translator, obj interface{}) error {
 			errs = append(errs, err.Error())
 		}
 
-		c.JSON(http.StatusBadRequest, NewResponseError(errs))
+		c.JSON(http.StatusBadRequest, NewResponseBasicError(errs))
 		return err
 	}
 
@@ -32,19 +33,7 @@ func BindJSON(c *gin.Context, trans ut.Translator, obj interface{}) error {
 // NewReturnError 設定回傳錯誤，統一回傳錯誤格式
 func NewReturnError(c *gin.Context, code int, err error) {
 	messages := []string{err.Error()}
-	c.JSON(code, NewResponseError(messages))
-}
-
-func NewResponseError(messages []string) ResponseError {
-	return ResponseError{
-		Message: messages,
-	}
-}
-
-type ResponseError struct {
-	_ struct{}
-
-	Message []string `json:"messages"`
+	c.JSON(code, NewResponseBasicError(messages))
 }
 
 // IsErrRecordNotFound 驗證 SQL 語法執行但查無資料情況，調整 http status
@@ -53,6 +42,29 @@ func IsErrRecordNotFound(c *gin.Context, err error) {
 		NewReturnError(c, http.StatusNotFound, err)
 	} else {
 		NewReturnError(c, http.StatusInternalServerError, err)
+	}
+}
+
+type ResponseBasic struct {
+	_ struct{}
+
+	Code     int         `json:"code"`
+	Messages []string    `json:"messages"`
+	Data     interface{} `json:"data"`
+}
+
+func NewResponseBasicSuccess(data interface{}) ResponseBasic {
+	return ResponseBasic{
+		Code:     1,
+		Messages: []string{"success"},
+		Data:     data,
+	}
+}
+
+func NewResponseBasicError(messages []string) ResponseBasic {
+	return ResponseBasic{
+		Code:     0,
+		Messages: messages,
 	}
 }
 

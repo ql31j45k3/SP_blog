@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ql31j45k3/SP_blog/internal/utils/tools"
+
 	uuid "github.com/satori/go.uuid"
 
 	"github.com/gin-gonic/gin"
@@ -51,7 +53,7 @@ func (er *exampleRouter) createGoroutine(c *gin.Context) {
 		TaskID: taskID,
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, tools.NewResponseBasicSuccess(result))
 }
 
 func (er *exampleRouter) getGoroutineStatus(c *gin.Context) {
