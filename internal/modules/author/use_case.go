@@ -10,18 +10,17 @@ import (
 	"gorm.io/gorm"
 )
 
-func newUseCaseAuthor(repositoryAuthor repositoryAuthor, db *gorm.DB, trans ut.Translator) useCaseAuthor {
+func newUseCaseAuthor(repositoryAuthor repositoryAuthor, db *gorm.DB) useCaseAuthor {
 	return &author{
 		repositoryAuthor: repositoryAuthor,
 
-		db:    db,
-		trans: trans,
+		db: db,
 	}
 }
 
 type useCaseAuthor interface {
-	Create(c *gin.Context) (responseAuthorCreate, error)
-	UpdateID(c *gin.Context) error
+	Create(c *gin.Context, author authors) (responseAuthorCreate, error)
+	UpdateID(c *gin.Context, id string, author authors) error
 	GetID(c *gin.Context) (responseAuthor, error)
 	Get(c *gin.Context) ([]responseAuthor, error)
 }
@@ -36,12 +35,7 @@ type author struct {
 	trans ut.Translator
 }
 
-func (a *author) Create(c *gin.Context) (responseAuthorCreate, error) {
-	var author authors
-	if err := tools.BindJSON(c, a.trans, &author); err != nil {
-		return responseAuthorCreate{}, err
-	}
-
+func (a *author) Create(c *gin.Context, author authors) (responseAuthorCreate, error) {
 	newRowID, err := a.repositoryAuthor.Create(a.db, author)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
@@ -55,15 +49,8 @@ func (a *author) Create(c *gin.Context) (responseAuthorCreate, error) {
 	return result, nil
 }
 
-func (a *author) UpdateID(c *gin.Context) error {
-	var author authors
-	if err := tools.BindJSON(c, a.trans, &author); err != nil {
-		return err
-	}
-
-	ID := c.Param("id")
-
-	cond, err := newAuthorCond(withAuthorID(ID))
+func (a *author) UpdateID(c *gin.Context, id string, author authors) error {
+	cond, err := newAuthorCond(withAuthorID(id))
 	if err != nil {
 		tools.NewReturnError(c, http.StatusBadRequest, err)
 		return err
