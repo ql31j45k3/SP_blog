@@ -1,6 +1,7 @@
 package article
 
 import (
+	"fmt"
 	"net/http"
 
 	ut "github.com/go-playground/universal-translator"
@@ -20,7 +21,7 @@ func newUseCaseArticle(repositoryArticle repositoryArticle, db *gorm.DB, trans u
 }
 
 type useCaseArticle interface {
-	Create(c *gin.Context) (uint, error)
+	Create(c *gin.Context) (responseArticleCreate, error)
 	UpdateID(c *gin.Context) error
 	GetID(c *gin.Context) (responseArticle, error)
 	Get(c *gin.Context) ([]responseArticle, error)
@@ -37,19 +38,23 @@ type article struct {
 	trans ut.Translator
 }
 
-func (a *article) Create(c *gin.Context) (uint, error) {
+func (a *article) Create(c *gin.Context) (responseArticleCreate, error) {
 	var article articles
 	if err := tools.BindJSON(c, a.trans, &article); err != nil {
-		return 0, err
+		return responseArticleCreate{}, err
 	}
 
 	newRowID, err := a.repositoryArticle.Create(a.db, article)
 	if err != nil {
 		tools.IsErrRecordNotFound(c, err)
-		return newRowID, err
+		return responseArticleCreate{}, err
 	}
 
-	return newRowID, nil
+	result := responseArticleCreate{
+		ID: fmt.Sprint(newRowID),
+	}
+
+	return result, nil
 }
 
 func (a *article) UpdateID(c *gin.Context) error {

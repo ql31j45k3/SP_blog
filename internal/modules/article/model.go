@@ -146,6 +146,12 @@ type articleLabels struct {
 	Tag        string `binding:"required,min=1,max=100"`
 }
 
+type responseArticleCreate struct {
+	_ struct{}
+
+	ID string `json:"id"`
+}
+
 type responseArticle struct {
 	_ struct{}
 
