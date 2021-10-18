@@ -7,8 +7,6 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/ql31j45k3/SP_blog/internal/modules/example"
-
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
@@ -61,7 +59,7 @@ func Start() {
 		}
 	}()
 
-	ctxStopNotify, cancelCtxStopNotify := context.WithCancel(context.Background())
+	_, cancelCtxStopNotify := context.WithCancel(context.Background())
 	// 注意: cancelCtx 底層保證多個調用，只會執行一次
 	defer cancelCtxStopNotify()
 
@@ -76,15 +74,6 @@ func Start() {
 	}
 
 	// 調用其他函式，函式參數容器會依照 Provide 提供後自行匹配
-	if err := container.Invoke(func(condAPI example.APIExampleCond) {
-		example.RegisterRouter(ctxStopNotify, stopJobFunc.add, condAPI)
-	}); err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Error("Start - container.Invoke(example.RegisterRouter)")
-		return
-	}
-
 	if err := container.Invoke(article.RegisterRouter); err != nil {
 		log.WithFields(log.Fields{
 			"err": err,
