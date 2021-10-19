@@ -13,7 +13,7 @@
     當設定檔 key 不存在未設定，程式取以下 default 值
 
     system.log.level: "warn"
-    system.log.path: /var/log/ostrich/def_log
+    system.log.path: /var/log/blog_api/def_log
 
     system.pprof.status: false
     system.pprof.block.status: false
