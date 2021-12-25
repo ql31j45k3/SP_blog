@@ -39,7 +39,7 @@ func Start(sourcePath string) error {
 	viper.SetConfigType("yaml")
 
 	if err := viper.ReadInConfig(); err != nil {
-		if IsUseVersion() {
+		if isUseVersion() {
 			return nil
 		}
 
