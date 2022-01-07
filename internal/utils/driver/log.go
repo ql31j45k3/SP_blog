@@ -20,6 +20,7 @@ func SetLogEnv() {
 
 	log.SetLevel(level)
 	log.SetFormatter(logFormat)
+	log.SetReportCaller(true)
 
 	logAddServerIPHock()
 	logAddHookRotatelogs(logFormat)
