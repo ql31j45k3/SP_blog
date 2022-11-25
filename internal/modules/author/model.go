@@ -23,8 +23,6 @@ type APIAuthorCond struct {
 }
 
 type authorCond struct {
-	_ struct{}
-
 	tools.Pagination
 
 	ID uint
@@ -93,8 +91,6 @@ func (cond *authorCond) parseGet(c *gin.Context) error {
 }
 
 type authors struct {
-	_ struct{}
-
 	gorm.Model
 
 	Title   string `json:"title" binding:"required,min=1,max=100"`
@@ -104,14 +100,10 @@ type authors struct {
 }
 
 type responseAuthorCreate struct {
-	_ struct{}
-
 	ID string `json:"id"`
 }
 
 type responseAuthor struct {
-	_ struct{}
-
 	tools.Model
 
 	Title   string `json:"title"`

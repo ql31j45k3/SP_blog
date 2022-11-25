@@ -27,8 +27,6 @@ func RegisterRouter(condAPI APIAuthorCond) {
 }
 
 type authorRouter struct {
-	_ struct{}
-
 	author useCaseAuthor
 
 	trans ut.Translator

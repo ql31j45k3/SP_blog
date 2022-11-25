@@ -38,8 +38,6 @@ func newConfigEnv() *configEnv {
 }
 
 type configEnv struct {
-	_ struct{}
-
 	sync.RWMutex
 
 	logLevel string

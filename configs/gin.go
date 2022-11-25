@@ -1,8 +1,9 @@
 package configs
 
 import (
-	"github.com/spf13/viper"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 const (
@@ -20,8 +21,6 @@ func newConfigGin() *configGin {
 }
 
 type configGin struct {
-	_ struct{}
-
 	mode string
 }
 

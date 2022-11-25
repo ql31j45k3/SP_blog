@@ -16,8 +16,6 @@ func newConfigHost() *configHost {
 }
 
 type configHost struct {
-	_ struct{}
-
 	sync.RWMutex
 
 	spBlogAPIHost string

@@ -23,8 +23,6 @@ type APIArticleCond struct {
 }
 
 type articleCond struct {
-	_ struct{}
-
 	tools.Pagination
 
 	ID uint
@@ -95,8 +93,6 @@ func (cond *articleCond) parseGet(c *gin.Context) error {
 }
 
 type articles struct {
-	_ struct{}
-
 	gorm.Model
 
 	Title   string `json:"title" binding:"required,min=1,max=100"`
@@ -109,8 +105,6 @@ type articles struct {
 }
 
 type articleLabels struct {
-	_ struct{}
-
 	gorm.Model
 
 	ArticlesID uint
@@ -118,14 +112,10 @@ type articleLabels struct {
 }
 
 type responseArticleCreate struct {
-	_ struct{}
-
 	ID string `json:"id"`
 }
 
 type responseArticle struct {
-	_ struct{}
-
 	tools.Model
 
 	Title   string `json:"title"`
@@ -136,8 +126,6 @@ type responseArticle struct {
 }
 
 type searchCond struct {
-	_ struct{}
-
 	tools.Pagination
 
 	keyword string
