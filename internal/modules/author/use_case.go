@@ -25,8 +25,6 @@ type useCaseAuthor interface {
 }
 
 type author struct {
-	_ struct{}
-
 	repositoryAuthor
 
 	db *gorm.DB

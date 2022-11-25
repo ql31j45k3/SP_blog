@@ -1,11 +1,12 @@
 package validator
 
 import (
+	"reflect"
+	"strings"
+
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/ql31j45k3/SP_blog/internal/utils/validator/zh"
-	"reflect"
-	"strings"
 )
 
 const (
@@ -46,7 +47,6 @@ func RegisterTagNameFunc(fld reflect.StructField) string {
 }
 
 type articleStatusFunc struct {
-	_ struct{}
 }
 
 // Validator 提供驗證 ArticleStatus 資料正確性 func
@@ -76,7 +76,6 @@ func (asf *articleStatusFunc) Translation(ut ut.Translator, fe validator.FieldEr
 }
 
 type authorStatusFunc struct {
-	_ struct{}
 }
 
 // Validator 提供驗證 AuthorStatus 資料正確性 func

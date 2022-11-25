@@ -21,7 +21,6 @@ type repositoryArticle interface {
 }
 
 type articleMysql struct {
-	_ struct{}
 }
 
 func (am *articleMysql) Create(db *gorm.DB, article articles) (uint, error) {

@@ -26,8 +26,6 @@ type useCaseArticle interface {
 }
 
 type article struct {
-	_ struct{}
-
 	repositoryArticle
 
 	db *gorm.DB

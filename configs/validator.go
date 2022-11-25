@@ -1,8 +1,9 @@
 package configs
 
 import (
-	"github.com/spf13/viper"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 func newConfigValidator() *configValidator {
@@ -14,8 +15,6 @@ func newConfigValidator() *configValidator {
 }
 
 type configValidator struct {
-	_ struct{}
-
 	locale string
 }
 

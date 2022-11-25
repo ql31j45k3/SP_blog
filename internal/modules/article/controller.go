@@ -28,8 +28,6 @@ func RegisterRouter(condAPI APIArticleCond) {
 }
 
 type articleRouter struct {
-	_ struct{}
-
 	article useCaseArticle
 
 	trans ut.Translator

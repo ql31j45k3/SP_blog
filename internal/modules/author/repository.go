@@ -17,7 +17,6 @@ type repositoryAuthor interface {
 }
 
 type authorMysql struct {
-	_ struct{}
 }
 
 func (am *authorMysql) Create(db *gorm.DB, author authors) (uint, error) {
